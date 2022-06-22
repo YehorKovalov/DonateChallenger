@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  ms-sql-server:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    container_name: lde.ms-sql-server
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "MSSQLServerStrongPassword123!"
+    hostname: localhost
+    ports:
+      - "1433:1433"
+  nginx:
+    image: nginx
+    container_name: lde.nginx
+    ports:
+      - 80:80
+    volumes:
+      - ./Proxy/gateway/nginx/conf.d:/etc/nginx/conf.d
+      - ./Proxy/assets:/var/www/assets
+
+networks:
+  default:
+    driver: bridge
+    internal: false
+    attachable: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.0.0/24
+          gateway: 192.168.0.2
