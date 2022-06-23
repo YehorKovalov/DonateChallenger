@@ -26,7 +26,7 @@ public class ChallengesBoardBffController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(typeof(AddChallengeForStreamerResponse<>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> Add(AddChallengeForStreamerRequest<int> request)
+    public async Task<IActionResult> Add(AddChallengeForStreamerRequest request)
     {
         var result = await _challengeService.AddChallengeForStreamerAsync(request);
         return Ok(result);

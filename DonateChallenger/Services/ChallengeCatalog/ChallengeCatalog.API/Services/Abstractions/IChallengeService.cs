@@ -7,7 +7,7 @@ namespace ChallengeCatalog.API.Services.Abstractions;
 
 public interface IChallengeService
 {
-    Task<AddChallengeForStreamerResponse<long?>?> AddChallengeForStreamerAsync(AddChallengeForStreamerRequest<int> request);
+    Task<AddChallengeForStreamerResponse<long?>?> AddChallengeForStreamerAsync(AddChallengeForStreamerRequest request);
 
     Task<GetPaginatedChallengesResponse<CurrentChallengeDto>?> GetPaginatedCurrentChallengesAsync(GetPaginatedStreamerChallengesRequest<ChallengeFilter> request);
 

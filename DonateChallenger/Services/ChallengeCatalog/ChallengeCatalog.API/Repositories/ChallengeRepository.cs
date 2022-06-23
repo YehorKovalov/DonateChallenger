@@ -73,7 +73,7 @@ public class ChallengeRepository : IChallengeRepository
     {
         if (challengeId <= 0)
         {
-            _logger.LogError($"{nameof(GetChallengeByIdAsync)} ---> bad argument: {nameof(challengeId)} = {challengeId}");
+            _logger.LogError($"{nameof(GetChallengeByIdAsync)} ---> bad arguments: {nameof(challengeId)} = {challengeId}");
             return null;
         }
 
@@ -117,11 +117,12 @@ public class ChallengeRepository : IChallengeRepository
             .Where(q => q.ChallengeStatusEntity.IsCompleted == sortByCompleted)
             .Where(q => q.ChallengeStatusEntity.IsSkipped == sortBySkipped);
 
-        var totalCount = await query.LongCountAsync();
         if (sortByCreatedTime.HasValue && sortByCreatedTime.Value != 0)
         {
             query = query.OrderByDescending(q => q.CreatedTime);
         }
+
+        var totalCount = await query.LongCountAsync();
 
         var challenges = await query
             .Skip(currentPage * challengesPerPage)

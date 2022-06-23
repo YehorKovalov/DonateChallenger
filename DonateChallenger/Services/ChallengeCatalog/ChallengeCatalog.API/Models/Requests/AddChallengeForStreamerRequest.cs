@@ -1,6 +1,6 @@
 namespace ChallengeCatalog.API.Models.Requests;
 
-public class AddChallengeForStreamerRequest<TStreamerId>
+public class AddChallengeForStreamerRequest
 {
     public string? Title { get; set; }
 
@@ -9,6 +9,4 @@ public class AddChallengeForStreamerRequest<TStreamerId>
     public decimal DonatePrice { get; set; }
 
     public string DonateFrom { get; set; } = null!;
-
-    public TStreamerId StreamerId { get; set; } = default !;
 }
