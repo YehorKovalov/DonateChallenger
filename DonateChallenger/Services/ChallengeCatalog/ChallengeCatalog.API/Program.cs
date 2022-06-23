@@ -1,25 +1,28 @@
+using ChallengeCatalog.API.Data;
+using ChallengeCatalog.API.Extensions;
+using Infrastructure.Extensions;
+using Infrastructure.Filters;
+
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddControllers();
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services
+    .AddDbContexts(builder.Configuration)
+    .AddConfiguredSwagger("ChallengeCatalog")
+    .AddAppDependencies()
+    .AddAppCors()
+    .AddAutoMapper(typeof(Program))
+    .AddControllers(o => o.Filters.Add(typeof(HttpGlobalExceptionFilter)))
+    .AddJsonOptions(o => o.JsonSerializerOptions.WriteIndented = true);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseConfiguredSwaggerWithUI(builder.Configuration, "ChallengeCatalog");
 
-app.UseHttpsRedirection();
+app.UseRouting();
+app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
 
 app.MapControllers();
 
+app.CreateDbIfNotExist(new ChallengesCatalogDbInitializer());
 app.Run();

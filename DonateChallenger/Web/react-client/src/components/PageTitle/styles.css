@@ -1,0 +1,6 @@
+.title {
+     text-align: center;
+     background: -webkit-linear-gradient(white, rgba(2,25,6,1));
+     background-clip: text;
+     -webkit-text-fill-color: transparent;
+}
