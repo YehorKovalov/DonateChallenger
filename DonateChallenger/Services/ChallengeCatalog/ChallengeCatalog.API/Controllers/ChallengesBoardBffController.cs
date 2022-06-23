@@ -14,18 +14,15 @@ namespace ChallengeCatalog.API.Controllers;
 public class ChallengesBoardBffController : ControllerBase
 {
     private readonly IChallengeService _challengeService;
-    private readonly ILogger<ChallengesBoardBffController> _logger;
 
     public ChallengesBoardBffController(
-        IChallengeService challengeService,
-        ILogger<ChallengesBoardBffController> logger)
+        IChallengeService challengeService)
     {
         _challengeService = challengeService;
-        _logger = logger;
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(AddChallengeForStreamerResponse<>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(AddChallengeForStreamerResponse<long?>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Add(AddChallengeForStreamerRequest request)
     {
         var result = await _challengeService.AddChallengeForStreamerAsync(request);

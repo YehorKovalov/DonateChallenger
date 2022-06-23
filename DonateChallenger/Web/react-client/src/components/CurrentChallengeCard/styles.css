@@ -1,0 +1,33 @@
+.card-body {
+     min-width: 100%;
+     background: linear-gradient(27deg, rgba(1,55,5,1) 0%, rgba(1,27,4,1) 28%, rgba(1,15,3,1) 69%, rgba(1,55,5,1) 97%);
+}
+
+.card {
+     width: 20rem;
+     margin: 1rem;
+}
+
+.donate-price {
+     text-align: end;
+     font-size: 1.5rem;
+     color: #bd0404;
+}
+
+.donate-donater {
+     font-size: 1.4rem;
+     color: #76ba00;
+}
+
+.donate-description {
+     font-size: 1.5rem;
+}
+
+
+.blur {
+     position: relative;
+     -webkit-animation: 2s animateLeft linear -1s infinite;
+          animation: 2s animateLeft linear -1s infinite;
+     transition: all 500ms ease;
+     filter: blur(15px);
+   }
