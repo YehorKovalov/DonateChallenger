@@ -35,7 +35,7 @@ public class ChallengesCatalogDbInitializer : IDbInitializer<ChallengeCatalogDbC
                 DonateFrom = $"Donater {i}",
                 DonatePrice = i * new Random().Next(1000),
                 StreamerId = (i % 3) + 1,
-                CreatedTime = i % 2 == 0 ? DateTime.UtcNow : DateTime.Now,
+                CreatedTime = DateTime.UtcNow,
                 ChallengeStatusEntity = new ChallengeStatusEntity
                 {
                     IsCompleted = i % 2 == 0,

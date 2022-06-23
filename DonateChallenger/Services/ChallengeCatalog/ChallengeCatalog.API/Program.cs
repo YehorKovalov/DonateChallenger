@@ -1,21 +1,24 @@
 using ChallengeCatalog.API.Data;
+using ChallengeCatalog.API.Extensions;
 using Infrastructure.Extensions;
-using Infrastructure.Services;
-using Infrastructure.Services.Abstractions;
-using Microsoft.EntityFrameworkCore;
+using Infrastructure.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllers();
-builder.Services.AddDbContextFactory<ChallengeCatalogDbContext>(o =>
-{
-    var connectionString = builder.Configuration.GetConnectionString("ChallengeConnectionString");
-    o.UseNpgsql(connectionString);
-});
-builder.Services.AddScoped<IDbContextWrapper<ChallengeCatalogDbContext>, DbContextWrapper<ChallengeCatalogDbContext>>();
+builder.Services
+    .AddDbContexts(builder.Configuration)
+    .AddConfiguredSwagger("ChallengeCatalog")
+    .AddAppDependencies()
+    .AddAppCors()
+    .AddAutoMapper(typeof(Program))
+    .AddControllers(o => o.Filters.Add(typeof(HttpGlobalExceptionFilter)))
+    .AddJsonOptions(o => o.JsonSerializerOptions.WriteIndented = true);
 
 var app = builder.Build();
 
+app.UseConfiguredSwaggerWithUI(builder.Configuration, "ChallengeCatalog");
+
 app.UseRouting();
+app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
 
