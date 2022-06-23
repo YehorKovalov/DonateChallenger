@@ -1,0 +1,40 @@
+.main-font-family {
+  font-family: 'Libre Baskerville', serif;
+}
+
+body{
+  font-family: 'Playfair Display', serif;
+  margin: 0;
+  padding: 0;
+}
+
+footer {
+  height: 5rem;
+  background: linear-gradient(138deg, rgba(0,0,0,1) 46%, rgba(2,25,6,1) 63%);
+}
+
+.wrapper {
+  min-height: calc(100vh - 5rem);
+  min-width: 100%;
+  background: linear-gradient(200deg, rgba(0,0,0,1) 46%, rgba(2,25,6,1) 63%);
+}
+
+.color-white {
+  color: white;
+}
+.color-black {
+  color: black;
+}
+
+.color-silver {
+  color: silver;
+}
+
+.hover_white:hover{
+  color: white;
+}
+
+textarea:focus, input:focus, button:focus{
+  outline: none;
+  border: none;
+}

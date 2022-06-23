@@ -46,6 +46,16 @@ services:
     ports:
       - 4001:4001
   
+  web.react-client:
+    container_name: lde.web.react-client
+    build:
+      context: ./Web/react-client
+      dockerfile: ./Dockerfile
+    ports:
+      - 3000:3000
+    depends_on:
+      - challenge-catalog.api
+
   nginx:
     image: nginx
     container_name: lde.nginx

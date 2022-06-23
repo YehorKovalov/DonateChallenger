@@ -34,6 +34,7 @@ public class ChallengeService : BaseDataService<ChallengeCatalogDbContext>, ICha
         {
             if (!AddChallengeRequestStateIsValid(request))
             {
+                Logger.LogError($"{nameof(AddChallengeForStreamerAsync)} ---> Bad request");
                 return null!;
             }
 

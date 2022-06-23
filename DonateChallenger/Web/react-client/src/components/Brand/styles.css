@@ -1,0 +1,6 @@
+.brand-font {
+  font-family: 'Butcherman', cursive;
+  background: -webkit-linear-gradient(#eee, #333);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
