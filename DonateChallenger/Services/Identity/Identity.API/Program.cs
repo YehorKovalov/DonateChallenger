@@ -1,81 +1,58 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using System.Reflection;
+using Identity.API;
+using Identity.API.Data;
+using Identity.API.Data.Identities;
+using Infrastructure.Extensions;
 
+var builder = WebApplication.CreateBuilder(args);
 
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Serilog;
-using Serilog.Events;
-using Serilog.Sinks.SystemConsole.Themes;
-using System;
-using System.Linq;
+var appDbConnection = builder.Configuration.GetConnectionString("AppDbConnection");
+var configurationDbConnection = builder.Configuration.GetConnectionString("ConfigurationDbConnection");
 
-namespace Identity.API
-{
-    public class Program
+var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
+
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(appDbConnection));
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.Configure<AppSettings>(builder.Configuration);
+
+builder.Services.AddIdentityServer()
+    .AddDeveloperSigningCredential()
+    .AddAspNetIdentity<ApplicationUser>()
+    .AddConfigurationStore(options =>
     {
-        public static int Main(string[] args)
-        {
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
-                .MinimumLevel.Override("System", LogEventLevel.Warning)
-                .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
-                .Enrich.FromLogContext()
-                // uncomment to write to Azure diagnostics stream
-                //.WriteTo.File(
-                //    @"D:\home\LogFiles\Application\identityserver.txt",
-                //    fileSizeLimitBytes: 1_000_000,
-                //    rollOnFileSizeLimit: true,
-                //    shared: true,
-                //    flushToDiskInterval: TimeSpan.FromSeconds(1))
-                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}", theme: AnsiConsoleTheme.Code)
-                .CreateLogger();
+        options.ConfigureDbContext = b => b.UseSqlServer(
+            configurationDbConnection,
+            sql => sql.MigrationsAssembly(migrationsAssembly));
+    })
+    .AddOperationalStore(options =>
+    {
+        options.ConfigureDbContext = b => b.UseSqlServer(
+            configurationDbConnection,
+            sql => sql.MigrationsAssembly(migrationsAssembly));
+    });
 
-            try
-            {
-                var seed = args.Contains("/seed");
-                if (seed)
-                {
-                    args = args.Except(new[] { "/seed" }).ToArray();
-                }
+builder.Services.AddControllers();
+builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
 
-                var host = CreateHostBuilder(args).Build();
+var app = builder.Build();
 
-                if (seed)
-                {
-                    Log.Information("Seeding database...");
-                    var config = host.Services.GetRequiredService<IConfiguration>();
-                    var connectionString = config.GetConnectionString("DefaultConnection");
-                    SeedData.EnsureSeedData(connectionString);
-                    Log.Information("Done seeding database.");
-                    return 0;
-                }
+app.UseExceptionHandler("/Home/Error");
 
-                Log.Information("Starting host...");
-                host.Run();
-                return 0;
-            }
-            catch (Exception ex)
-            {
-                Log.Fatal(ex, "Host terminated unexpectedly.");
-                return 1;
-            }
-            finally
-            {
-                Log.CloseAndFlush();
-            }
-        }
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseIdentityServer();
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .UseSerilog()
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
-}
+app.UseRouting();
+app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax });
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.CreateDbIfNotExist(new AppDbInitializer());
+app.CreateDbIfNotExist(new ConfigurationDbContextInitializer());
+app.Run();

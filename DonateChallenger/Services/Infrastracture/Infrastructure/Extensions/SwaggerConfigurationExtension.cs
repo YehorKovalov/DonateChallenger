@@ -41,7 +41,7 @@ public static class SwaggerConfigurationExtension
                 throw new ArgumentException();
             }
 
-            var authority = config["Authorization:Authority"] ?? throw new ArgumentException();
+            var authority = config["Authorization:Authority"] ?? throw new ArgumentNullException();
 
             options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
             {

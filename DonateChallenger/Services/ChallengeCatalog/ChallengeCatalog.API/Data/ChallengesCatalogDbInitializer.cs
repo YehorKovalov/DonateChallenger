@@ -6,19 +6,19 @@ namespace ChallengeCatalog.API.Data;
 
 public class ChallengesCatalogDbInitializer : IDbInitializer<ChallengeCatalogDbContext>
 {
-    public void Initialize(ChallengeCatalogDbContext dbContext)
+    public async Task Initialize(ChallengeCatalogDbContext dbContext)
     {
-        var dbIsCreated = dbContext.Database.EnsureCreated();
+        var dbIsCreated = await dbContext.Database.EnsureCreatedAsync();
         if (dbIsCreated)
         {
-            dbContext.Database.Migrate();
+            await dbContext.Database.MigrateAsync();
         }
 
-        if (!dbContext.Challenges.Any())
+        if (!await dbContext.Challenges.AnyAsync())
         {
             var challenges = GetChallenges(100);
-            dbContext.Challenges.AddRange(challenges);
-            dbContext.SaveChanges();
+            await dbContext.Challenges.AddRangeAsync(challenges);
+            await dbContext.SaveChangesAsync();
         }
     }
 

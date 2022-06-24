@@ -15,7 +15,7 @@ public static class IHostExtensions
         {
             var context = services.GetRequiredService<TDbContext>();
 
-            dbInitializer.Initialize(context);
+            dbInitializer.Initialize(context).Wait();
         }
         catch (Exception ex)
         {
