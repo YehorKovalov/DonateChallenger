@@ -1,4 +1,3 @@
-import NavLink from '../NavLink';
 import './styles.css';
 
 const Brand = () => {

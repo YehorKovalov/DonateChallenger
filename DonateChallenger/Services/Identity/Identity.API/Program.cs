@@ -2,20 +2,31 @@ using System.Reflection;
 using Identity.API;
 using Identity.API.Data;
 using Identity.API.Data.Identities;
+using Identity.API.Services;
+using Identity.API.Services.Abstractions;
 using Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var appDbConnection = builder.Configuration.GetConnectionString("AppDbConnection");
-var configurationDbConnection = builder.Configuration.GetConnectionString("ConfigurationDbConnection");
+var appDbConnection = builder.Configuration["AppDbConnection"];
+var configurationDbConnection = builder.Configuration["ConfigurationDbConnection"];
 
 var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(appDbConnection));
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(o =>
+    {
+        o.Password.RequiredLength = 4;
+        o.Password.RequireUppercase = false;
+        o.Password.RequireLowercase = false;
+        o.Password.RequireNonAlphanumeric = false;
+    })
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IHttpContextService, HttpContextService>();
+builder.Services.AddTransient<IAccountService<ApplicationUser>, AccountService>();
 builder.Services.Configure<AppSettings>(builder.Configuration);
 
 builder.Services.AddIdentityServer()
@@ -51,7 +62,7 @@ app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMo
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Account}/{action=Login}/{id?}");
 
 app.CreateDbIfNotExist(new AppDbInitializer());
 app.CreateDbIfNotExist(new ConfigurationDbContextInitializer());

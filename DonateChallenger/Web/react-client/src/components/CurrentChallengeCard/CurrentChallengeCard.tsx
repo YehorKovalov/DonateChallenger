@@ -18,7 +18,7 @@ export interface ChallengeCardProps {
 
 const CurrentChallengeCard = observer((props: ChallengeCardProps) => {
      const store = useInjection<ChallengeStore>(iocStores.challengeStore);
-     const className = props.challengeId == store.lastUsedChallengeId ? 'color-silver border  blur' : 'color-silver border';
+     const className = props.challengeId === store.lastUsedChallengeId ? 'color-silver border  blur' : 'color-silver border';
      return (
           <Card bg='dark' key={props.challengeId} className={className}>
                <Card.Body>

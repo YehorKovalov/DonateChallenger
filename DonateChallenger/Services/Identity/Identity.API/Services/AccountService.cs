@@ -1,82 +1,134 @@
-using Identity.API.Data;
 using Identity.API.Data.Identities;
 using Identity.API.Models.AccountViewModels;
+using Identity.API.Models.AccountViewModels.Responses;
 using Identity.API.Services.Abstractions;
+using IdentityModel;
 using IdentityServer4.Services;
 using Infrastructure.Exceptions;
-using Infrastructure.Services;
-using Infrastructure.Services.Abstractions;
-using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Options;
 
 namespace Identity.API.Services;
 
-public class AccountService : BaseDataService<AppDbContext>, IAccountService<ApplicationUser>
+public class AccountService : IAccountService<ApplicationUser>
 {
     private readonly IIdentityServerInteractionService _interactionService;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly AppSettings _appSettings;
+    private readonly IHttpContextService _httpContextService;
+    private readonly ILogger<AccountService> _logger;
 
-    protected AccountService(
-        IDbContextWrapper<AppDbContext> dbContext,
-        ILogger<BaseDataService<AppDbContext>> logger,
+    public AccountService(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
         IIdentityServerInteractionService interactionService,
-        AppSettings appSettings)
-            : base(dbContext, logger)
+        IOptions<AppSettings> appSettings,
+        IHttpContextService httpContextService,
+        ILogger<AccountService> logger)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _interactionService = interactionService;
-        _appSettings = appSettings;
+        _appSettings = appSettings.Value;
+        _httpContextService = httpContextService;
+        _logger = logger;
     }
 
     public async Task<ApplicationUser?> FindUserByEmail(string user)
     {
-        return await ExecuteSafeAsync(async () =>
+        if (string.IsNullOrWhiteSpace(user))
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                var errorMessage = $"{nameof(FindUserByEmail)} ---> Bad arguments. {nameof(user)} is not valid";
-                Logger.LogError(errorMessage);
-                throw new BusinessException(errorMessage);
-            }
+            var errorMessage = $"{nameof(FindUserByEmail)} ---> Bad arguments. {nameof(user)} is not valid";
+            _logger.LogError(errorMessage);
+            throw new BusinessException(errorMessage);
+        }
 
-            var searchedUser = await _userManager.FindByEmailAsync(user);
-            if (searchedUser == null)
-            {
-                Logger.LogInformation($"{nameof(FindUserByEmail)} ---> Searched User's not found");
-            }
+        var searchedUser = await _userManager.FindByEmailAsync(user);
+        if (searchedUser == null)
+        {
+            _logger.LogInformation($"{nameof(FindUserByEmail)} ---> Searched User's not found");
+        }
 
-            return searchedUser;
-        });
+        return searchedUser;
     }
 
     public async Task<SignInResponseViewModel> SignInAsync(string email, string password, string returnUrl, bool rememberMe)
     {
-        return await ExecuteSafeAsync(async () =>
+        var response = new SignInResponseViewModel { ReturnUrl = GetValidatedReturnUrl(returnUrl) };
+
+        var user = await FindUserByEmail(email);
+        if (user == null)
         {
-            var response = new SignInResponseViewModel { ReturnUrl = ValidateReturnUrl(returnUrl) };
-
-            var user = await FindUserByEmail(email);
-            if (user == null)
-            {
-                return response;
-            }
-
-            var passwordIsValid = await _userManager.CheckPasswordAsync(user, password);
-            if (!passwordIsValid)
-            {
-                return response;
-            }
-
-            response.SignInIsSuccessful = true;
-            var props = BuildAuthenticationProperties(response.ReturnUrl, rememberMe);
-
-            await _signInManager.SignInAsync(user, props);
             return response;
-        });
+        }
+
+        var passwordIsValid = await _userManager.CheckPasswordAsync(user, password);
+        if (!passwordIsValid)
+        {
+            return response;
+        }
+
+        var props = BuildAuthenticationProperties(response.ReturnUrl, rememberMe);
+
+        await _signInManager.SignInAsync(user, props);
+        response.SignInIsSuccessful = true;
+        return response;
+    }
+
+    public async Task<PostLogoutRedirectResponseViewModel> SignOutAsync(string logoutId)
+    {
+        var httpContext = _httpContextService.GetHttpContext();
+        await HandleExternalIdentityProviderSignOut(httpContext, logoutId);
+
+        await httpContext.SignOutAsync();
+
+        await httpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
+
+        httpContext.User = new ClaimsPrincipal(new ClaimsIdentity());
+
+        var logout = await _interactionService.GetLogoutContextAsync(logoutId);
+        return new PostLogoutRedirectResponseViewModel { Uri = logout.PostLogoutRedirectUri };
+    }
+
+    public async Task<SignUpResponseViewModel> SignUpAsync(ApplicationUser user, string email, string password, string confirmPassword, string? redirectUrl)
+    {
+        var user2 = new ApplicationUser
+        {
+            UserName = email,
+            Email = email
+        };
+
+        var response = new SignUpResponseViewModel { RedirectUrl = GetValidatedReturnUrl(redirectUrl) };
+        var result = await _userManager.CreateAsync(user2, password);
+
+        response.SignUpIsSuccessful = !result.Errors.Any();
+        return response;
+    }
+
+    public string GetValidatedReturnUrl(string? urlForValidating)
+    {
+        var alternativeRedirectUrl = _appSettings.ReactClientUrl ?? throw new NullReferenceException(nameof(_appSettings.ReactClientUrl));
+        var urlIsValid = urlForValidating is not null && _interactionService.IsValidReturnUrl(urlForValidating);
+        return urlIsValid ? urlForValidating! : alternativeRedirectUrl;
+    }
+
+    private async Task HandleExternalIdentityProviderSignOut(HttpContext httpContext, string logoutId)
+    {
+        var identityProvider = httpContext.User.FindFirst(JwtClaimTypes.IdentityProvider)?.Value;
+        if (identityProvider != null && identityProvider != IdentityServerConstants.LocalIdentityProvider)
+        {
+            if (logoutId == null)
+            {
+                logoutId = await _interactionService.CreateLogoutContextAsync();
+            }
+
+            var url = LogoutRedirectUriBuilder(logoutId);
+
+            await httpContext.SignOutAsync(identityProvider, new AuthenticationProperties
+            {
+                RedirectUri = url
+            });
+        }
     }
 
     private AuthenticationProperties BuildAuthenticationProperties(string returnUrl, bool rememberMe)
@@ -102,15 +154,5 @@ public class AccountService : BaseDataService<AppDbContext>, IAccountService<App
         return authProps;
     }
 
-    private string ValidateReturnUrl(string returnUrl)
-    {
-        if (string.IsNullOrWhiteSpace(returnUrl))
-        {
-            var errorMessage = $"{nameof(SignInAsync)} ---> Bad arguments. {nameof(returnUrl)} cannot be null or white space";
-            Logger.LogError(errorMessage);
-            throw new BusinessException(errorMessage);
-        }
-
-        return _interactionService.IsValidReturnUrl(returnUrl) ? returnUrl : Defaults.ReturnUrl;
-    }
+    private string LogoutRedirectUriBuilder(string logoutId) => $"/Account/Logout?logoutId={logoutId}";
 }

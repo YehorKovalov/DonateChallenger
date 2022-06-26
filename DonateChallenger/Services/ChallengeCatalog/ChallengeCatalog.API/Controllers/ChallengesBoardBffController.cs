@@ -5,18 +5,21 @@ using ChallengeCatalog.API.Models.Requests;
 using ChallengeCatalog.API.Models.Response;
 using ChallengeCatalog.API.Services.Abstractions;
 using Infrastructure;
+using Infrastructure.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChallengeCatalog.API.Controllers;
 
 [ApiController]
+[Scope("challengeCatalog")]
+[Authorize(Policy = AuthPolicy.AllowEndUserPolicy)]
 [Route(Defaults.DefaultRoute)]
 public class ChallengesBoardBffController : ControllerBase
 {
     private readonly IChallengeService _challengeService;
 
-    public ChallengesBoardBffController(
-        IChallengeService challengeService)
+    public ChallengesBoardBffController(IChallengeService challengeService)
     {
         _challengeService = challengeService;
     }

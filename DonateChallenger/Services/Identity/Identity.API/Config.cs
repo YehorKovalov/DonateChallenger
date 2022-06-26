@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace Identity.API
+﻿namespace Identity.API
 {
     public static class Config
     {
@@ -38,28 +36,31 @@ namespace Identity.API
                     RedirectUris = { $"{reactClientUrl}/" },
 
                     PostLogoutRedirectUris = { $"{reactClientUrl}/" },
+                    ClientSecrets = { new Secret("secret".Sha256()) },
 
                     AllowedCorsOrigins = { reactClientUrl },
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "catalog",
+                        "challengeCatalog",
                     }
                 },
                 new Client
                 {
                     ClientId = "challengecatalogswaggerui",
-                    ClientName = "Challenge Catalog Swagger UI",
+                    ClientName = "Challenge Catalog",
                     AllowedGrantTypes = GrantTypes.Implicit,
                     AllowAccessTokensViaBrowser = true,
+
+                    ClientSecrets = { new Secret("secret".Sha256()) },
 
                     RedirectUris = { $"{challengeCatalogUrl}/swagger/oauth2-redirect.html" },
                     PostLogoutRedirectUris = { $"{challengeCatalogUrl}/swagger/" },
 
                     AllowedScopes =
                     {
-                        "catalog"
+                        "challengeCatalog"
                     }
                 },
             };

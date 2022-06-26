@@ -4,9 +4,7 @@ namespace Infrastructure.Extensions;
 
 public static class IHostExtensions
 {
-    public static void CreateDbIfNotExist<TDbContext>(
-        this IHost app,
-        IDbInitializer<TDbContext> dbInitializer)
+    public static void CreateDbIfNotExist<TDbContext>(this IHost app, IDbInitializer<TDbContext> dbInitializer)
         where TDbContext : DbContext
     {
         using var scope = app.Services.CreateScope();

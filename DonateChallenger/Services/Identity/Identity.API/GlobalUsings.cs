@@ -1,5 +1,9 @@
 global using System.Threading.Tasks;
+global using System.Security.Claims;
 global using IdentityServer4.Models;
 global using IdentityServer4;
 global using Microsoft.AspNetCore.Identity;
 global using Microsoft.EntityFrameworkCore;
+global using Microsoft.AspNetCore.Authentication;
+global using Microsoft.AspNetCore.Authorization;
+global using Microsoft.AspNetCore.Mvc;
