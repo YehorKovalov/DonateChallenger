@@ -8,6 +8,7 @@ import SelectUserRolePage from '../pages/SelectUserRolePage';
 import AuthStore from '../oidc/AuthStore';
 import { useInjection } from '../utilities/ioc/ioc.react';
 import iocStores from '../utilities/ioc/iocStores';
+import { SignInRedirect, SignInSilent, SignOutRedirect } from '../oidc/components';
 
 const AppRoutes = observer(() => {
 
@@ -18,9 +19,10 @@ const AppRoutes = observer(() => {
                <Router>
                     <Routes>
                          <Route path='/' element={ <Layout /> }>
-                              {authStore.streamerAuthenticated
-                                   ? <Route index element={ <ChallengesPage /> } />
-                                   : <Route index element={ <SelectUserRolePage/> } />}
+                              <Route index element={authStore.userIsAuthenticated ? <ChallengesPage /> : <SelectUserRolePage/> }/>
+                              <Route path="/signin" element={ <SignInRedirect />} />
+                              <Route path="/signout" element={ <SignOutRedirect />} />
+                              <Route path="/signinsilent" element={ <SignInSilent />} />
                          </Route>
                     </Routes>
                </Router>
