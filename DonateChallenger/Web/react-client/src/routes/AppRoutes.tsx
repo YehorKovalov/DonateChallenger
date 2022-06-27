@@ -5,7 +5,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import Layout from '../containers/Layout';
 import ChallengesPage from '../pages/ChallengesPage';
 import SelectUserRolePage from '../pages/SelectUserRolePage';
-import AuthStore from '../stores/AuthStore';
+import AuthStore from '../oidc/AuthStore';
 import { useInjection } from '../utilities/ioc/ioc.react';
 import iocStores from '../utilities/ioc/iocStores';
 
