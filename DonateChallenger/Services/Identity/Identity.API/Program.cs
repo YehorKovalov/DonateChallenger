@@ -34,15 +34,19 @@ builder.Services.AddIdentityServer()
     .AddAspNetIdentity<ApplicationUser>()
     .AddConfigurationStore(options =>
     {
-        options.ConfigureDbContext = b => b.UseSqlServer(
-            configurationDbConnection,
-            sql => sql.MigrationsAssembly(migrationsAssembly));
+        options.ConfigureDbContext = b => b.UseSqlServer(configurationDbConnection, sql =>
+            {
+                sql.MigrationsAssembly(migrationsAssembly);
+                sql.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(2), errorNumbersToAdd: null);
+            });
     })
     .AddOperationalStore(options =>
     {
-        options.ConfigureDbContext = b => b.UseSqlServer(
-            configurationDbConnection,
-            sql => sql.MigrationsAssembly(migrationsAssembly));
+        options.ConfigureDbContext = b => b.UseSqlServer(configurationDbConnection, sql =>
+            {
+                sql.MigrationsAssembly(migrationsAssembly);
+                sql.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(2), errorNumbersToAdd: null);
+            });
     });
 
 builder.Services.AddControllers();
