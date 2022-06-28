@@ -14,6 +14,11 @@ namespace Identity.API.Data
                 await context.Database.MigrateAsync();
             }
 
+            await EnsureSeedAsync(context);
+        }
+
+        private async Task EnsureSeedAsync(ConfigurationDbContext context)
+        {
             if (!await context.Clients.AnyAsync())
             {
                 var clients = Config.GetClients();
