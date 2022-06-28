@@ -4,9 +4,11 @@ using Infrastructure.Extensions;
 using Infrastructure.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Services
     .AddDbContexts(builder.Configuration)
-    .AddConfiguredSwagger("ChallengeCatalog")
+    .AddCustomConfiguredSwagger("ChallengeCatalog", builder.Configuration, GetScopes())
+    .AddCustomAuthorization(builder.Configuration)
     .AddAppDependencies()
     .AddAppCors()
     .AddAutoMapper(typeof(Program))
@@ -15,7 +17,7 @@ builder.Services
 
 var app = builder.Build();
 
-app.UseConfiguredSwaggerWithUI(builder.Configuration, "ChallengeCatalog");
+app.UseCustomConfiguredSwaggerWithUI(builder.Configuration, "ChallengeCatalog", "challengecatalogswaggerui");
 
 app.UseRouting();
 app.UseCors("CorsPolicy");
@@ -26,3 +28,8 @@ app.MapControllers();
 
 app.CreateDbIfNotExist(new ChallengesCatalogDbInitializer());
 app.Run();
+
+Dictionary<string, string> GetScopes() => new Dictionary<string, string>
+{
+    { "challengeCatalog", "challengeCatalog" }
+};

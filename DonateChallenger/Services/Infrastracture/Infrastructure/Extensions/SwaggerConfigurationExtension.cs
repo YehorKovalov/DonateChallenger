@@ -5,7 +5,7 @@ namespace Infrastructure.Extensions;
 
 public static class SwaggerConfigurationExtension
 {
-    public static IServiceCollection AddConfiguredSwagger(this IServiceCollection services, string serviceName)
+    public static IServiceCollection AddCustomConfiguredSwagger(this IServiceCollection services, string serviceName)
     {
         if (string.IsNullOrWhiteSpace(serviceName))
         {
@@ -25,7 +25,7 @@ public static class SwaggerConfigurationExtension
         return services;
     }
 
-    public static IServiceCollection AddConfiguredSwagger(this IServiceCollection services, string serviceName, IConfiguration config, Dictionary<string, string> scopes)
+    public static IServiceCollection AddCustomConfiguredSwagger(this IServiceCollection services, string serviceName, IConfiguration config, Dictionary<string, string> scopes)
     {
         services.AddSwaggerGen(options =>
         {
@@ -41,7 +41,7 @@ public static class SwaggerConfigurationExtension
                 throw new ArgumentException();
             }
 
-            var authority = config["Authorization:Authority"] ?? throw new ArgumentException();
+            var authority = config["Authorization:Authority"] ?? throw new ArgumentNullException();
 
             options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
             {
@@ -63,7 +63,7 @@ public static class SwaggerConfigurationExtension
         return services;
     }
 
-    public static IApplicationBuilder UseConfiguredSwaggerWithUI(
+    public static IApplicationBuilder UseCustomConfiguredSwaggerWithUI(
         this WebApplication app,
         IConfiguration config,
         string serviceName,

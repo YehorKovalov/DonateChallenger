@@ -1,5 +1,4 @@
 import { observer } from 'mobx-react';
-import { useEffect } from 'react';
 import CurrentChallengeCard from '../../components/CurrentChallengeCard';
 import ChallengesStore from '../../stores/components/ChallengesStore';
 import { useInjection } from '../../utilities/ioc/ioc.react';

@@ -9,7 +9,7 @@ public class BaseDataService<TDbContext>
     private readonly IDbContextWrapper<TDbContext> _dbContext;
     private readonly ILogger<BaseDataService<TDbContext>> _logger;
 
-    protected BaseDataService(
+    public BaseDataService(
         IDbContextWrapper<TDbContext> dbContext,
         ILogger<BaseDataService<TDbContext>> logger)
     {

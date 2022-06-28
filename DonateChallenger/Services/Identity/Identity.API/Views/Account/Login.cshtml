@@ -1,87 +1,47 @@
-@model LoginViewModel
+@model Identity.API.Models.AccountViewModels.LoginViewModel
 
-<div class="login-page">
-    <div class="lead">
-        <h1>Login</h1>
-        <p>Choose how to login</p>
-    </div>
-
-    <partial name="_ValidationSummary" />
-
+<div class="container">
     <div class="row">
-
-        @if (Model.EnableLocalLogin)
-        {
-            <div class="col-sm-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Local Account</h2>
+        <div class="col-md-12">
+            <section>
+                <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@Model.ReturnUrl" method="post" class="form-login">
+                    <input type="hidden" asp-for="ReturnUrl" />
+                    <h4 class="text-left mb-4">ARE YOU REGISTERED?</h4>
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="Email" class="control-label form-label"></label>
+                        <input asp-for="Email" class="form-control form-input w-100" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
-
-                    <div class="card-body">
-                        <form asp-route="Login">
-                            <input type="hidden" asp-for="ReturnUrl" />
-
-                            <div class="form-group">
-                                <label asp-for="Username"></label>
-                                <input class="form-control" placeholder="Username" asp-for="Username" autofocus>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="Password"></label>
-                                <input type="password" class="form-control" placeholder="Password" asp-for="Password" autocomplete="off">
-                            </div>
-                            @if (Model.AllowRememberLogin)
-                            {
-                                <div class="form-group">
-                                    <div class="form-check">
-                                        <input class="form-check-input" asp-for="RememberLogin">
-                                        <label class="form-check-label" asp-for="RememberLogin">
-                                            Remember My Login
-                                        </label>
-                                    </div>
-                                </div>
-                            }
-                            <button class="btn btn-primary" name="button" value="login">Login</button>
-                            <button class="btn btn-secondary" name="button" value="cancel">Cancel</button>
-                        </form>
+                    <div class="form-group">
+                        <label asp-for="Password" class="control-label form-label"></label>
+                        <input asp-for="Password" class="form-control form-input w-100" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
-                </div>
-            </div>
-        }
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="checkbox">
+                            <label asp-for="RememberMe">
+                                <input asp-for="RememberMe" class="mr-1" />
+                                <div class="fs-4">Remember me</div>
+                            </label>
+                        </div>
 
-        @if (Model.VisibleExternalProviders.Any())
-        {
-            <div class="col-sm-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>External Account</h2>
+                        <button type="submit" class="btn btn-primary">LOG IN</button>
                     </div>
-                    <div class="card-body">
-                        <ul class="list-inline">
-                            @foreach (var provider in Model.VisibleExternalProviders)
-                            {
-                                <li class="list-inline-item">
-                                    <a class="btn btn-secondary"
-                                       asp-controller="External"
-                                       asp-action="Challenge"
-                                       asp-route-scheme="@provider.AuthenticationScheme"
-                                       asp-route-returnUrl="@Model.ReturnUrl">
-                                        @provider.DisplayName
-                                    </a>
-                                </li>
-                            }
-                        </ul>
+                    <div class="form-login-register-link text-center mt-3">
+                        <a class="text-link" asp-action="Register" asp-route-returnurl="@Model.ReturnUrl">Register as a new user?</a>
+                    </div>
+                    
+                </form>
+                <div class="form-login-details">
+                    <div>
+                        Note that for demo purposes you don't need to register and can login with these credentials:
+                    </div>
+                    <div>
+                        User: <strong>demouser@microsoft.com</strong> Password: <strong>Pass@word1</strong>
                     </div>
                 </div>
-            </div>
-        }
-
-        @if (!Model.EnableLocalLogin && !Model.VisibleExternalProviders.Any())
-        {
-            <div class="alert alert-warning">
-                <strong>Invalid login request</strong>
-                There are no login schemes configured for this request.
-            </div>
-        }
+            </section>
+        </div>
     </div>
 </div>
