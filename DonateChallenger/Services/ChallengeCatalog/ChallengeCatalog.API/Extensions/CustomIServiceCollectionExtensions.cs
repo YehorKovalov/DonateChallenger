@@ -16,10 +16,7 @@ public static class CustomIServiceCollectionExtensions
         services.AddDbContextFactory<ChallengeCatalogDbContext>(o =>
         {
             var connectionString = configuration.GetConnectionString("ChallengeConnectionString");
-            o.UseNpgsql(connectionString, sql =>
-            {
-                sql.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(2), errorCodesToAdd: null);
-            });
+            o.UseNpgsql(connectionString);
         });
         services.AddScoped<IDbContextWrapper<ChallengeCatalogDbContext>, DbContextWrapper<ChallengeCatalogDbContext>>();
 

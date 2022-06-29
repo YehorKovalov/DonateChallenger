@@ -40,11 +40,11 @@ namespace Identity.API.Data
                 await context.SaveChangesAsync();
             }
 
-            if (!await context.ApiResources.AnyAsync())
+            if (!await context.ApiScopes.AnyAsync())
             {
-                foreach (var api in Config.APIs)
+                foreach (var api in Config.Scopes)
                 {
-                    await context.ApiResources.AddAsync(api.ToEntity());
+                    await context.ApiScopes.AddAsync(api.ToEntity());
                 }
 
                 await context.SaveChangesAsync();

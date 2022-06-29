@@ -4,13 +4,13 @@ import moment from "moment";
 import { ChallengeService } from "../../services/ChallengeService";
 import iocServices from "../../utilities/ioc/iocServices";
 import iocStores from "../../utilities/ioc/iocStores";
-import ChallengerBoardStore from "./ChallengerBoardStore";
+import ChallengesStore from "./ChallengesStore";
 
 @injectable()
 export default class ChallengeStore {
      
      @inject(iocServices.challengeService) private readonly challengeService!: ChallengeService;
-     @inject(iocStores.boardsStore) private readonly boardsStore!: ChallengerBoardStore;
+     @inject(iocStores.challengesStore) private readonly challengesStore!: ChallengesStore;
 
      constructor() {
           makeAutoObservable(this);
@@ -23,7 +23,7 @@ export default class ChallengeStore {
           if (isSuccess) {
                this.lastUsedChallengeId = challengeId;
                this.waitForBluring(() => {
-                    this.boardsStore.getChallengesByCurrentStatus();
+                    this.challengesStore.getChallengesByCurrentStatus();
                })
           }
           else {
@@ -37,7 +37,7 @@ export default class ChallengeStore {
           if (isSuccess) {
                this.lastUsedChallengeId = challengeId;
                this.waitForBluring(() => {
-                    this.boardsStore.getChallengesByCurrentStatus();
+                    this.challengesStore.getChallengesByCurrentStatus();
                })
           }
           else {

@@ -107,7 +107,7 @@ public class AccountService : IAccountService<ApplicationUser>
 
     public string GetValidatedReturnUrl(string? urlForValidating)
     {
-        var alternativeRedirectUrl = _appSettings.ReactClientUrl ?? throw new NullReferenceException(nameof(_appSettings.ReactClientUrl));
+        var alternativeRedirectUrl = _appSettings.GlobalUrl ?? throw new NullReferenceException(nameof(_appSettings.ReactClientUrl));
         var urlIsValid = urlForValidating is not null && _interactionService.IsValidReturnUrl(urlForValidating);
         return urlIsValid ? urlForValidating! : alternativeRedirectUrl;
     }
