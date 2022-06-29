@@ -10,9 +10,10 @@
             new IdentityResources.Profile()
         };
 
-        public static IEnumerable<ApiResource> APIs => new List<ApiResource>
+        public static IEnumerable<ApiScope> Scopes => new List<ApiScope>
         {
-            new ApiResource("challengeCatalog", "Challenge Catalog API"),
+            new ApiScope("react", "React client"),
+            new ApiScope("challengeCatalog", "Challenge Catalog"),
         };
 
         public static IEnumerable<Client> GetClients()
@@ -20,12 +21,14 @@
             _configuration = GetConfiguration();
             var reactClientUrl = _configuration?["ReactClientUrl"] ?? throw new ArgumentNullException();
             var challengeCatalogUrl = _configuration?["ChallengeCatalogUrl"] ?? throw new ArgumentNullException();
+            var globalUrl = _configuration?["GlobalUrl"] ?? throw new ArgumentNullException();
             return new List<Client>
             {
                 new Client
                 {
                     ClientId = "spa",
                     ClientName = "Donate-Challenger SPA OpenId Client",
+                    ClientUri = reactClientUrl,
 
                     AllowedGrantTypes = GrantTypes.Code,
 
@@ -33,17 +36,31 @@
                     RequireConsent = false,
                     RequirePkce = true,
 
-                    RedirectUris = { $"{reactClientUrl}/" },
-
-                    PostLogoutRedirectUris = { $"{reactClientUrl}/" },
+                    RedirectUris =
+                    {
+                        globalUrl,
+                        $"{globalUrl}/signout-oidc",
+                        $"{globalUrl}/silentrenew",
+                        $"{globalUrl}/logout/callback"
+                    },
+                    PostLogoutRedirectUris =
+                    {
+                        $"{reactClientUrl}/logout/callback",
+                        $"{globalUrl}/logout/callback"
+                    },
                     ClientSecrets = { new Secret("secret".Sha256()) },
 
-                    AllowedCorsOrigins = { reactClientUrl },
+                    AllowedCorsOrigins =
+                    {
+                        reactClientUrl,
+                        globalUrl
+                    },
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         "challengeCatalog",
+                        "react"
                     }
                 },
                 new Client

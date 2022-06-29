@@ -29,6 +29,20 @@ builder.Services.AddScoped<IHttpContextService, HttpContextService>();
 builder.Services.AddTransient<IAccountService<ApplicationUser>, AccountService>();
 builder.Services.Configure<AppSettings>(builder.Configuration);
 
+var reactClientUrl = builder.Configuration?["ReactClientUrl"] ?? throw new ArgumentNullException();
+var challengeCatalogUrl = builder.Configuration?["ChallengeCatalogUrl"] ?? throw new ArgumentNullException();
+var globalUrl = builder.Configuration?["GlobalUrl"] ?? throw new ArgumentNullException();
+builder.Services.AddCors(
+    options => options
+        .AddPolicy(
+            "CorsPolicy",
+            builder => builder
+                .SetIsOriginAllowed((host) => true)
+                .WithOrigins(challengeCatalogUrl, reactClientUrl, globalUrl)
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()));
+
 builder.Services.AddIdentityServer()
     .AddDeveloperSigningCredential()
     .AddAspNetIdentity<ApplicationUser>()
@@ -62,6 +76,8 @@ app.UseStaticFiles();
 app.UseIdentityServer();
 
 app.UseRouting();
+app.UseCors("CorcPolicy");
+
 app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax });
 
 app.MapControllerRoute(

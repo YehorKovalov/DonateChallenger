@@ -4,6 +4,7 @@ using Identity.API.Services.Abstractions;
 
 namespace Identity.API.Controllers;
 
+[AllowAnonymous]
 public class AccountController : Controller
 {
     private readonly IAccountService<ApplicationUser> _accountService;
@@ -50,7 +51,6 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    [AllowAnonymous]
     public IActionResult Register(string returnUrl)
     {
         var viewModel = new RegisterViewModel { ReturnUrl = _accountService.GetValidatedReturnUrl(returnUrl) };
@@ -58,7 +58,6 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    [AllowAnonymous]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {

@@ -22,7 +22,7 @@ const AppRoutes = observer(() => {
                               <Route index element={authStore.userIsAuthenticated ? <ChallengesPage /> : <SelectUserRolePage/> }/>
                               <Route path="/signin" element={ <SignInRedirect />} />
                               <Route path="/signout" element={ <SignOutRedirect />} />
-                              <Route path="/signinsilent" element={ <SignInSilent />} />
+                              <Route path="/silentrenew" element={ <SignInSilent />} />
                          </Route>
                     </Routes>
                </Router>

@@ -21,20 +21,20 @@ export default class AuthStore {
      public getAuthenticationStatus = (): void => {
           this.userIsAuthenticated =  this.authenticationService.getAuthenticationStatus();
      };
-        
+
      public tryGetUser = async (): Promise<void> => {
           const userResponse = await this.authenticationService.getUser();
           this.setUser(userResponse);
      };
-        
+
      public removeRedirectLocation = (): void => {
           this.localStorageService.remove(this.redirectUri_id);
      };
-        
+
      public replaceLocation = (): void => {
           window.location.replace(this.localStorageService.get(this.redirectUri_id) || '/');
      };
-        
+
      public saveLocation = (location?: string): void => {
           if (location) {
                this.localStorageService.set(this.redirectUri_id, location);
@@ -46,22 +46,26 @@ export default class AuthStore {
                localStorage.setItem(this.redirectUri_id, '/');
           }
      };
-        
+
      public setUser = (user: User | null): void => {
           this.user = user;
      };
-        
+
      public signinRedirect = async (location?: string): Promise<void> => {
           this.saveLocation(location);
+          this.authenticationService.stopSilentRenew();
+          await this.authenticationService.clearStaleState();
           await this.authenticationService.login();
+          this.authenticationService.startSilentRenew();
      };
-        
+
      public signinSilent = async (): Promise<void> => {
           this.user = await this.authenticationService.renewToken();
      };
-        
+
      public signoutRedirect = async (location?: string): Promise<void> => {
           this.saveLocation(location);
           await this.authenticationService.logout();
+          await this.authenticationService.clearStaleState();
      };
 }

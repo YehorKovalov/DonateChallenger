@@ -1,0 +1,31 @@
+.arrow {
+     border: solid silver;
+     border-width: 0 3px 3px 0;
+     display: inline-block;
+   }
+   
+   .arrow:hover {
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+  }
+
+   .right {
+     transform: rotate(-45deg);
+     -webkit-transform: rotate(-45deg);
+   }
+   
+   .left {
+     transform: rotate(135deg);
+     -webkit-transform: rotate(135deg);
+   }
+   
+   .up {
+     transform: rotate(-135deg);
+     -webkit-transform: rotate(-135deg);
+   }
+   
+   .down {
+     transform: rotate(45deg);
+     -webkit-transform: rotate(45deg);
+   }
