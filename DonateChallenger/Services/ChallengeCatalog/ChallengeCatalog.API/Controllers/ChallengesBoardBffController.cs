@@ -25,6 +25,7 @@ public class ChallengesBoardBffController : ControllerBase
     }
 
     [HttpPost]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(AddChallengeForStreamerResponse<long?>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Add(AddChallengeForStreamerRequest request)
     {
@@ -33,6 +34,7 @@ public class ChallengesBoardBffController : ControllerBase
     }
 
     [HttpPost]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(GetPaginatedChallengesResponse<CurrentChallengeDto>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Current(GetPaginatedStreamerChallengesRequest<ChallengeFilter> request)
     {
@@ -41,6 +43,7 @@ public class ChallengesBoardBffController : ControllerBase
     }
 
     [HttpPost]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(bool?), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Skip(long? challengeId)
     {
@@ -49,6 +52,7 @@ public class ChallengesBoardBffController : ControllerBase
     }
 
     [HttpPost]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(bool?), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Complete(long? challengeId)
     {
@@ -57,6 +61,7 @@ public class ChallengesBoardBffController : ControllerBase
     }
 
     [HttpPost]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(GetPaginatedChallengesResponse<SkippedChallengeDto>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Skipped(GetPaginatedStreamerChallengesRequest<ChallengeFilter> request)
     {
@@ -65,6 +70,7 @@ public class ChallengesBoardBffController : ControllerBase
     }
 
     [HttpPost]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(GetPaginatedChallengesResponse<CompletedChallengeDto>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Completed(GetPaginatedStreamerChallengesRequest<ChallengeFilter> request)
     {

@@ -40,6 +40,7 @@ services:
       - ASPNETCORE_URLS=http://+:4001
       - ConnectionString=server=host.docker.internal;port=8002;database=DonateChallenger.Services.ChallengeCatalogDb;uid=postgres;password=postgres;
       - PathBase=http://donate-challenger.com:4001
+      - Authorization__Authority=http://donate-challenger.com:4000
     depends_on:
       - postgres
     command: dotnet run
@@ -53,8 +54,9 @@ services:
       dockerfile: ./Services/Identity/Identity.API/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:4000
       - AppDbConnection=server=host.docker.internal;database=DonateChallenger.Services.IdentityDb.Identity;User ID=sa;Password=MSSQLServerStrongPassword123!;
-      - ConfigurationDbConnection=server=host.docker.internal;database=DonateChallenger.Services.IdentityDb;User ID=sa;Password=MSSQLServerStrongPassword123!;
+      - ConfigurationDbConnection=server=host.docker.internal;database=DonateChallenger.Services.IdentityDb.Configuration;User ID=sa;Password=MSSQLServerStrongPassword123!;
       - PathBase=http://donate-challenger.com:4000
     depends_on:
       - ms-sql-server
