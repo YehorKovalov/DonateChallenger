@@ -1,46 +1,75 @@
 import { inject, injectable } from "inversify";
 import { makeAutoObservable } from "mobx";
+import { ChallengeStatusEnum } from "../../models/ChallengeStatusEnum";
 import { CurrentChallenge } from "../../models/CurrentChallenge";
 import { PaginatedChallenges } from "../../models/PaginatedChallenges";
 import { ChallengeService } from "../../services/ChallengeService";
 import challengesConstants from "../../utilities/ChallengesConstants";
 import iocServices from "../../utilities/ioc/iocServices";
+import iocStores from "../../utilities/ioc/iocStores";
+import { formPages } from "../../utilities/PagesProvider";
+import ChallengesBoardStore from "./ChallengesBoardStore";
 
 @injectable()
 export default class ChallengesStore {
      
      @inject(iocServices.challengeService) private readonly challengeService!: ChallengeService;
+     @inject(iocStores.challengesBoardStore) private readonly boardStore!: ChallengesBoardStore;
      private readonly challengesPerPage: number = challengesConstants.APP_CHALLENGES_PER_PAGE;
 
      constructor() {
           makeAutoObservable(this);
      }
 
-     currentPage = 0;
-     sortByCreatedTime?: boolean | undefined = undefined;
-     minPriceFilter?: number | undefined = undefined;
+
      paginatedChallenges: PaginatedChallenges<CurrentChallenge> | null = null;
+     currentChallengeStatus: ChallengeStatusEnum = ChallengeStatusEnum.Current;
 
-     public getPaginatedCurrentChallenges = async () => {
+     public getChallengesByStatus = async (status: ChallengeStatusEnum) => {
+
+          if (status === ChallengeStatusEnum.Current) {
+               await this.getPaginatedCurrentChallenges();
+          }
+          else if (status === ChallengeStatusEnum.Completed) {
+               await this.getPaginatedCompletedChallenges();
+          }
+          else if (status === ChallengeStatusEnum.Skipped) {
+               await this.getPaginatedSkippedChallenges();
+          }
+          this.boardStore.buttons = formPages(this.paginatedChallenges!.totalPages)
+          this.currentChallengeStatus = status;
+
+          this.boardStore.pagesAmount = this.paginatedChallenges!.totalPages;
+     }
+
+     public getChallengesByCurrentStatus = async () => {
+          await this.getChallengesByStatus(this.currentChallengeStatus);
+     }
+
+     public getBoardTitle = () => {
+          return `${this.currentChallengeStatus} Challenges`;
+     }
+
+     private getPaginatedCurrentChallenges = async () => {
           
           const paginatedCurrentChallenges = await this.challengeService
-               .getPaginatedCurrentChallenges(this.currentPage, this.challengesPerPage, this.sortByCreatedTime, this.minPriceFilter);
+               .getPaginatedCurrentChallenges(this.boardStore.currentPage, this.challengesPerPage, this.boardStore.sortByCreatedTime, this.boardStore.minPriceFilter);
           
           this.paginatedChallenges = paginatedCurrentChallenges;
      }
 
-     public getPaginatedSkippedChallenges = async () => {
+     private getPaginatedSkippedChallenges = async () => {
           
           const paginatedCurrentChallenges = await this.challengeService
-               .getPaginatedSkippedChallenges(this.currentPage, this.challengesPerPage, this.sortByCreatedTime, this.minPriceFilter);
+               .getPaginatedSkippedChallenges(this.boardStore.currentPage, this.challengesPerPage, this.boardStore.sortByCreatedTime, this.boardStore.minPriceFilter);
           
           this.paginatedChallenges = paginatedCurrentChallenges;
      }
 
-     public getPaginatedCompletedChallenges = async () => {
+     private getPaginatedCompletedChallenges = async () => {
           
           const paginatedCurrentChallenges = await this.challengeService
-               .getPaginatedCompletedChallenges(this.currentPage, this.challengesPerPage, this.sortByCreatedTime, this.minPriceFilter);
+               .getPaginatedCompletedChallenges(this.boardStore.currentPage, this.challengesPerPage, this.boardStore.sortByCreatedTime, this.boardStore.minPriceFilter);
           
           this.paginatedChallenges = paginatedCurrentChallenges;
      }

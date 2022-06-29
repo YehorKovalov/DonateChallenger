@@ -50,6 +50,7 @@ export default class DefaultChallengeService implements ChallengeService {
      public async getPaginatedCurrentChallenges(currentPage: number, challengesPerPage: number, sortByCreatedTime?: boolean, minPriceFilter?: number)
           : Promise<GetPaginatedChallengesResponse<CurrentChallengeDto>> {
 
+          
           const url = `${this.CHALLENGE_BOARD_ROUTE}/current`;
           const response = await this.getPaginatedChallengesInternal<GetPaginatedChallengesResponse<CurrentChallengeDto>>(url, currentPage, challengesPerPage, sortByCreatedTime, minPriceFilter);
 
@@ -122,5 +123,9 @@ export default class DefaultChallengeService implements ChallengeService {
           }
 
           return Object.fromEntries(filters);
+     }
+
+     private decreaseCurrentPageValue = (currentPage: number): number => {
+          return currentPage === 0 ? currentPage : --currentPage;
      }
 }

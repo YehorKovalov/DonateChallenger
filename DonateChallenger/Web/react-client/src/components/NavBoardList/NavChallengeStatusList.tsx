@@ -1,14 +1,14 @@
 import { observer } from "mobx-react";
 import { ChallengeStatusEnum } from "../../models/ChallengeStatusEnum";
-import ChallengerBoardStore from "../../stores/components/ChallengerBoardStore";
+import ChallengesStore from "../../stores/components/ChallengesStore";
 import { useInjection } from "../../utilities/ioc/ioc.react";
 import iocStores from "../../utilities/ioc/iocStores";
-import ChallengeStatus from "./ChallengeCategory";
+import ChallengeStatus from "./ChallengeStatus";
 import './styles.css';
 
 const NavChallengeStatusList = observer(() => {
 
-     const store = useInjection<ChallengerBoardStore>(iocStores.boardsStore);
+     const store = useInjection<ChallengesStore>(iocStores.challengesStore);
 
      return (
           <li>
