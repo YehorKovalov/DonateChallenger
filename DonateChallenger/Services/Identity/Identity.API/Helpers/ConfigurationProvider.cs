@@ -1,13 +1,17 @@
-namespace Identity.API.Helpers;
+using System.IO;
+using Microsoft.Extensions.Configuration;
 
-public static class ConfigurationProvider
+namespace Identity.API.Helpers
 {
-    public static IConfiguration GetConfiguration(string directoryPath)
+    public static class ConfigurationProvider
     {
-        return new ConfigurationBuilder()
-            .SetBasePath(Path.Combine(directoryPath))
-            .AddJsonFile("appsettings.json")
-            .AddEnvironmentVariables()
-            .Build();
-    }
+        public static IConfiguration GetConfiguration(string directoryPath)
+        {
+            return new ConfigurationBuilder()
+                .SetBasePath(Path.Combine(directoryPath))
+                .AddJsonFile("appsettings.json")
+                .AddEnvironmentVariables()
+                .Build();
+        }
+    }   
 }
