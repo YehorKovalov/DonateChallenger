@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Identity.API.Models.Account
+﻿namespace Identity.API.Models.Account
 {
     public class AccountOptions
     {

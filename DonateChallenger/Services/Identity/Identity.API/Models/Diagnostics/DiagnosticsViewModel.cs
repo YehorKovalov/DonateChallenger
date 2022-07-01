@@ -1,7 +1,4 @@
-using IdentityModel;
-using Microsoft.AspNetCore.Authentication;
 using Newtonsoft.Json;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Identity.API.Models.Diagnostics

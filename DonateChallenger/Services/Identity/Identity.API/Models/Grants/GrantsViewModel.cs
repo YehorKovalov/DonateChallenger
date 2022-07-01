@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Identity.API.Models.Grants
+﻿namespace Identity.API.Models.Grants
 {
     public class GrantsViewModel
     {

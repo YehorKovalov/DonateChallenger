@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using IdentityServer4.EntityFramework.DbContexts;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;

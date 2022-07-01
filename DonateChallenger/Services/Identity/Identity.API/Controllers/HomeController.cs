@@ -1,11 +1,5 @@
-using IdentityServer4.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
-using Identity.API.Attributes;
 using Identity.API.Models.Home;
 
 namespace Identity.API.Controllers

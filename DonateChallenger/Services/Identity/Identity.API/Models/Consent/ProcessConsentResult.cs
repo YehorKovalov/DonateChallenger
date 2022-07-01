@@ -1,5 +1,3 @@
-using IdentityServer4.Models;
-
 namespace Identity.API.Models.Consent
 {
     public class ProcessConsentResult

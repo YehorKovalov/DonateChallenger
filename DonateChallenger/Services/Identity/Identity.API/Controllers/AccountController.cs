@@ -1,20 +1,5 @@
-﻿using IdentityModel;
-using IdentityServer4.Events;
-using IdentityServer4.Extensions;
-using IdentityServer4.Models;
-using IdentityServer4.Services;
-using IdentityServer4.Stores;
-using Identity.API.Models;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Identity.API.Attributes;
-using Identity.API.Extensions;
-using Identity.API.Models.Account;
+﻿using Identity.API.Models.Account;
+using Microsoft.EntityFrameworkCore;
 
 namespace Identity.API.Controllers
 {
@@ -51,9 +36,7 @@ namespace Identity.API.Controllers
             var vm = await BuildLoginViewModelAsync(returnUrl);
 
             if (vm.IsExternalLoginOnly)
-            {
                 return RedirectToAction("Challenge", "External", new { scheme = vm.ExternalLoginScheme, returnUrl });
-            }
 
             return View(vm);
         }
@@ -71,16 +54,12 @@ namespace Identity.API.Controllers
                     await _interaction.DenyAuthorizationAsync(context, AuthorizationError.AccessDenied);
 
                     if (context.IsNativeClient())
-                    {
                         return this.LoadingPage("Redirect", model.ReturnUrl);
-                    }
 
                     return Redirect(model.ReturnUrl);
                 }
-                else
-                {
-                    return Redirect("~/");
-                }
+
+                return Redirect("~/");
             }
 
             if (ModelState.IsValid)
@@ -94,25 +73,17 @@ namespace Identity.API.Controllers
                     if (context != null)
                     {
                         if (context.IsNativeClient())
-                        {
                             return this.LoadingPage("Redirect", model.ReturnUrl);
-                        }
 
                         return Redirect(model.ReturnUrl);
                     }
 
                     if (Url.IsLocalUrl(model.ReturnUrl))
-                    {
                         return Redirect(model.ReturnUrl);
-                    }
-                    else if (string.IsNullOrEmpty(model.ReturnUrl))
-                    {
+                    if (string.IsNullOrEmpty(model.ReturnUrl))
                         return Redirect("~/");
-                    }
-                    else
-                    {
-                        throw new Exception("invalid return URL");
-                    }
+
+                    throw new Exception("invalid return URL");
                 }
 
                 await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials", clientId:context?.Client.ClientId));
@@ -130,9 +101,7 @@ namespace Identity.API.Controllers
             var vm = await BuildLogoutViewModelAsync(logoutId);
 
             if (vm.ShowLogoutPrompt == false)
-            {
                 return await Logout(vm);
-            }
 
             return View(vm);
         }
@@ -179,7 +148,6 @@ namespace Identity.API.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl)
         {
-            ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser
@@ -193,17 +161,70 @@ namespace Identity.API.Controllers
                     AddErrors(result);
                     return View(model);
                 }
+                
+                var parameters = new
+                {
+                    returnUrl = returnUrl,
+                    userId = user.Id
+                };
+                return RedirectToAction("RegisterAdditionalInformation", "account", parameters);
             }
 
             if (returnUrl != null)
             {
                 if (HttpContext.User.Identity.IsAuthenticated)
                     return Redirect(returnUrl);
-                else
-                    if (ModelState.IsValid)
-                    return RedirectToAction("login", "account", new { returnUrl = returnUrl });
-                else
+                return View(model);
+            }
+
+            return RedirectToAction("index", "home");
+        }
+
+        [HttpGet]
+        public IActionResult RegisterAdditionalInformation(string returnUrl, string userId)
+        {
+            var vm = new AdditionalInformationViewModel
+            {
+                ReturnUrl = returnUrl,
+                UserId = userId
+            };
+            return View(vm);
+        }
+        
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RegisterAdditionalInformation(AdditionalInformationViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var nicknameAlreadyExists = await _userManager.Users.FirstOrDefaultAsync(f => f.Nickname == model.Nickname);
+                if (nicknameAlreadyExists != null)
+                {
+                    ModelState.AddModelError(string.Empty, "Nickname already exists");
                     return View(model);
+                }
+
+                var user = await _userManager.FindByIdAsync(model.UserId);
+                user.Nickname = model.Nickname;
+                user.MinDonatePriceInDollars = model.MinDonatePriceInDollars;
+
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Errors.Any())
+                {
+                    AddErrors(result);
+                    return View(model);
+                }
+                
+                if (model.ReturnUrl != null)
+                    return RedirectToAction("login", "account", new { returnUrl = model.ReturnUrl });
+            }
+            
+            if (model.ReturnUrl != null)
+            {
+                if (HttpContext.User.Identity.IsAuthenticated)
+                    return Redirect(model.ReturnUrl);
+                return View(model);
             }
 
             return RedirectToAction("index", "home");
@@ -214,7 +235,7 @@ namespace Identity.API.Controllers
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
             if (context?.IdP != null && await _schemeProvider.GetSchemeAsync(context.IdP) != null)
             {
-                var local = context.IdP == IdentityServer4.IdentityServerConstants.LocalIdentityProvider;
+                var local = context.IdP == IdentityServerConstants.LocalIdentityProvider;
 
                 var vm = new LoginViewModel
                 {
@@ -224,9 +245,7 @@ namespace Identity.API.Controllers
                 };
 
                 if (!local)
-                {
                     vm.ExternalProviders = new[] { new ExternalProvider { AuthenticationScheme = context.IdP } };
-                }
 
                 return vm;
             }
@@ -250,9 +269,7 @@ namespace Identity.API.Controllers
                     allowLocal = client.EnableLocalLogin;
 
                     if (client.IdentityProviderRestrictions != null && client.IdentityProviderRestrictions.Any())
-                    {
                         providers = providers.Where(provider => client.IdentityProviderRestrictions.Contains(provider.AuthenticationScheme)).ToList();
-                    }
                 }
             }
 
@@ -277,9 +294,7 @@ namespace Identity.API.Controllers
         private void AddErrors(IdentityResult result)
         {
             foreach (var error in result.Errors)
-            {
                 ModelState.AddModelError(string.Empty, error.Description);
-            }
         }
 
         private async Task<LogoutViewModel> BuildLogoutViewModelAsync(string logoutId)
@@ -324,9 +339,7 @@ namespace Identity.API.Controllers
                     if (providerSupportsSignout)
                     {
                         if (vm.LogoutId == null)
-                        {
                             vm.LogoutId = await _interaction.CreateLogoutContextAsync();
-                        }
 
                         vm.ExternalAuthenticationScheme = idp;
                     }

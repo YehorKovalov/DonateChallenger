@@ -1,7 +1,4 @@
-using System;
 using Identity.API.Models.Account;
-using IdentityServer4.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Identity.API.Extensions
 {

@@ -1,11 +1,7 @@
-using System;
-using System.Threading.Tasks;
-using Identity.API.Data;
 using Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace Identity.API.Extensions
 {

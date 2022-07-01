@@ -1,10 +1,4 @@
-using System.Linq;
-using System.Threading.Tasks;
-using Identity.API.Attributes;
 using Identity.API.Models.Diagnostics;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Identity.API.Controllers
 {

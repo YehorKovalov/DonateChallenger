@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Identity.API.Models.Account
+﻿namespace Identity.API.Models.Account
 {
     public class LoginViewModel : LoginInputModel
     {

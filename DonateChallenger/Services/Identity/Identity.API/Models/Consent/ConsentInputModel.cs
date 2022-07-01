@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Identity.API.Models.Consent
+﻿namespace Identity.API.Models.Consent
 {
     public class ConsentInputModel
     {

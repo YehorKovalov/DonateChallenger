@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using IdentityServer4;
-using IdentityServer4.Models;
-using Microsoft.Extensions.Configuration;
+﻿using System.IO;
 
 namespace Identity.API
 {

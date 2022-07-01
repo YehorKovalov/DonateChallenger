@@ -1,14 +1,9 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using Identity.API.Data;
-using Identity.API.Extensions;
-using Identity.API.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -16,7 +11,6 @@ namespace Identity.API
 {
     public class Startup
     {
-
         private readonly IWebHostEnvironment _environment;
         private readonly IConfiguration _configuration;
 

@@ -1,5 +1,4 @@
 using System.IO;
-using Microsoft.Extensions.Configuration;
 
 namespace Identity.API.Helpers
 {

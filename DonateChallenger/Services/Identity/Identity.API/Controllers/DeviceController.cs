@@ -1,19 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Identity.API.Attributes;
 using Identity.API.Models.Consent;
 using Identity.API.Models.Device;
 using IdentityServer4.Configuration;
-using IdentityServer4.Events;
-using IdentityServer4.Extensions;
-using IdentityServer4.Models;
-using IdentityServer4.Services;
 using IdentityServer4.Validation;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Identity.API.Controllers

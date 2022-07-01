@@ -25,4 +25,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Infrastracture\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\DTOs" />
+  </ItemGroup>
 </Project>

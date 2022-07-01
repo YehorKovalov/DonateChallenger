@@ -1,6 +1,4 @@
-﻿using IdentityServer4.Models;
-
-namespace Identity.API.Models.Home
+﻿namespace Identity.API.Models.Home
 {
     public class ErrorViewModel
     {
