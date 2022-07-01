@@ -1,68 +1,339 @@
-using Identity.API.Data.Identities;
-using Identity.API.Models.AccountViewModels;
-using Identity.API.Services.Abstractions;
+﻿using IdentityModel;
+using IdentityServer4.Events;
+using IdentityServer4.Extensions;
+using IdentityServer4.Models;
+using IdentityServer4.Services;
+using IdentityServer4.Stores;
+using Identity.API.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Identity.API.Attributes;
+using Identity.API.Extensions;
+using Identity.API.Models.Account;
 
-namespace Identity.API.Controllers;
-
-[AllowAnonymous]
-public class AccountController : Controller
+namespace Identity.API.Controllers
 {
-    private readonly IAccountService<ApplicationUser> _accountService;
-    public AccountController(IAccountService<ApplicationUser> accountService) => _accountService = accountService;
-
-    [HttpGet]
-    public IActionResult Login(string returnUrl)
+    [SecurityHeaders]
+    [AllowAnonymous]
+    public class AccountController : Controller
     {
-        var vm = new LoginViewModel { ReturnUrl = _accountService.GetValidatedReturnUrl(returnUrl) };
-        return View(vm);
-    }
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IIdentityServerInteractionService _interaction;
+        private readonly IClientStore _clientStore;
+        private readonly IAuthenticationSchemeProvider _schemeProvider;
+        private readonly IEventService _events;
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(LoginViewModel model)
-    {
-        var response = await _accountService.SignInAsync(model.Email, model.Password, model.ReturnUrl, model.RememberMe);
-        if (response.SignInIsSuccessful)
+        public AccountController(
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            IIdentityServerInteractionService interaction,
+            IClientStore clientStore,
+            IAuthenticationSchemeProvider schemeProvider,
+            IEventService events)
         {
-            return Redirect(response.ReturnUrl);
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _interaction = interaction;
+            _clientStore = clientStore;
+            _schemeProvider = schemeProvider;
+            _events = events;
         }
 
-        return View(response.ReturnUrl);
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> Logout(string logoutId)
-    {
-        if (!User.Identity!.IsAuthenticated)
+        [HttpGet]
+        public async Task<IActionResult> Login(string returnUrl)
         {
-            return await Logout(new LogoutViewModel { LogoutId = logoutId });
+            var vm = await BuildLoginViewModelAsync(returnUrl);
+
+            if (vm.IsExternalLoginOnly)
+            {
+                return RedirectToAction("Challenge", "External", new { scheme = vm.ExternalLoginScheme, returnUrl });
+            }
+
+            return View(vm);
         }
 
-        var viewModel = new LogoutViewModel { LogoutId = logoutId };
-        return View(viewModel);
-    }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginInputModel model, string button)
+        {
+            var context = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Logout(LogoutViewModel model)
-    {
-        var viewModel = await _accountService.SignOutAsync(model.LogoutId);
-        return Redirect(viewModel.Uri);
-    }
+            if (button != "login")
+            {
+                if (context != null)
+                {
+                    await _interaction.DenyAuthorizationAsync(context, AuthorizationError.AccessDenied);
 
-    [HttpGet]
-    public IActionResult Register(string returnUrl)
-    {
-        var viewModel = new RegisterViewModel { ReturnUrl = _accountService.GetValidatedReturnUrl(returnUrl) };
-        return View(viewModel);
-    }
+                    if (context.IsNativeClient())
+                    {
+                        return this.LoadingPage("Redirect", model.ReturnUrl);
+                    }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Register(RegisterViewModel model)
-    {
-        var responseViewModel = await _accountService.SignUpAsync(model.User, model.Email, model.Password, model.ConfirmPassword, model?.ReturnUrl);
-        var redirectTo = responseViewModel.SignUpIsSuccessful ? nameof(Login) : nameof(Register);
-        return RedirectToAction(redirectTo, new { returnUrl = responseViewModel.RedirectUrl });
+                    return Redirect(model.ReturnUrl);
+                }
+                else
+                {
+                    return Redirect("~/");
+                }
+            }
+
+            if (ModelState.IsValid)
+            {
+                var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberLogin, lockoutOnFailure: true);
+                if (result.Succeeded)
+                {
+                    var user = await _userManager.FindByNameAsync(model.Username);
+                    await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.Client.ClientId));
+
+                    if (context != null)
+                    {
+                        if (context.IsNativeClient())
+                        {
+                            return this.LoadingPage("Redirect", model.ReturnUrl);
+                        }
+
+                        return Redirect(model.ReturnUrl);
+                    }
+
+                    if (Url.IsLocalUrl(model.ReturnUrl))
+                    {
+                        return Redirect(model.ReturnUrl);
+                    }
+                    else if (string.IsNullOrEmpty(model.ReturnUrl))
+                    {
+                        return Redirect("~/");
+                    }
+                    else
+                    {
+                        throw new Exception("invalid return URL");
+                    }
+                }
+
+                await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials", clientId:context?.Client.ClientId));
+                ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsErrorMessage);
+            }
+
+            var vm = await BuildLoginViewModelAsync(model);
+            return View(vm);
+        }
+
+        
+        [HttpGet]
+        public async Task<IActionResult> Logout(string logoutId)
+        {
+            var vm = await BuildLogoutViewModelAsync(logoutId);
+
+            if (vm.ShowLogoutPrompt == false)
+            {
+                return await Logout(vm);
+            }
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout(LogoutInputModel model)
+        {
+            var vm = await BuildLoggedOutViewModelAsync(model.LogoutId);
+
+            if (User?.Identity.IsAuthenticated == true)
+            {
+                await _signInManager.SignOutAsync();
+
+                await _events.RaiseAsync(new UserLogoutSuccessEvent(User.GetSubjectId(), User.GetDisplayName()));
+            }
+
+            if (vm.TriggerExternalSignout)
+            {
+                var url = Url.Action("Logout", new { logoutId = vm.LogoutId });
+
+                return SignOut(new AuthenticationProperties { RedirectUri = url }, vm.ExternalAuthenticationScheme);
+            }
+
+            return View("LoggedOut", vm);
+        }
+
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Register(string returnUrl)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            if (ModelState.IsValid)
+            {
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email
+                };
+                var result = await _userManager.CreateAsync(user, model.Password);
+                if (result.Errors.Any())
+                {
+                    AddErrors(result);
+                    return View(model);
+                }
+            }
+
+            if (returnUrl != null)
+            {
+                if (HttpContext.User.Identity.IsAuthenticated)
+                    return Redirect(returnUrl);
+                else
+                    if (ModelState.IsValid)
+                    return RedirectToAction("login", "account", new { returnUrl = returnUrl });
+                else
+                    return View(model);
+            }
+
+            return RedirectToAction("index", "home");
+        }
+
+        private async Task<LoginViewModel> BuildLoginViewModelAsync(string returnUrl)
+        {
+            var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
+            if (context?.IdP != null && await _schemeProvider.GetSchemeAsync(context.IdP) != null)
+            {
+                var local = context.IdP == IdentityServer4.IdentityServerConstants.LocalIdentityProvider;
+
+                var vm = new LoginViewModel
+                {
+                    EnableLocalLogin = local,
+                    ReturnUrl = returnUrl,
+                    Username = context?.LoginHint,
+                };
+
+                if (!local)
+                {
+                    vm.ExternalProviders = new[] { new ExternalProvider { AuthenticationScheme = context.IdP } };
+                }
+
+                return vm;
+            }
+
+            var schemes = await _schemeProvider.GetAllSchemesAsync();
+
+            var providers = schemes
+                .Where(x => x.DisplayName != null)
+                .Select(x => new ExternalProvider
+                {
+                    DisplayName = x.DisplayName ?? x.Name,
+                    AuthenticationScheme = x.Name
+                }).ToList();
+
+            var allowLocal = true;
+            if (context?.Client.ClientId != null)
+            {
+                var client = await _clientStore.FindEnabledClientByIdAsync(context.Client.ClientId);
+                if (client != null)
+                {
+                    allowLocal = client.EnableLocalLogin;
+
+                    if (client.IdentityProviderRestrictions != null && client.IdentityProviderRestrictions.Any())
+                    {
+                        providers = providers.Where(provider => client.IdentityProviderRestrictions.Contains(provider.AuthenticationScheme)).ToList();
+                    }
+                }
+            }
+
+            return new LoginViewModel
+            {
+                AllowRememberLogin = AccountOptions.AllowRememberLogin,
+                EnableLocalLogin = allowLocal && AccountOptions.AllowLocalLogin,
+                ReturnUrl = returnUrl,
+                Username = context?.LoginHint,
+                ExternalProviders = providers.ToArray()
+            };
+        }
+
+        private async Task<LoginViewModel> BuildLoginViewModelAsync(LoginInputModel model)
+        {
+            var vm = await BuildLoginViewModelAsync(model.ReturnUrl);
+            vm.Username = model.Username;
+            vm.RememberLogin = model.RememberLogin;
+            return vm;
+        }
+
+        private void AddErrors(IdentityResult result)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+        }
+
+        private async Task<LogoutViewModel> BuildLogoutViewModelAsync(string logoutId)
+        {
+            var vm = new LogoutViewModel { LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt };
+
+            if (User?.Identity.IsAuthenticated != true)
+            {
+                vm.ShowLogoutPrompt = false;
+                return vm;
+            }
+
+            var context = await _interaction.GetLogoutContextAsync(logoutId);
+            if (context?.ShowSignoutPrompt == false)
+            {
+                vm.ShowLogoutPrompt = false;
+                return vm;
+            }
+
+            return vm;
+        }
+
+        private async Task<LoggedOutViewModel> BuildLoggedOutViewModelAsync(string logoutId)
+        {
+            var logout = await _interaction.GetLogoutContextAsync(logoutId);
+
+            var vm = new LoggedOutViewModel
+            {
+                AutomaticRedirectAfterSignOut = AccountOptions.AutomaticRedirectAfterSignOut,
+                PostLogoutRedirectUri = logout?.PostLogoutRedirectUri,
+                ClientName = string.IsNullOrEmpty(logout?.ClientName) ? logout?.ClientId : logout?.ClientName,
+                SignOutIframeUrl = logout?.SignOutIFrameUrl,
+                LogoutId = logoutId
+            };
+
+            if (User?.Identity.IsAuthenticated == true)
+            {
+                var idp = User.FindFirst(JwtClaimTypes.IdentityProvider)?.Value;
+                if (idp != null && idp != IdentityServer4.IdentityServerConstants.LocalIdentityProvider)
+                {
+                    var providerSupportsSignout = await HttpContext.GetSchemeSupportsSignOutAsync(idp);
+                    if (providerSupportsSignout)
+                    {
+                        if (vm.LogoutId == null)
+                        {
+                            vm.LogoutId = await _interaction.CreateLogoutContextAsync();
+                        }
+
+                        vm.ExternalAuthenticationScheme = idp;
+                    }
+                }
+            }
+
+            return vm;
+        }
     }
 }
