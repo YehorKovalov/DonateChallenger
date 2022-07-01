@@ -9,63 +9,55 @@ import { AuthenticationService } from "./AuthenticationService";
 export default class AuthStore {
      @inject(iocServices.authenticationService) private readonly authenticationService!: AuthenticationService;
      @inject(iocServices.localStorageService) private readonly localStorageService!: LocalStorageService;
-     private readonly redirectUri_id = 'redirectUri';
-
+     private readonly redirectUri = 'redirectUri';
      constructor() {
           makeAutoObservable(this);
      }
 
-     userIsAuthenticated = true;
      user: User | null = null;
-
-     public getAuthenticationStatus = (): void => {
-          this.userIsAuthenticated =  this.authenticationService.getAuthenticationStatus();
-     };
 
      public tryGetUser = async (): Promise<void> => {
           const userResponse = await this.authenticationService.getUser();
-          this.setUser(userResponse);
+          this.user = userResponse;
+          console.log(this.user);
      };
 
      public removeRedirectLocation = (): void => {
-          this.localStorageService.remove(this.redirectUri_id);
+          this.localStorageService.remove(this.redirectUri);
+     };
+        
+     public replaceLocation = (): void => {
+          window.location.replace(this.localStorageService.get(this.redirectUri) || '/');
      };
 
-     public replaceLocation = (): void => {
-          window.location.replace(this.localStorageService.get(this.redirectUri_id) || '/');
+     public signinRedirect = async (): Promise<void> => {
+          await this.authenticationService.login();
      };
 
      public saveLocation = (location?: string): void => {
           if (location) {
-               this.localStorageService.set(this.redirectUri_id, location);
-          }
-          else if (window.location.pathname !== '/signin' && window.location.pathname !== '/signout') {
-               this.localStorageService.set(this.redirectUri_id, window.location.pathname);
-          }
-          else {
-               localStorage.setItem(this.redirectUri_id, '/');
+            this.localStorageService.set(this.redirectUri, location);
+          } else if (window.location.pathname !== '/signin' && window.location.pathname !== '/signout') {
+            this.localStorageService.set(this.redirectUri, window.location.pathname);
+          } else {
+            localStorage.setItem(this.redirectUri, '/');
           }
      };
+      
 
-     public setUser = (user: User | null): void => {
-          this.user = user;
-     };
-
-     public signinRedirect = async (location?: string): Promise<void> => {
-          this.saveLocation(location);
-          this.authenticationService.stopSilentRenew();
-          await this.authenticationService.clearStaleState();
-          await this.authenticationService.login();
-          this.authenticationService.startSilentRenew();
-     };
-
-     public signinSilent = async (): Promise<void> => {
-          this.user = await this.authenticationService.renewToken();
-     };
-
-     public signoutRedirect = async (location?: string): Promise<void> => {
-          this.saveLocation(location);
+     public signoutRedirect = async (): Promise<void> => {
+          this.saveLocation();
           await this.authenticationService.logout();
-          await this.authenticationService.clearStaleState();
+
+     };
+
+     public signinRedirectCallback = async (): Promise<void> => {
+          await this.authenticationService.signinRedirectCallback();
+          this.replaceLocation();
+          this.removeRedirectLocation();
+     };
+
+     public signoutRedirectCallback = async (): Promise<void> => {
+          await this.authenticationService.signoutRedirectCallback();
      };
 }
