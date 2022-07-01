@@ -1,18 +1,14 @@
-@model Identity.API.Models.AccountViewModels.RegisterViewModel
+@model RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+}
 
 <div class="container">
     <h1 class="mb-4 mt-5">[ New Account ]</h1>
-    <form asp-controller="Account" asp-action="Register" asp-route-returnurl="@Model.ReturnUrl" method="post" class="form-register">
+    <form asp-controller="Account" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-register">
         <h4 class="order-create-section-title">Information</h4>
         <div asp-validation-summary="All" class="text-danger"></div>
-        <div class="row">
-            <div class="form-group col-sm-6">
-                <label asp-for="User.PhoneNumber" class="control-label form-label">Phone Number</label>
-                <input asp-for="User.PhoneNumber" class="form-control form-input" />
-                <span asp-validation-for="User.PhoneNumber" class="text-danger" />
-            </div>
-        </div>
-        <br /><br />
         <div class="row">
             <div class="form-group col-sm-6">
                 <label asp-for="Email" class="control-label form-label"></label>
@@ -38,3 +34,7 @@
         <br /><br />
     </form>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
