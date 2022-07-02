@@ -22,10 +22,10 @@ app.UseCustomConfiguredSwaggerWithUI(builder.Configuration, "ChallengeCatalog", 
 app.UseRouting();
 app.UseCors("CorsPolicy");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
 app.CreateDbIfNotExist(new ChallengesCatalogDbInitializer());
 app.Run();
 

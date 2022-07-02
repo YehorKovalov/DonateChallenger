@@ -11,7 +11,10 @@ const App = observer(() => {
 
   useEffect(() => {
     const fetchSigninSilent = async () => {
-      await authStore.tryGetUser();
+      await authStore.signinSilent();
+      if (!authStore.user) {
+        await authStore.tryGetUser();
+      }
     }
 
     fetchSigninSilent();

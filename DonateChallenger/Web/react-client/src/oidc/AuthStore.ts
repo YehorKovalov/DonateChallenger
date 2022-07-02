@@ -19,7 +19,6 @@ export default class AuthStore {
      public tryGetUser = async (): Promise<void> => {
           const userResponse = await this.authenticationService.getUser();
           this.user = userResponse;
-          console.log(this.user);
      };
 
      public removeRedirectLocation = (): void => {
@@ -31,7 +30,11 @@ export default class AuthStore {
      };
 
      public signinRedirect = async (): Promise<void> => {
+          this.saveLocation();
+          this.authenticationService.stopSilentRenew();
+          await this.authenticationService.clearStaleState();
           await this.authenticationService.login();
+          this.authenticationService.startSilentRenew();
      };
 
      public saveLocation = (location?: string): void => {
@@ -57,7 +60,15 @@ export default class AuthStore {
           this.removeRedirectLocation();
      };
 
+     public signinSilent = async (): Promise<void> => {
+          this.user = await this.authenticationService.signinSilent();
+     };
+      
+
      public signoutRedirectCallback = async (): Promise<void> => {
           await this.authenticationService.signoutRedirectCallback();
+          window.localStorage.clear();
+          this.replaceLocation();
+          this.removeRedirectLocation();
      };
 }
