@@ -19,7 +19,7 @@ public class ChallengeRepository : IChallengeRepository
         _dbContext = dbContext.DbContext;
     }
 
-    public async Task<long?> AddChallengeForStreamerAsync(string description, decimal donatePrice, string donateFrom, int streamerId, string? title)
+    public async Task<long?> AddChallengeForStreamerAsync(string description, decimal donatePrice, string donateFrom, string streamerId, string? title)
     {
         var challenge = new ChallengeEntity
         {
@@ -66,7 +66,7 @@ public class ChallengeRepository : IChallengeRepository
     {
         var result = _dbContext.Update(challenge);
         await _dbContext.SaveChangesAsync();
-        return result?.Entity?.StreamerId > 0;
+        return result?.Entity?.ChallengeId > 0;
     }
 
     public async Task<ChallengeEntity?> GetChallengeByIdAsync(long challengeId, bool loadRelatedEntities = false)
@@ -93,7 +93,7 @@ public class ChallengeRepository : IChallengeRepository
         return challenge;
     }
 
-    public async Task<PaginatedChallenges> GetPaginatedCurrentChallengesAsync(int currentPage, int challengesPerPage, int streamId, int? minPriceFilter = null, int? sortByCreatedTime = 0, bool sortBySkipped = false, bool sortByCompleted = false)
+    public async Task<PaginatedChallenges> GetPaginatedCurrentChallengesAsync(int currentPage, int challengesPerPage, string streamerId, int? minPriceFilter = null, int? sortByCreatedTime = 0, bool sortBySkipped = false, bool sortByCompleted = false)
     {
         var query = _dbContext.Challenges.AsQueryable();
 
@@ -106,7 +106,7 @@ public class ChallengeRepository : IChallengeRepository
             };
         }
 
-        query = query.Where(q => q.StreamerId == streamId);
+        query = query.Where(q => q.StreamerId == streamerId);
 
         if (minPriceFilter.HasValue)
         {

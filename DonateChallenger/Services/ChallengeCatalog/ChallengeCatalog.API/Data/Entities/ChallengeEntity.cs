@@ -14,7 +14,7 @@ public class ChallengeEntity
 
     public string DonateFrom { get; set; } = null!;
 
-    public int StreamerId { get; set; }
+    public string StreamerId { get; set; } = null!;
 
     public DateTime CreatedTime { get; set; }
 }
