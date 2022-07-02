@@ -42,19 +42,14 @@ namespace Identity.API
 
                     RedirectUris =
                     {
-                        $"{globalUrl}/",
-                        $"{globalUrl}/signin/callback"
+                        globalUrl,
+                        $"{globalUrl}/signin-oidc",
+                        $"{globalUrl}/silentrenew"
                     },
-                    PostLogoutRedirectUris =
-                    {
-                        $"{globalUrl}/"
-                    },
+                    PostLogoutRedirectUris = { $"{globalUrl}/signout-oidc" },
                     ClientSecrets = { new Secret("secret".Sha256()) },
 
-                    AllowedCorsOrigins =
-                    {
-                        globalUrl
-                    },
+                    AllowedCorsOrigins = { globalUrl },
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,

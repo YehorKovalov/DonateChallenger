@@ -8,5 +8,7 @@ public class AddChallengeForStreamerRequest
 
     public decimal DonatePrice { get; set; }
 
+    public string StreamerId { get; set; } = null!;
+
     public string DonateFrom { get; set; } = null!;
 }

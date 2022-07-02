@@ -25,7 +25,9 @@ namespace Identity.API
             var appDbConnection = _configuration["AppDbConnection"];
             var configurationDbConnection = _configuration["ConfigurationDbConnection"];
             var persistedGrantDbConnection = _configuration["PersistedGrantDbConnection"];
-
+            var reactClientUrl = _configuration?["ReactClientUrl"] ?? throw new ArgumentNullException();
+            var challengeCatalogUrl = _configuration?["ChallengeCatalogUrl"] ?? throw new ArgumentNullException();
+            var globalUrl = _configuration?["GlobalUrl"] ?? throw new ArgumentNullException();
             var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
 
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(appDbConnection));
@@ -39,9 +41,7 @@ namespace Identity.API
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
 
-            var reactClientUrl = _configuration?["ReactClientUrl"] ?? throw new ArgumentNullException();
-            var challengeCatalogUrl = _configuration?["ChallengeCatalogUrl"] ?? throw new ArgumentNullException();
-            var globalUrl = _configuration?["GlobalUrl"] ?? throw new ArgumentNullException();
+
             services.AddCors(
                 options => options
                     .AddPolicy(
@@ -74,7 +74,6 @@ namespace Identity.API
                 });
 
             services.AddControllers();
-            services.AddAuthentication();
             services.AddControllersWithViews();
             services.AddRazorPages();
         }
@@ -88,12 +87,12 @@ namespace Identity.API
 
             app.UseStaticFiles();
 
-            app.UseRouting();
             app.UseIdentityServer();
+            app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Strict });
+            app.UseRouting();
+
             app.UseCors("CorsPolicy");
             app.UseAuthorization();
-
-            app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax });
 
             app.CreateDbIfNotExist(new AppDbInitializer());
             app.CreateDbIfNotExist(new ConfigurationDbContextInitializer());

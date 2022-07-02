@@ -9,6 +9,8 @@ import { GetPaginatedStreamerChallengesResponse as GetPaginatedChallengesRespons
 import { ChallengesBoardFilter } from "../models/ChallengesBoardFilter";
 import iocServices from "../utilities/ioc/iocServices";
 import { ApiHeader, ContentType, HttpService, MethodType } from "./HttpService";
+import AuthStore from "../oidc/AuthStore";
+import iocStores from "../utilities/ioc/iocStores";
 
 export interface ChallengeService {
      addChallenge(description: string, donatePrice: number, donateFrom: string, title?: string)
@@ -27,14 +29,21 @@ export interface ChallengeService {
 export default class DefaultChallengeService implements ChallengeService {
 
      @inject(iocServices.httpService) private readonly httpService!: HttpService;
+     @inject(iocStores.authStore) private readonly authStore!: AuthStore;
      private readonly CHALLENGE_BOARD_ROUTE = process.env.REACT_APP_CHALLENGES_BOARD_CONTROLLER_ROUTE;
      
      public async addChallenge(description: string, donatePrice: number, donateFrom: string, title?: string): Promise<AddChallengeForStreamerResponse> {
           
-          const request: AddChallengeForStreamerRequest<number> = {
+          while (!this.authStore.user) {
+               await this.authStore.signinRedirect();
+               await this.authStore.tryGetUser();
+          }
+
+          const request: AddChallengeForStreamerRequest = {
                title: title,
                description: description,
                donateFrom: donateFrom,
+               streamerId: this.authStore.user!.profile.sub!,
                donatePrice: donatePrice,
           }
           
@@ -96,12 +105,18 @@ export default class DefaultChallengeService implements ChallengeService {
      private async getPaginatedChallengesInternal<T>(url: string, currentPage: number, challengesPerPage: number, sortByCreatedTime?: boolean, minPriceFilter?: number)
           : Promise<T> {
 
+          while (!this.authStore.user) {
+               await this.authStore.signinRedirect();
+               await this.authStore.tryGetUser();
+          }
+
           const headers = { contentType: ContentType.Json };
           const method = MethodType.POST;
 
           const filters = this.handleFilters(sortByCreatedTime, minPriceFilter);
           const request: GetPaginatedStreamerChallengesRequest = {
                currentPage: currentPage,
+               streamerId: this.authStore.user!.profile.sub,
                challengesPerPage: challengesPerPage,
                filters: filters
           };

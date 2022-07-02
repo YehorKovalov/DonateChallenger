@@ -7,5 +7,11 @@ export const oidcConfiguration: UserManagerSettings = {
      scope: `${process.env.REACT_APP_SCOPE}`,
      response_type: `${process.env.REACT_APP_RESPONSE_TYPE}`,
      post_logout_redirect_uri: `${process.env.REACT_APP_POST_LOGOUT_REDIRECT_URL}`,
-     client_secret: `${process.env.REACT_APP_CLIENT_SECRET}`,
+     silent_redirect_uri: `${process.env.REACT_APP_POST_LOGOUT_REDIRECT_URL}`,
+     client_secret: `${process.env.REACT_APP_SILENT_REDIRECT_URL}`,
+     userStore: new Oidc.WebStorageStateStore ({ store: window.sessionStorage }),
+     automaticSilentRenew: true,
+     filterProtocolClaims: true,
+     loadUserInfo: true,
+     monitorSession: true
 }

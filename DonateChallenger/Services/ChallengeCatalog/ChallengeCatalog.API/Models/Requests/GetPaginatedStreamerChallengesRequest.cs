@@ -7,5 +7,7 @@ public class GetPaginatedStreamerChallengesRequest<T>
 
     public int ChallengesPerPage { get; set; }
 
+    public string StreamerId { get; set; } = null!;
+
     public IDictionary<T, int>? Filters { get; set; }
 }

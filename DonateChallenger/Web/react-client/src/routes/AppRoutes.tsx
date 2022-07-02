@@ -11,6 +11,7 @@ import iocStores from '../utilities/ioc/iocStores';
 import { SignInRedirect, SignOutRedirect } from '../oidc/components';
 import SigninRedirectCallback from '../oidc/components/SigninRedirectCallback';
 import SignoutRedirectCallback from '../oidc/components/SignoutRedirectCallback';
+import SigninSilent from '../oidc/components/SigninSilent';
 
 const AppRoutes = observer(() => {
 
@@ -24,8 +25,9 @@ const AppRoutes = observer(() => {
                               <Route index element={authStore.user ? <ChallengesPage /> : <SelectUserRolePage/> }/>
                               <Route path="/signin" element={ <SignInRedirect /> } />
                               <Route path="/signout" element={ <SignOutRedirect /> } />
-                              <Route path="/signin/callback" element={ <SigninRedirectCallback /> } />
-                              <Route path="/logout/callback" element={ <SignoutRedirectCallback /> } />
+                              <Route path="/signin-oidc" element={ <SigninRedirectCallback /> } />
+                              <Route path="/signout-oidc" element={ <SignoutRedirectCallback /> } />
+                              <Route path="/silentrenew" element={ <SigninSilent/> } />
                          </Route>
                     </Routes>
                </Router>

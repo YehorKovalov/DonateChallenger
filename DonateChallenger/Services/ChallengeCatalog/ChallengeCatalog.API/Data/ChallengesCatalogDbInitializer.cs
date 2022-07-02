@@ -1,5 +1,6 @@
 using ChallengeCatalog.API.Data.Entities;
 using Infrastructure;
+using Infrastructure.SeedingConvensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChallengeCatalog.API.Data;
@@ -25,16 +26,16 @@ public class ChallengesCatalogDbInitializer : IDbInitializer<ChallengeCatalogDbC
     private IEnumerable<ChallengeEntity> GetChallenges(int? number = 30)
     {
         var challenges = new List<ChallengeEntity>();
-
-        for (var i = 1; i < number; i++)
+        var response = StreamerIdsProvider.Response;
+        for (var i = 0; i < number; i++)
         {
             challenges.Add(new ChallengeEntity
             {
                 Title = $"Title {i}",
                 Description = $"It is a long description of challenge for streamer. Has Id = {i}",
                 DonateFrom = $"Donater {i}",
+                StreamerId = response.Ids[i % response.IdsAmount],
                 DonatePrice = i * new Random().Next(1000),
-                StreamerId = (i % 3) + 1,
                 CreatedTime = DateTime.UtcNow,
                 ChallengeStatusEntity = new ChallengeStatusEntity
                 {
