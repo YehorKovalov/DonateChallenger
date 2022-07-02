@@ -14,19 +14,17 @@
             <input type="hidden" asp-for="UserId" />
             <div class="form-group col-sm-offset-6"></div>
              <div class="form-group col-sm-6">
-                <label asp-for="Nickname" class="control-label form-label"></label>
-                <input asp-for="Nickname" class="form-control form-input" />
+                <input asp-for="Nickname" class="input-gradient__black-darkgreen" placeholder="Nickname"/>
                 <span asp-validation-for="Nickname" class="text-danger"></span>
             </div>
             <div class="form-group col-sm-6">
-                <label asp-for="MinDonatePriceInDollars" class="control-label form-label"></label>
-                <input asp-for="MinDonatePriceInDollars" class="form-control form-input" />
+                <input asp-for="MinDonatePriceInDollars" class="input-gradient__black-darkgreen" placeholder="MinDonatePriceInDollars"/>
                 <span asp-validation-for="MinDonatePriceInDollars" class="text-danger"></span>
             </div>
         </div>
         <br /><br />
         <div class="d-flex mt-3 justify-content-end">
-            <button type="submit" class="btn btn-primary">Register</button>
+            <button type="submit" class="btn btn-outline-light">Register</button>
         </div>
         <br /><br />
     </form>
