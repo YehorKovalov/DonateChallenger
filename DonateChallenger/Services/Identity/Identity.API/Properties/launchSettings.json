@@ -1,13 +1,12 @@
-﻿{
+{
   "profiles": {
     "Identity.API": {
       "commandName": "Project",
-      "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "http://donate-challenger.com:4000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "applicationUrl": "http://donate-challenger.com:4000"
     }
   }
 }

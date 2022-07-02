@@ -19,10 +19,7 @@ public class ChallengesBoardBffController : ControllerBase
 {
     private readonly IChallengeService _challengeService;
 
-    public ChallengesBoardBffController(IChallengeService challengeService)
-    {
-        _challengeService = challengeService;
-    }
+    public ChallengesBoardBffController(IChallengeService challengeService) => _challengeService = challengeService;
 
     [HttpPost]
     [AllowAnonymous]

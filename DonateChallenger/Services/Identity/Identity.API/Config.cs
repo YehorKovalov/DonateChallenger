@@ -1,8 +1,10 @@
-﻿namespace Identity.API
+﻿using System.IO;
+
+namespace Identity.API
 {
     public static class Config
     {
-        private static IConfiguration? _configuration;
+        private static IConfiguration _configuration;
 
         public static IEnumerable<IdentityResource> Resources => new List<IdentityResource>
         {
@@ -13,6 +15,7 @@
         public static IEnumerable<ApiScope> Scopes => new List<ApiScope>
         {
             new ApiScope("react", "React client"),
+            new ApiScope("identity.api", "Identity API"),
             new ApiScope("challengeCatalog", "Challenge Catalog"),
         };
 
@@ -28,31 +31,28 @@
                 {
                     ClientId = "spa",
                     ClientName = "Donate-Challenger SPA OpenId Client",
-                    ClientUri = reactClientUrl,
+                    ClientUri = globalUrl,
 
                     AllowedGrantTypes = GrantTypes.Code,
 
-                    AllowAccessTokensViaBrowser = true,
                     RequireConsent = false,
                     RequirePkce = true,
+                    RequireClientSecret = false,
+                    AllowAccessTokensViaBrowser = true,
 
                     RedirectUris =
                     {
-                        globalUrl,
-                        $"{globalUrl}/signout-oidc",
-                        $"{globalUrl}/silentrenew",
-                        $"{globalUrl}/logout/callback"
+                        $"{globalUrl}/",
+                        $"{globalUrl}/signin/callback"
                     },
                     PostLogoutRedirectUris =
                     {
-                        $"{reactClientUrl}/logout/callback",
-                        $"{globalUrl}/logout/callback"
+                        $"{globalUrl}/"
                     },
                     ClientSecrets = { new Secret("secret".Sha256()) },
 
                     AllowedCorsOrigins =
                     {
-                        reactClientUrl,
                         globalUrl
                     },
                     AllowedScopes =
@@ -60,7 +60,8 @@
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         "challengeCatalog",
-                        "react"
+                        "react",
+                        "identity.api"
                     }
                 },
                 new Client

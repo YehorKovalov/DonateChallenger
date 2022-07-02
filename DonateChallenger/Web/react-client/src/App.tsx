@@ -9,6 +9,14 @@ const App = observer(() => {
   
   const authStore = useInjection<AuthStore>(iocStores.authStore);
 
+  useEffect(() => {
+    const fetchSigninSilent = async () => {
+      await authStore.tryGetUser();
+    }
+
+    fetchSigninSilent();
+  }, [authStore]);
+
   return (
     <div className="main-font-family">
           <AppRoutes />

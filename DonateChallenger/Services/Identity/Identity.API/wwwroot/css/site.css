@@ -1,18 +1,36 @@
-html {
-  font-size: 14px;
+﻿.body-container {
+  margin-top: 60px;
+  padding-bottom: 40px;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+body{
+  background: radial-gradient(circle, rgba(0,0,0,1) 33%, rgba(3,37,8,1) 100%);
+  min-width: 100%;
+  min-height: calc(100vh - 5rem);
 }
 
-html {
-  position: relative;
-  min-height: 100%;
+.bg-black {
+  background-color: black;
+}
+.color-silver{
+  color: silver;
 }
 
-body {
-  margin-bottom: 60px;
+input:focus, textarea {
+  outline: none !important;
+}
+
+.input-gradient__black-darkgreen {
+  padding-left: 1rem;
+  min-height: 4rem;
+  min-width: 30rem;
+  background: linear-gradient(0deg, rgba(3,60,21,1) 0%, rgba(0,0,0,1) 45%);
+  color: ghostwhite;
+  border: none;
+  border-radius: 0.25rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.input-gradient__black-darkgreen:hover {
+  color: white;
 }

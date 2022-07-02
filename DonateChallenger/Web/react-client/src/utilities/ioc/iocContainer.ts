@@ -9,6 +9,7 @@ import iocStores from "./iocStores";
 import DefaultAuthenticationService, { AuthenticationService } from "../../oidc/AuthenticationService";
 import DefaultLocalStorageService, { LocalStorageService } from "../../services/LocalStorageService";
 import ChallengesBoardStore from "../../stores/components/ChallengesBoardStore";
+import UserRoleStore from "../../stores/UserRoleStore";
 
 export const container = new Container();
 container.bind<HttpService>(iocServices.httpService).to(DefaultHttpService).inSingletonScope();
@@ -20,3 +21,4 @@ container.bind<ChallengesStore>(iocStores.challengesStore).to(ChallengesStore).i
 container.bind<ChallengeStore>(iocStores.challengeStore).to(ChallengeStore).inSingletonScope();
 container.bind<ChallengesBoardStore>(iocStores.challengesBoardStore).to(ChallengesBoardStore).inSingletonScope();
 container.bind<AuthStore>(iocStores.authStore).to(AuthStore).inSingletonScope();
+container.bind<UserRoleStore>(iocStores.userRoleStore).to(UserRoleStore).inSingletonScope();

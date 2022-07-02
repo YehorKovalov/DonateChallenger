@@ -1,0 +1,35 @@
+@model AdditionalInformationViewModel
+
+@{
+    ViewData["Title"] = "Additional Information";
+}
+
+<div class="container">
+    <h1 class="mb-4 mt-5">[ New Account ]</h1>
+    <form asp-controller="Account" asp-action="RegisterAdditionalInformation" method="post" class="form-register">
+        <h4 class="order-create-section-title">Information</h4>
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="row">
+            <input type="hidden" asp-for="ReturnUrl" />
+            <input type="hidden" asp-for="UserId" />
+            <div class="form-group col-sm-offset-6"></div>
+             <div class="form-group col-sm-6">
+                <input asp-for="Nickname" class="input-gradient__black-darkgreen" placeholder="Nickname"/>
+                <span asp-validation-for="Nickname" class="text-danger"></span>
+            </div>
+            <div class="form-group col-sm-6">
+                <input asp-for="MinDonatePriceInDollars" class="input-gradient__black-darkgreen" placeholder="MinDonatePriceInDollars"/>
+                <span asp-validation-for="MinDonatePriceInDollars" class="text-danger"></span>
+            </div>
+        </div>
+        <br /><br />
+        <div class="d-flex mt-3 justify-content-end">
+            <button type="submit" class="btn btn-outline-light">Register</button>
+        </div>
+        <br /><br />
+    </form>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

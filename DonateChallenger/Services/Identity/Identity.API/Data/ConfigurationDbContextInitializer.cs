@@ -1,6 +1,7 @@
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 namespace Identity.API.Data
 {

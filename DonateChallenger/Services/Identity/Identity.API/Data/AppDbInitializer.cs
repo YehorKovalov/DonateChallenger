@@ -1,15 +1,17 @@
 using Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
-namespace Identity.API.Data;
-
-public class AppDbInitializer : IDbInitializer<AppDbContext>
+namespace Identity.API.Data
 {
-    public async Task Initialize(AppDbContext dbContext)
+    public class AppDbInitializer : IDbInitializer<AppDbContext>
     {
-        var dbIsCreated = await dbContext.Database.EnsureCreatedAsync();
-        if (dbIsCreated)
+        public async Task Initialize(AppDbContext dbContext)
         {
-            await dbContext.Database.MigrateAsync();
+            var dbIsCreated = await dbContext.Database.EnsureCreatedAsync();
+            if (dbIsCreated)
+            {
+                await dbContext.Database.MigrateAsync();
+            }
         }
     }
 }

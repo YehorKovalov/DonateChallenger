@@ -57,6 +57,7 @@ services:
       - ASPNETCORE_URLS=http://+:4000
       - AppDbConnection=server=host.docker.internal;database=DonateChallenger.Services.IdentityDb.Identity;User ID=sa;Password=MSSQLServerStrongPassword123!;
       - ConfigurationDbConnection=server=host.docker.internal;database=DonateChallenger.Services.IdentityDb.Configuration;User ID=sa;Password=MSSQLServerStrongPassword123!;
+      - PersistedGrantDbConnection=server=host.docker.internal;database=DonateChallenger.Services.IdentityDb.PersistedGrant;User ID=sa;Password=MSSQLServerStrongPassword123!;
       - PathBase=http://donate-challenger.com:4000
     depends_on:
       - ms-sql-server
