@@ -4,5 +4,7 @@ namespace Identity.API.Services.Abstractions;
 
 public interface IStreamerService
 {
-    Task<SearchStreamersNicknamesResponse<string>> FindStreamerByNickname(string nickname);
+    Task<SearchStreamersNicknamesResponse<string>> FindStreamerByNicknameAsync(string nickname);
+    Task<GetMinDonatePriceResponse<double?>> GetMinDonatePriceAsync(string streamerId);
+    Task<ChangeMinDonatePriceResponse> ChangeMinDonatePriceAsync(string streamerId, double changeOn);
 }
