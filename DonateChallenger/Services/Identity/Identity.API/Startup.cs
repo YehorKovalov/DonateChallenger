@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Identity.API.Data;
+﻿using Identity.API.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -23,59 +22,13 @@ namespace Identity.API
         public void ConfigureServices(IServiceCollection services)
         {
             var appDbConnection = _configuration["AppDbConnection"];
-            var configurationDbConnection = _configuration["ConfigurationDbConnection"];
-            var persistedGrantDbConnection = _configuration["PersistedGrantDbConnection"];
-            var reactClientUrl = _configuration?["ReactClientUrl"] ?? throw new ArgumentNullException();
-            var challengeCatalogUrl = _configuration?["ChallengeCatalogUrl"] ?? throw new ArgumentNullException();
-            var globalUrl = _configuration?["GlobalUrl"] ?? throw new ArgumentNullException();
-            var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
-
-            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(appDbConnection));
-            services.AddIdentity<ApplicationUser, IdentityRole>(o =>
-                {
-                    o.Password.RequiredLength = 4;
-                    o.Password.RequireUppercase = false;
-                    o.Password.RequireLowercase = false;
-                    o.Password.RequireNonAlphanumeric = false;
-                })
-                .AddEntityFrameworkStores<AppDbContext>()
-                .AddDefaultTokenProviders();
-
-
-            services.AddCors(
-                options => options
-                    .AddPolicy(
-                        "CorsPolicy",
-                        builder => builder
-                            .SetIsOriginAllowed(host => true)
-                            .WithOrigins(challengeCatalogUrl, reactClientUrl, globalUrl)
-                            .AllowAnyHeader()
-                            .AllowAnyMethod()
-                            .AllowCredentials()));
-
-            services.AddIdentityServer()
-                .AddDeveloperSigningCredential()
-                .AddAspNetIdentity<ApplicationUser>()
-                .AddConfigurationStore(options =>
-                {
-                    options.ConfigureDbContext = b => b.UseSqlServer(configurationDbConnection, sql =>
-                    {
-                        sql.MigrationsAssembly(migrationsAssembly);
-                        sql.EnableRetryOnFailure(15, TimeSpan.FromSeconds(2), null);
-                    });
-                })
-                .AddOperationalStore(options =>
-                {
-                    options.ConfigureDbContext = b => b.UseSqlServer(persistedGrantDbConnection, sql =>
-                    {
-                        sql.MigrationsAssembly(migrationsAssembly);
-                        sql.EnableRetryOnFailure(15, TimeSpan.FromSeconds(2), null);
-                    });
-                });
-
-            services.AddControllers();
-            services.AddControllersWithViews();
-            services.AddRazorPages();
+            services
+                .AddDbContext<AppDbContext>(options => options.UseSqlServer(appDbConnection))
+                .AddConfiguredIdentity<AppDbContext, ApplicationUser>()
+                .AddConfiguredCors(_configuration)
+                .AddAppDependencies()
+                .AddConfiguredIdentityServer<ApplicationUser>(_configuration)
+                .ConfigureMvc();
         }
 
         public void Configure(IApplicationBuilder app)
@@ -94,9 +47,7 @@ namespace Identity.API
             app.UseCors("CorsPolicy");
             app.UseAuthorization();
 
-            app.CreateDbIfNotExist(new AppDbInitializer());
-            app.CreateDbIfNotExist(new ConfigurationDbContextInitializer());
-            app.CreateDbIfNotExist(new PersistedDbContextInitializer());
+            app.EnsureInitializeAppDbContexts();
             app.UseEndpoints(endpoints => { endpoints.MapDefaultControllerRoute(); });
         }
     }
