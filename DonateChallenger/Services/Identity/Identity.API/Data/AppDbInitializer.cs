@@ -1,6 +1,5 @@
-using IdentityServer4.Test;
 using Infrastructure;
-using Infrastructure.SeedingConvensions;
+using Infrastructure.SeedingConventions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

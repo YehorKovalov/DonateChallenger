@@ -1,4 +1,4 @@
-namespace Infrastructure.SeedingConvensions;
+namespace Infrastructure.SeedingConventions;
 
 public class GetIdsResponse
 {
