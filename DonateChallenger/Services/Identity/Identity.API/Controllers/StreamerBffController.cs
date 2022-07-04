@@ -1,9 +1,8 @@
 using System.Net;
-using Identity.API.Models.Requests;
+using Identity.API.Models.DTOs;
 using Identity.API.Models.Responses;
 using Identity.API.Services.Abstractions;
 using Infrastructure;
-using Microsoft.AspNetCore.Routing;
 
 namespace Identity.API.Controllers;
 
@@ -16,17 +15,16 @@ public class StreamerBffController : ControllerBase
 
     public StreamerBffController(IStreamerService streamerService) =>_streamerService = streamerService;
 
-    [HttpPost]
+    [HttpGet]
     [AllowAnonymous]
     [ProducesResponseType(typeof(SearchStreamersNicknamesResponse<string>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> SearchNicknames(SearchStreamersNicknamesRequest request)
+    public async Task<IActionResult> SearchNicknames(string? nicknameAsFilter)
     {
-        var result = await _streamerService.FindStreamerByNicknameAsync(request.NicknameAsFilter);
+        var result = await _streamerService.FindStreamerByNicknameAsync(nicknameAsFilter);
         return Ok(result);
     }
 
     [HttpGet]
-    [Route("mindonateprice/{streamerId:string}")]
     [ProducesResponseType(typeof(GetMinDonatePriceResponse<double?>), (int) HttpStatusCode.OK)]
     public async Task<IActionResult> GetMinDonatePrice(string streamerId)
     {
@@ -34,11 +32,19 @@ public class StreamerBffController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet]
+    [HttpPost]
     [ProducesResponseType(typeof(ChangeMinDonatePriceResponse), (int) HttpStatusCode.OK)]
     public async Task<IActionResult> ChangeMinDonatePrice(string streamerId, double changeOn)
     {
         var result = await _streamerService.ChangeMinDonatePriceAsync(streamerId, changeOn);
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [ProducesResponseType(typeof(GetStreamerProfileResponse<StreamerProfileDto>), (int) HttpStatusCode.OK)]
+    public async Task<IActionResult> UserProfile(string streamerId)
+    {
+        var result = await _streamerService.GetStreamerProfileAsync(streamerId);
         return Ok(result);
     }
 }
