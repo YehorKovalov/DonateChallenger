@@ -23,7 +23,7 @@ namespace Identity.API
         {
             var appDbConnection = _configuration["AppDbConnection"];
             services
-                .AddDbContext<AppDbContext>(options => options.UseSqlServer(appDbConnection))
+                .AddDbContextFactory<AppDbContext>(options => options.UseSqlServer(appDbConnection))
                 .AddConfiguredIdentity<AppDbContext, ApplicationUser>()
                 .AddConfiguredCors(_configuration)
                 .AddAppDependencies()

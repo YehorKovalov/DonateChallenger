@@ -22,8 +22,8 @@ export default class ChallengeStore {
           const isSuccess = await this.challengeService.skipChallengeByChallengeId(challengeId);
           if (isSuccess) {
                this.lastUsedChallengeId = challengeId;
-               this.waitForBluring(() => {
-                    this.challengesStore.getChallengesByCurrentStatus();
+               await this.waitForBluring(async () => {
+                    await this.challengesStore.getChallengesByCurrentStatus();
                })
           }
           else {
@@ -36,8 +36,8 @@ export default class ChallengeStore {
           const isSuccess = await this.challengeService.completeChallengeByChallengeId(challengeId);
           if (isSuccess) {
                this.lastUsedChallengeId = challengeId;
-               this.waitForBluring(() => {
-                    this.challengesStore.getChallengesByCurrentStatus();
+               await this.waitForBluring(async () => {
+                    await this.challengesStore.getChallengesByCurrentStatus();
                })
           }
           else {
@@ -50,9 +50,9 @@ export default class ChallengeStore {
           return moment(new Date(time), "YYYYMMDD").fromNow();
      }
 
-     private waitForBluring = (action: () => void) => {
-          setTimeout(() => {
-               action();
+     private waitForBluring = async (action: () => Promise<void>) => {
+          setTimeout(async () => {
+               await action();
           }, 500);
      }
 }

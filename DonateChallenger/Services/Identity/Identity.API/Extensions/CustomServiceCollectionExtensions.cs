@@ -1,6 +1,9 @@
 using System.Reflection;
+using Identity.API.Data;
 using Identity.API.Services;
 using Identity.API.Services.Abstractions;
+using Infrastructure.Services;
+using Infrastructure.Services.Abstractions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -85,6 +88,8 @@ public static class CustomServiceCollectionExtensions
     public static IServiceCollection AddAppDependencies(this IServiceCollection services)
     {
         services.AddTransient<IStreamerService, StreamerService>();
+        services.AddScoped<IDbContextWrapper<AppDbContext>, DbContextWrapper<AppDbContext>>();
+
         return services;
     }
 }

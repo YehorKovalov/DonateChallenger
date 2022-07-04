@@ -1,4 +1,5 @@
 using Identity.API.Data;
+using Identity.API.Models.DTOs;
 using Identity.API.Models.Responses;
 using Identity.API.Services.Abstractions;
 using Infrastructure.Services;
@@ -36,6 +37,29 @@ public class StreamerService : BaseDataService<AppDbContext>, IStreamerService
         });
     }
 
+    public async Task<GetStreamerProfileResponse<StreamerProfileDto>> GetStreamerProfileAsync(string streamerId)
+    {
+        return await ExecuteSafeAsync(async () =>
+        {
+            Logger.LogInformation($"{nameof(GetStreamerProfileAsync)} ---> {nameof(streamerId)}: {streamerId}");
+            var streamer = await _userManager.Users.FirstOrDefaultAsync(s => s.Id == streamerId);
+            if (streamer == null)
+            {
+                Logger.LogWarning($"{nameof(GetStreamerProfileAsync)} ---> Streamer with id: {streamer} doesn't exist");
+            }
+
+            return new GetStreamerProfileResponse<StreamerProfileDto>
+            {
+                Data = new StreamerProfileDto
+                {
+                    StreamerId = streamer?.Id,
+                    StreamerNickname = streamer?.Nickname,
+                    MinDonatePrice = streamer?.MinDonatePriceInDollars,
+                }
+            };
+        });
+    }
+    
     public async Task<GetMinDonatePriceResponse<double?>> GetMinDonatePriceAsync(string streamerId)
     {
         return await ExecuteSafeAsync(async () =>

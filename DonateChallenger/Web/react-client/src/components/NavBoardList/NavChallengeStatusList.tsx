@@ -3,6 +3,7 @@ import { ChallengeStatusEnum } from "../../models/ChallengeStatusEnum";
 import ChallengesStore from "../../stores/components/ChallengesStore";
 import { useInjection } from "../../utilities/ioc/ioc.react";
 import iocStores from "../../utilities/ioc/iocStores";
+import NavLink from "../NavLink";
 import ChallengeStatus from "./ChallengeStatus";
 import './styles.css';
 
@@ -13,7 +14,7 @@ const NavChallengeStatusList = observer(() => {
      return (
           <li>
                <span className="menu">
-                    <h2 className="menu-title menu-title">Challenges</h2>
+                    <NavLink href='/' ><span className="menu-title menu-title">Challenges</span></NavLink>
                     <ul className="menu-dropdown">
                          <li>
                               <ChallengeStatus title={ChallengeStatusEnum.Current}

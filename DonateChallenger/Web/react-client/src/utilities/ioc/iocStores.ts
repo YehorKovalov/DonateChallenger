@@ -3,5 +3,6 @@ export default {
      challengeStore: Symbol("challengeStore"),
      authStore: Symbol("authStore"),
      challengesBoardStore: Symbol("challengesBoardStore"),
-     userRoleStore: Symbol("userRoleStore")
+     userRoleStore: Symbol("userRoleStore"),
+     streamerProfileStore: Symbol("streamerProfileStore"),
 }
