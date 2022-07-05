@@ -25,6 +25,9 @@ footer {
 .color-black {
   color: black;
 }
+.color-red {
+  color: rgb(177, 5, 5);
+}
 
 .color-silver {
   color: silver;

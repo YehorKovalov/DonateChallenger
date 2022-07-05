@@ -32,11 +32,20 @@ public class StreamerBffController : ControllerBase
         return Ok(result);
     }
 
+    
     [HttpPost]
-    [ProducesResponseType(typeof(ChangeMinDonatePriceResponse), (int) HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ChangeStreamerProfileDataResponse<double>), (int) HttpStatusCode.OK)]
     public async Task<IActionResult> ChangeMinDonatePrice(string streamerId, double changeOn)
     {
         var result = await _streamerService.ChangeMinDonatePriceAsync(streamerId, changeOn);
+        return Ok(result);
+    }
+
+    [HttpPost]
+    [ProducesResponseType(typeof(ChangeStreamerProfileDataResponse<string>), (int) HttpStatusCode.OK)]
+    public async Task<IActionResult> ChangeNickname(string streamerId, string newNickname)
+    {
+        var result = await _streamerService.ChangeStreamerNicknameAsync(streamerId, newNickname);
         return Ok(result);
     }
 

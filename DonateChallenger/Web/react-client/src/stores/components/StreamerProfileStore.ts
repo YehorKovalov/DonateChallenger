@@ -1,5 +1,6 @@
 import { inject, injectable } from "inversify";
 import { makeAutoObservable } from "mobx";
+import { InputWithValidation } from "../../models/InputWithValidation";
 import { StreamerProfile } from "../../models/StreamerProfile";
 import AuthStore from "../../oidc/AuthStore";
 import { StreamerService } from "../../services/StreamerService";
@@ -10,15 +11,32 @@ import iocStores from "../../utilities/ioc/iocStores";
 export default class StreamerProfileStore {
      @inject(iocServices.streamerService) private readonly streamerService!: StreamerService;
      @inject(iocStores.authStore) private readonly authStore!: AuthStore;
-     
+     private emptyString = '';
      constructor() {
+          this.profile = {
+               streamerId: '',
+               streamerNickname: '',
+               minDonatePrice: 0
+          };
+
+          this.nicknameInput = {
+               errors: [],
+               state: ''
+          }
+
+          this.minDonatePriceInput = {
+               errors: [],
+               state: ''
+          }
+
           makeAutoObservable(this);
      }
 
      profile: StreamerProfile = null!;
 
-     changedNickname: string = '';
-     changedMinDonatePrice: string = '';
+     nicknameInput: InputWithValidation<string> = null!;
+
+     minDonatePriceInput: InputWithValidation<string> = null!;
 
      public getStreamerProfile = async () => {
           await this.getStreamerId();
@@ -26,43 +44,48 @@ export default class StreamerProfileStore {
           this.profile = response.data;
      }
 
-     public getMinDonatePrice = async () : Promise<void> => {
-          await this.getStreamerId();
-
-          if (this.authStore.user) {
-               const response = await this.streamerService.getMinDonatePrice(this.profile.streamerId);
-               this.profile!.minDonatePrice = response.data;
-          }
-     }
-
-     public changeMinDonatePrice = async () : Promise<void> => {
-          const minDonatePrice = Number.parseInt(this.changedMinDonatePrice);
+     public changeMinDonatePrice = async () : Promise<boolean> => {
+          const minDonatePrice = Number.parseInt(this.minDonatePriceInput.state);
           await this.getStreamerId();
           if (this.authStore.user) {
                if (minDonatePrice === this.profile.minDonatePrice) {
-                    console.log("Invalid minDonatePrice")
-                    return;
+                    return false;
                }
 
                const response = await this.streamerService.changeMinDonatePrice(this.profile.streamerId, minDonatePrice);
-               
-               const emptyString = '';
-               this.changedMinDonatePrice = emptyString;
-               console.log(`Changing is succesful: ${response.Succeeded}`)
+               this.minDonatePriceInput.errors = response.validationErrors
+
+               if (response.succeeded) {
+                    this.profile.minDonatePrice = response.changedData;
+                    this.minDonatePriceInput.state = this.emptyString;
+                    return true;
+               }
+
+               this.minDonatePriceInput.state = response.changedData.toString();
           }
+          return false;
      }
 
-     public changeNickname = async () : Promise<void> => {
+     public changeNickname = async () : Promise<boolean> => {
           await this.getStreamerId();
 
           if (this.authStore.user) {
-               if (this.changedNickname === this.profile.streamerNickname) {
-                    return;
+               if (this.nicknameInput.state === this.profile.streamerNickname) {
+                    return false;
                }
 
-               const emptyString = '';
-               this.changedNickname = emptyString;
+               const response = await this.streamerService.changeStreamerNickname(this.profile.streamerId, this.nicknameInput.state);
+               this.nicknameInput.errors = response.validationErrors;
+               if (response.succeeded) {
+                    this.profile.streamerNickname = response.changedData;
+                    this.nicknameInput.state = this.emptyString;
+                    return true;
+               }
+               
+               this.nicknameInput.state = response.changedData;
           }
+
+          return false;
      }
 
      private getStreamerId = async () => {

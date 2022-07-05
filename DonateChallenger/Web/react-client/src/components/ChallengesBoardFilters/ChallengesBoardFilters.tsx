@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { Col, Form, Row } from 'react-bootstrap';
 import ChallengesBoardStore from '../../stores/components/ChallengesBoardStore';
 import ChallengesStore from '../../stores/components/ChallengesStore';
+import { ChallengesFiltersConstants } from '../../utilities/ChallengesFiltersConstants';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
 import './styles.css';
@@ -26,7 +27,6 @@ const ChallengesBoardFilters = observer(() => {
                     <Form.Check type="switch" label="Sort by time" onChange={(e) => boardStore.sortByCreatedTime = e.target.checked}/>
                </Col>
                <Col lg={2}>
-                    <div>Min donate price : 100$</div>
                </Col>
           </Row>
      );

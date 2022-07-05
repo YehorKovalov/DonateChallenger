@@ -29,11 +29,11 @@ const Header = observer(() => {
                               ? <>
                                    <NavBoardList />
                                    <NavLink href='/profile'>Profile</NavLink>
-                                   <NavLink href='/signout' className='pt-5'><Logout/></NavLink>
+                                   <NavLink href='/signout' ><Logout/></NavLink>
                               </>
                               :
                               <>
-                                   <NavLink href='/signin' className='pt-5'><UserLoginIcon/></NavLink>
+                                   <NavLink href='/signin'><UserLoginIcon/></NavLink>
                               </>
                               }
                           </Nav>

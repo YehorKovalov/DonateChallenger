@@ -1,3 +1,8 @@
 .header-bg-color {
      background: linear-gradient(138deg, rgba(0,0,0,1) 46%, rgba(2,25,6,1) 63%);
 }
+
+.menu-title {
+     padding: 0;
+     margin: 0;
+}

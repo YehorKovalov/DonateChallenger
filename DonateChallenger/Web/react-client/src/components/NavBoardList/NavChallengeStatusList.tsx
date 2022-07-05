@@ -14,7 +14,7 @@ const NavChallengeStatusList = observer(() => {
      return (
           <li>
                <span className="menu">
-                    <NavLink href='/' ><span className="menu-title menu-title">Challenges</span></NavLink>
+                    <NavLink href='/' className="menu-title">Challenges</NavLink>
                     <ul className="menu-dropdown">
                          <li>
                               <ChallengeStatus title={ChallengeStatusEnum.Current}

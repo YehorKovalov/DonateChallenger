@@ -44,7 +44,7 @@ namespace Identity.API.Data
                         NormalizedEmail = email.Normalize(),
                         UserName = userName,
                         NormalizedUserName = userName.Normalize(),
-                        Nickname = email,
+                        Nickname = $"Donater {i}",
                         MinDonatePriceInDollars = random.Next(100000),
                         SecurityStamp = Guid.NewGuid().ToString(),
                         EmailConfirmed = true,

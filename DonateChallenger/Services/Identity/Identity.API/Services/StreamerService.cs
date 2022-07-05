@@ -1,4 +1,5 @@
 using Identity.API.Data;
+using Identity.API.Helpers;
 using Identity.API.Models.DTOs;
 using Identity.API.Models.Responses;
 using Identity.API.Services.Abstractions;
@@ -78,33 +79,126 @@ public class StreamerService : BaseDataService<AppDbContext>, IStreamerService
         });
     }
 
-    public async Task<ChangeMinDonatePriceResponse> ChangeMinDonatePriceAsync(string streamerId, double changeOn)
+    public async Task<ChangeStreamerProfileDataResponse<double>> ChangeMinDonatePriceAsync(string streamerId, double changeOn)
     {
         return await ExecuteSafeAsync(async () =>
         {
-            Logger.LogInformation($"{nameof(ChangeMinDonatePriceAsync)} ---> {nameof(streamerId)}: {streamerId};  {nameof(changeOn)}: {changeOn}");
-            const double logicalMinimumDonatePrice = 0.1;
-            if (changeOn < logicalMinimumDonatePrice)
+            var methodName = nameof(ChangeMinDonatePriceAsync);
+
+            Logger.LogInformation($"{methodName} ---> {nameof(streamerId)}: {streamerId};  {nameof(changeOn)}: {changeOn}");
+            if (changeOn < ValidationConstants.LogicalMinimumDonatePrice)
             {
-                Logger.LogInformation($"{nameof(ChangeMinDonatePriceAsync)} ---> Arrived minimum donate price is less than logical minimum price({logicalMinimumDonatePrice}$");
-                return new ChangeMinDonatePriceResponse { Succeeded = false };
+                var errorMessage = $"Price cannot be less than {ValidationConstants.LogicalMinimumDonatePrice}";
+                Logger.LogInformation($"{methodName} ---> {errorMessage}");
+                return new ChangeStreamerProfileDataResponse<double>
+                {
+                    ValidationErrors = new List<string> { errorMessage },
+                    ChangedData = 0
+                };
             }
 
+            if (changeOn > ValidationConstants.LogicalMaximumMinimumDonatePrice)
+            {
+                var errorMessage = $"Price cannot be more than {ValidationConstants.LogicalMaximumMinimumDonatePrice}";
+                Logger.LogInformation($"{methodName} ---> {errorMessage}");
+                return new ChangeStreamerProfileDataResponse<double>
+                {
+                    ValidationErrors = new List<string> { errorMessage },
+                    ChangedData = 0
+                };
+            }
+            
             var streamer = await _userManager.Users.FirstOrDefaultAsync(s => s.Id == streamerId);
             if (streamer == null)
             {
-                Logger.LogWarning($"{nameof(ChangeMinDonatePriceAsync)} ---> Streamer with id: {streamer} doesn't exist");
-                return new ChangeMinDonatePriceResponse { Succeeded = false };
+                Logger.LogWarning($"{methodName} ---> Streamer with id: {streamer} doesn't exist");
+                return new ChangeStreamerProfileDataResponse<double>
+                {
+                    ValidationErrors = null,
+                    ChangedData = 0
+                };
             }
 
             streamer.MinDonatePriceInDollars = changeOn;
             var result = await _userManager.UpdateAsync(streamer);
             foreach (var error in result.Errors)
             {
-                Logger.LogError($"{nameof(ChangeMinDonatePriceAsync)} ---> Code: {error.Code}. Description: {error.Description}");
+                Logger.LogError($"{methodName} ---> Code: {error.Code}. Description: {error.Description}");
             }
 
-            return new ChangeMinDonatePriceResponse { Succeeded = result.Succeeded };
+            return new ChangeStreamerProfileDataResponse<double>
+            {
+                ValidationErrors = Enumerable.Empty<string>(),
+                Succeeded = true,
+                ChangedData = changeOn
+            };
+        });
+    }
+
+    public async Task<ChangeStreamerProfileDataResponse<string>> ChangeStreamerNicknameAsync(string streamerId, string newNickname)
+    {
+        return await ExecuteSafeAsync(async () =>
+        {
+            var methodName = nameof(ChangeMinDonatePriceAsync);
+
+            Logger.LogInformation($"{methodName} ---> {nameof(streamerId)}: {streamerId};  {nameof(newNickname)}: {newNickname}");
+            if (string.IsNullOrWhiteSpace(newNickname))
+            {
+                var errorMessage = "Nickname can't not be empty";
+                Logger.LogInformation($"{methodName} ---> {errorMessage}");
+                return new ChangeStreamerProfileDataResponse<string>
+                {
+                    ValidationErrors = new List<string> { errorMessage },
+                    ChangedData = string.Empty
+                };
+            }
+
+            if (newNickname.Length > ValidationConstants.NicknameMaxLength)
+            {
+                var errorMessage = $"Nickname symbols can not be more than {ValidationConstants.NicknameMaxLength}";
+                Logger.LogInformation($"{methodName} ---> {errorMessage}");
+                return new ChangeStreamerProfileDataResponse<string>
+                {
+                    ValidationErrors = new List<string> { errorMessage },
+                    ChangedData = newNickname
+                };
+            }
+
+            if (await _userManager.Users.AnyAsync(s => s.Nickname == newNickname))
+            {
+                var errorMessage = $"Nickname {newNickname} already exists";
+                Logger.LogWarning($"{methodName} ---> {errorMessage}");
+                return new ChangeStreamerProfileDataResponse<string>
+                {
+                    ValidationErrors = new List<string> { errorMessage },
+                    ChangedData = newNickname
+                };
+            }
+
+            var streamer = await _userManager.Users.FirstOrDefaultAsync(s => s.Id == streamerId);
+            if (streamer == null)
+            {
+                Logger.LogWarning($"{methodName} ---> Streamer with id: {streamer} doesn't exist");
+                return new ChangeStreamerProfileDataResponse<string>
+                {
+                    ValidationErrors = null,
+                    ChangedData = string.Empty
+                };
+            }
+
+            streamer.Nickname = newNickname;
+            var result = await _userManager.UpdateAsync(streamer);
+            foreach (var error in result.Errors)
+            {
+                Logger.LogError($"{methodName} ---> Code: {error.Code}. Description: {error.Description}");
+            }
+
+            return new ChangeStreamerProfileDataResponse<string>
+            {
+                ValidationErrors = Enumerable.Empty<string>(),
+                Succeeded = true,
+                ChangedData = newNickname
+            };
         });
     }
 }
