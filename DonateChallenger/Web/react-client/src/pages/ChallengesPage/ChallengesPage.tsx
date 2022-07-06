@@ -19,6 +19,7 @@ const ChallengesPage = observer(() => {
      const boardStore = useInjection<ChallengesBoardStore>(iocStores.challengesBoardStore);
 
      useEffect(() => {
+          console.log("i am page")
           const fetch = async () => {
               await challengesStore.getChallengesByCurrentStatus();
           }

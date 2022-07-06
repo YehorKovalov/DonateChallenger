@@ -34,11 +34,6 @@ export default class DefaultChallengeService implements ChallengeService {
      
      public async addChallenge(description: string, donatePrice: number, donateFrom: string, title?: string): Promise<AddChallengeForStreamerResponse> {
           
-          while (!this.authStore.user) {
-               await this.authStore.signinRedirect();
-               await this.authStore.tryGetUser();
-          }
-
           const request: AddChallengeForStreamerRequest = {
                title: title,
                description: description,
@@ -58,7 +53,6 @@ export default class DefaultChallengeService implements ChallengeService {
 
      public async getPaginatedCurrentChallenges(currentPage: number, challengesPerPage: number, sortByCreatedTime?: boolean, minPriceFilter?: number)
           : Promise<GetPaginatedChallengesResponse<CurrentChallengeDto>> {
-
           
           const url = `${this.CHALLENGE_BOARD_ROUTE}/current`;
           const response = await this.getPaginatedChallengesInternal<GetPaginatedChallengesResponse<CurrentChallengeDto>>(url, currentPage, challengesPerPage, sortByCreatedTime, minPriceFilter);
@@ -105,11 +99,6 @@ export default class DefaultChallengeService implements ChallengeService {
      private async getPaginatedChallengesInternal<T>(url: string, currentPage: number, challengesPerPage: number, sortByCreatedTime?: boolean, minPriceFilter?: number)
           : Promise<T> {
 
-          while (!this.authStore.user) {
-               await this.authStore.signinRedirect();
-               await this.authStore.tryGetUser();
-          }
-
           const headers = { contentType: ContentType.Json };
           const method = MethodType.POST;
 
@@ -121,6 +110,7 @@ export default class DefaultChallengeService implements ChallengeService {
                filters: filters
           };
 
+          console.log(request)
           const response = await this.httpService.send<T>(url, method, headers, request);
 
           return { ...response.data };

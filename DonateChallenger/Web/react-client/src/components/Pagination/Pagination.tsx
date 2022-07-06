@@ -22,6 +22,7 @@ const Pagination = observer(() => {
 
           fetch();
      }, [boardStore.currentPage]);
+
           return (
           <Row className='justify-content-md-center text-center pb-5 pt-5'>
                <Col lg={1}>
