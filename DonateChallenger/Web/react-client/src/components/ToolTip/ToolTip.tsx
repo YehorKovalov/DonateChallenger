@@ -12,7 +12,7 @@ const ToolTip = observer((props: ToolTipProps) => {
      return (
           <OverlayTrigger key={overlayTriggerPlacement} placement={overlayTriggerPlacement} overlay={
                <Tooltip id={`tooltip-${overlayTriggerPlacement}`}>
-                    {props.tipText}
+                    <span className='fs-5'>{props.tipText}</span>
                </Tooltip>}
           >
                <span role='button' onClick={props.onClick} className="color-silver fs-2">
