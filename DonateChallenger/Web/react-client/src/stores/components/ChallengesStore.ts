@@ -9,12 +9,14 @@ import iocServices from "../../utilities/ioc/iocServices";
 import iocStores from "../../utilities/ioc/iocStores";
 import { formPages } from "../../utilities/PagesProvider";
 import ChallengesBoardStore from "./ChallengesBoardStore";
+import StreamerProfileStore from "./StreamerProfileStore";
 
 @injectable()
 export default class ChallengesStore {
      
      @inject(iocServices.challengeService) private readonly challengeService!: ChallengeService;
      @inject(iocStores.challengesBoardStore) private readonly boardStore!: ChallengesBoardStore;
+     @inject(iocStores.streamerProfileStore) private readonly streamerProfile!: StreamerProfileStore;
      private readonly challengesPerPage: number = challengesConstants.APP_CHALLENGES_PER_PAGE;
 
      constructor() {
@@ -36,6 +38,7 @@ export default class ChallengesStore {
           else if (status === ChallengeStatusEnum.Skipped) {
                await this.getPaginatedSkippedChallenges();
           }
+
           this.boardStore.buttons = formPages(this.paginatedChallenges!.totalPages)
           this.currentChallengeStatus = status;
 

@@ -2,7 +2,7 @@ using Identity.API.Models.Account;
 
 namespace Identity.API.Extensions
 {
-    public static class Extensions
+    public static class ScaffoldedExtensions
     {
         public static bool IsNativeClient(this AuthorizationRequest context)
         {

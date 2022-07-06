@@ -1,5 +1,5 @@
 using System.Net;
-using Identity.API.Models.Requests;
+using Identity.API.Models.DTOs;
 using Identity.API.Models.Responses;
 using Identity.API.Services.Abstractions;
 using Infrastructure;
@@ -15,12 +15,45 @@ public class StreamerBffController : ControllerBase
 
     public StreamerBffController(IStreamerService streamerService) =>_streamerService = streamerService;
 
-    [HttpPost]
+    [HttpGet]
     [AllowAnonymous]
     [ProducesResponseType(typeof(SearchStreamersNicknamesResponse<string>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> SearchNicknamesAsync(SearchStreamersNicknamesRequest request)
+    public async Task<IActionResult> SearchNicknames(string? nicknameAsFilter)
     {
-        var result = await _streamerService.FindStreamerByNickname(request.NicknameAsFilter);
+        var result = await _streamerService.FindStreamerByNicknameAsync(nicknameAsFilter);
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [ProducesResponseType(typeof(GetMinDonatePriceResponse<double?>), (int) HttpStatusCode.OK)]
+    public async Task<IActionResult> GetMinDonatePrice(string streamerId)
+    {
+        var result = await _streamerService.GetMinDonatePriceAsync(streamerId);
+        return Ok(result);
+    }
+
+    
+    [HttpPost]
+    [ProducesResponseType(typeof(ChangeStreamerProfileDataResponse<double>), (int) HttpStatusCode.OK)]
+    public async Task<IActionResult> ChangeMinDonatePrice(string streamerId, double changeOn)
+    {
+        var result = await _streamerService.ChangeMinDonatePriceAsync(streamerId, changeOn);
+        return Ok(result);
+    }
+
+    [HttpPost]
+    [ProducesResponseType(typeof(ChangeStreamerProfileDataResponse<string>), (int) HttpStatusCode.OK)]
+    public async Task<IActionResult> ChangeNickname(string streamerId, string newNickname)
+    {
+        var result = await _streamerService.ChangeStreamerNicknameAsync(streamerId, newNickname);
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [ProducesResponseType(typeof(GetStreamerProfileResponse<StreamerProfileDto>), (int) HttpStatusCode.OK)]
+    public async Task<IActionResult> UserProfile(string streamerId)
+    {
+        var result = await _streamerService.GetStreamerProfileAsync(streamerId);
         return Ok(result);
     }
 }

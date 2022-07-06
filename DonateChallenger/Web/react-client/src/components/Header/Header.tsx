@@ -1,9 +1,11 @@
 import { observer } from 'mobx-react';
 import { Container, Nav, Navbar } from 'react-bootstrap';
 import AuthStore from '../../oidc/AuthStore';
+import StreamerProfile from '../../pages/StreamerProfilePage';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
 import Brand from '../Brand';
+import Logout from '../Logout';
 import NavBoardList from '../NavBoardList';
 import NavLink from '../NavLink';
 import UserLoginIcon from '../UserLoginIcon';
@@ -21,13 +23,21 @@ const Header = observer(() => {
                     </Navbar.Brand>
                     <div className='col-3'></div>
                     <Navbar.Toggle className='ms-auto' aria-controls="responsive-navbar-nav" />
-                    {authStore.user &&
                     <Navbar.Collapse id="navbarScroll">
                          <Nav className="col-4 fs-3" navbarScroll>
-                              <NavBoardList />
-                              <NavLink href='/signin' className='pt-5'><UserLoginIcon/></NavLink>
-                         </Nav>
-                    </Navbar.Collapse>}
+                              {authStore.user
+                              ? <>
+                                   <NavBoardList />
+                                   <NavLink href='/profile'>Profile</NavLink>
+                                   <NavLink href='/signout' ><Logout/></NavLink>
+                              </>
+                              :
+                              <>
+                                   <NavLink href='/signin'><UserLoginIcon/></NavLink>
+                              </>
+                              }
+                          </Nav>
+                    </Navbar.Collapse>
                </Container>
           </Navbar>
      );
