@@ -1,5 +1,5 @@
 using Infrastructure;
-using Infrastructure.SeedingConventions;
+using Infrastructure.Seeding;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

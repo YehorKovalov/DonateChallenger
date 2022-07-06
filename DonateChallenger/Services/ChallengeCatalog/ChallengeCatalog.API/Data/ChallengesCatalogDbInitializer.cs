@@ -1,6 +1,6 @@
 using ChallengeCatalog.API.Data.Entities;
 using Infrastructure;
-using Infrastructure.SeedingConventions;
+using Infrastructure.Seeding;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChallengeCatalog.API.Data;

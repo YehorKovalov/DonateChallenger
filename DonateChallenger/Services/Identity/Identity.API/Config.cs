@@ -31,7 +31,6 @@ namespace Identity.API
                 {
                     ClientId = "spa",
                     ClientName = "Donate-Challenger SPA OpenId Client",
-                    ClientUri = globalUrl,
 
                     AllowedGrantTypes = GrantTypes.Code,
 
@@ -40,16 +39,27 @@ namespace Identity.API
                     RequireClientSecret = false,
                     AllowAccessTokensViaBrowser = true,
 
+                    // ClientUri = globalUrl,
+                    // RedirectUris =
+                    // {
+                    //     globalUrl,
+                    //     $"{globalUrl}/signin-oidc",
+                    //     $"{globalUrl}/silentrenew"
+                    // },
+                    // PostLogoutRedirectUris = { globalUrl },
+                    // AllowedCorsOrigins = { globalUrl },
+                    ClientUri = reactClientUrl,
                     RedirectUris =
                     {
-                        globalUrl,
-                        $"{globalUrl}/signin-oidc",
-                        $"{globalUrl}/silentrenew"
+                        reactClientUrl,
+                        $"{reactClientUrl}/signin-oidc",
+                        $"{reactClientUrl}/silentrenew"
                     },
-                    PostLogoutRedirectUris = { $"{globalUrl}/signout-oidc" },
+                    PostLogoutRedirectUris = { reactClientUrl },
+                    AllowedCorsOrigins = { reactClientUrl },
+
                     ClientSecrets = { new Secret("secret".Sha256()) },
 
-                    AllowedCorsOrigins = { globalUrl },
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
