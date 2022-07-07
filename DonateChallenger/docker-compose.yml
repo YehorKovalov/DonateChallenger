@@ -30,6 +30,13 @@ services:
     ports:
       - 8002:5432
   
+  rabbitmq:
+    image: masstransit/rabbitmq:latest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "15692:15692"
+  
   challenge-catalog.api:
     container_name: lde.challenge-catalog.api
     build:
