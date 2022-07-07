@@ -24,6 +24,7 @@ namespace Identity.API
             _configuration = GetConfiguration();
             var reactClientUrl = _configuration?["ReactClientUrl"] ?? throw new ArgumentNullException();
             var challengeCatalogUrl = _configuration?["ChallengeCatalogUrl"] ?? throw new ArgumentNullException();
+            var challengeOrderUrl = _configuration?["ChallengeOrderUrl"] ?? throw new ArgumentNullException();
             var globalUrl = _configuration?["GlobalUrl"] ?? throw new ArgumentNullException();
             return new List<Client>
             {
@@ -84,6 +85,23 @@ namespace Identity.API
                     AllowedScopes =
                     {
                         "challengeCatalog"
+                    }
+                },
+                new Client
+                {
+                    ClientId = "challengeorderswaggerui",
+                    ClientName = "Challenge Order",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
+
+                    ClientSecrets = { new Secret("secret".Sha256()) },
+
+                    RedirectUris = { $"{challengeOrderUrl}/swagger/oauth2-redirect.html" },
+                    PostLogoutRedirectUris = { $"{challengeOrderUrl}/swagger/" },
+
+                    AllowedScopes =
+                    {
+                        "challengeOrder"
                     }
                 },
             };

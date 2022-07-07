@@ -19,7 +19,7 @@ public class ChallengeRepository : IChallengeRepository
         _dbContext = dbContext.DbContext;
     }
 
-    public async Task<long?> AddChallengeForStreamerAsync(string description, decimal donatePrice, string donateFrom, string streamerId, string? title)
+    public async Task<long?> AddChallengeForStreamerAsync(string description, double donatePrice, string donateFrom, string streamerId, string? title)
     {
         var challenge = new ChallengeEntity
         {

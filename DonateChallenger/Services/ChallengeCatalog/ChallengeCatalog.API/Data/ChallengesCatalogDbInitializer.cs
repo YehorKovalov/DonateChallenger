@@ -17,13 +17,13 @@ public class ChallengesCatalogDbInitializer : IDbInitializer<ChallengeCatalogDbC
 
         if (!await dbContext.Challenges.AnyAsync())
         {
-            var challenges = GetChallenges(100);
+            var challenges = GetChallenges(CatalogChallengeSeedingConstants.ChallengesAmount);
             await dbContext.Challenges.AddRangeAsync(challenges);
             await dbContext.SaveChangesAsync();
         }
     }
 
-    private IEnumerable<ChallengeEntity> GetChallenges(int? number = 30)
+    private IEnumerable<ChallengeEntity> GetChallenges(long? number = 30)
     {
         var challenges = new List<ChallengeEntity>();
         var response = StreamerIdsProvider.Response;

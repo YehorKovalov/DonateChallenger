@@ -27,17 +27,17 @@ public class ChallengeService : BaseDataService<ChallengeCatalogDbContext>, ICha
         _mapper = mapper;
     }
 
-    public async Task<AddChallengeForStreamerResponse<long?>?> AddChallengeForStreamerAsync(AddChallengeForStreamerRequest request)
+    public async Task<AddChallengeForStreamerResponse<long?>?> AddChallengeForStreamerAsync(string donateFrom, string streamerId, double donatePrice, string description, string? title)
     {
         return await ExecuteSafeAsync(async () =>
         {
-            if (!AddChallengeRequestStateIsValid(request))
+            if (!AddChallengeRequestStateIsValid(donateFrom, streamerId, donatePrice, description))
             {
                 Logger.LogError($"{nameof(AddChallengeForStreamerAsync)} ---> Bad request");
                 return null!;
             }
 
-            var result = await _challengeRepository.AddChallengeForStreamerAsync(request.Description, request.DonatePrice, request.DonateFrom, request.StreamerId, request.Title);
+            var result = await _challengeRepository.AddChallengeForStreamerAsync(description, donatePrice, donateFrom, streamerId, title);
 
             return new AddChallengeForStreamerResponse<long?> { ChallengeId = result };
         });
@@ -148,11 +148,12 @@ public class ChallengeService : BaseDataService<ChallengeCatalogDbContext>, ICha
         }
     }
 
-    private bool AddChallengeRequestStateIsValid(AddChallengeForStreamerRequest request)
+    private bool AddChallengeRequestStateIsValid(string donateFrom, string streamerId, double donatePrice, string description)
     {
-        return !string.IsNullOrWhiteSpace(request.Description)
-               && !string.IsNullOrWhiteSpace(request.DonateFrom)
-               && request.DonatePrice > 0;
+        return !string.IsNullOrWhiteSpace(description)
+               && !string.IsNullOrWhiteSpace(donateFrom)
+               && !string.IsNullOrWhiteSpace(streamerId)
+               && donatePrice > 0;
     }
 
     private bool GetPaginatedChallengesRequestStateIsValid(GetPaginatedStreamerChallengesRequest<ChallengeFilter> request)
