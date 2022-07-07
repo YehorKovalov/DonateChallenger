@@ -33,6 +33,7 @@ public static class CustomServiceCollectionExtensions
     {
         var reactClientUrl = configuration?["ReactClientUrl"] ?? throw new ArgumentNullException("ReactClientUrl");
         var challengeCatalogUrl = configuration?["ChallengeCatalogUrl"] ?? throw new ArgumentNullException("ChallengeCatalogUrl");
+        var challengeOrderUrl = configuration?["ChallengeOrderUrl"] ?? throw new ArgumentNullException("ChallengeOrderUrl");
         var globalUrl = configuration?["GlobalUrl"] ?? throw new ArgumentNullException("GlobalUrl");
         services.AddCors(
             options => options
@@ -40,7 +41,7 @@ public static class CustomServiceCollectionExtensions
                     "CorsPolicy",
                     builder => builder
                         .SetIsOriginAllowed(host => true)
-                        .WithOrigins(challengeCatalogUrl, reactClientUrl, globalUrl)
+                        .WithOrigins(challengeOrderUrl, challengeCatalogUrl, reactClientUrl, globalUrl)
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials()));
