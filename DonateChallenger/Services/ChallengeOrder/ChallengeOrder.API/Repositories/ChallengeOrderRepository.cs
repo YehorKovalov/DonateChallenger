@@ -18,14 +18,15 @@ public class ChallengeOrderRepository : IChallengeOrderRepository
         _appDbContext = appDbContext.DbContext;
     }
 
-    public async Task<Guid> Add(Guid paymentId, long catalogChallengeId)
+    public async Task<Guid> Add(string paymentId, int challengesAmount, double resultDonationPrice)
     {
-        _logger.LogInformation($"{nameof(Add)} ---> {nameof(paymentId)}: {paymentId}; {nameof(catalogChallengeId)}: {catalogChallengeId}");
+        _logger.LogInformation($"{nameof(Add)} ---> {nameof(paymentId)}: {paymentId};");
         var order = new ChallengeOrderEntity
         {
             ChallengeOrderId = Guid.NewGuid(),
             PaymentId = paymentId,
-            CatalogChallengeId = catalogChallengeId
+            ChallengesAmount = challengesAmount,
+            ResultDonationPrice = resultDonationPrice
         };
 
         var result = await _appDbContext.AddAsync(order);

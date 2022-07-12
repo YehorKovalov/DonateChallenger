@@ -24,14 +24,16 @@ public class AppDbContextInitializer : IDbInitializer<AppDbContext>
 
     private IEnumerable<ChallengeOrderEntity> GetChallengeOrders(long? amount = 30)
     {
+        var merchantIds = new string[] { "V9YL22Q4UQ3PA", "5WSFVT57ASS6U", "MCB5L4ZBENTWC" };
         var orders = new List<ChallengeOrderEntity>();
         for (var i = 0; i < amount; i++)
         {
             orders.Add(new ChallengeOrderEntity
             {
                 ChallengeOrderId = Guid.NewGuid(),
-                CatalogChallengeId = i,
-                PaymentId = Guid.NewGuid() // will be changed after implementing Payment.API
+                PaymentId = merchantIds[i % 3],
+                ChallengesAmount = (i % 3) + 1,
+                ResultDonationPrice = 12342
             });
         }
 

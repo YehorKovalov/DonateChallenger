@@ -4,5 +4,5 @@ namespace ChallengeOrder.API.Services.Abstractions;
 
 public interface IChallengeOrderService
 {
-    Task<AddChallengeOrderResponse<Guid?>> AddChallengeOrderAsync(string description, decimal donatePrice, string streamerId, string donateFrom, string? title);
+    Task<AddChallengeOrderResponse<Guid?>> AddChallengeOrderAsync(string paymentId, int challengesAmount, double resultDonationPrice);
 }

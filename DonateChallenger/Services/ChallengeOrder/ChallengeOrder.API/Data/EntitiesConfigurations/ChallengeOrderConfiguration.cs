@@ -11,6 +11,5 @@ public class ChallengeOrderConfiguration : IEntityTypeConfiguration<ChallengeOrd
         builder.ToTable("ChallengeOrder").HasKey(c => c.ChallengeOrderId);
         builder.Property(c => c.ChallengeOrderId).IsRequired();
         builder.Property(c => c.PaymentId).IsRequired();
-        builder.Property(c => c.CatalogChallengeId).IsRequired();
     }
 }

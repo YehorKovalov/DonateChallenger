@@ -9,6 +9,7 @@ var configuration = builder.Configuration;
 builder.Services
     .AddConfiguredMessageBus(configuration)
     .AddAppCors()
+    .AddCustomAuthorization(configuration)
     .AddAppDependencies()
     .AddDbContextFactory<AppDbContext>(o => o.UseSqlServer(configuration.GetConnectionString("OrderConnectionString")))
     .AddCustomConfiguredSwagger("ChallengeOrder", configuration, GetScopes())
