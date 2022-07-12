@@ -1,5 +1,5 @@
 ﻿using Identity.API.Models.Account;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace Identity.API.Controllers
 {
@@ -198,8 +198,8 @@ namespace Identity.API.Controllers
         {
             if (ModelState.IsValid)
             {
-                var nicknameAlreadyExists = await _userManager.Users.FirstOrDefaultAsync(f => f.Nickname == model.Nickname);
-                if (nicknameAlreadyExists != null)
+                var nicknameAlreadyExists = await _userManager.Users.AnyAsync(f => f.Nickname == model.Nickname);
+                if (!nicknameAlreadyExists)
                 {
                     ModelState.AddModelError(string.Empty, "Nickname already exists");
                     return View(model);
@@ -208,6 +208,7 @@ namespace Identity.API.Controllers
                 var user = await _userManager.FindByIdAsync(model.UserId);
                 user.Nickname = model.Nickname;
                 user.MinDonatePriceInDollars = model.MinDonatePriceInDollars;
+                user.MerchantId = model.MerchantId;
 
                 var result = await _userManager.UpdateAsync(user);
                 if (result.Errors.Any())
@@ -333,7 +334,7 @@ namespace Identity.API.Controllers
             if (User?.Identity.IsAuthenticated == true)
             {
                 var idp = User.FindFirst(JwtClaimTypes.IdentityProvider)?.Value;
-                if (idp != null && idp != IdentityServer4.IdentityServerConstants.LocalIdentityProvider)
+                if (idp != null && idp != IdentityServerConstants.LocalIdentityProvider)
                 {
                     var providerSupportsSignout = await HttpContext.GetSchemeSupportsSignOutAsync(idp);
                     if (providerSupportsSignout)

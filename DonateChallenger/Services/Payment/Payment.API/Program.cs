@@ -5,19 +5,23 @@ using Microsoft.Extensions.DependencyInjection;
 using Payment.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
-var config = builder.Configuration;
+var configuration = builder.Configuration;
 
 builder.Services
-    .AddCustomConfiguredSwagger("Payment", config, GetScopes())
+    .AddCustomConfiguredSwagger("Payment", configuration, GetScopes())
+    .AddCustomAuthorization(configuration)
     .AddAppDependencies()
-    .RegisterAppConfigurations(config)
+    .AddConfiguredMessageBus(configuration)
+    .AddAppCors()
+    .RegisterAppConfigurations(configuration)
     .AddControllers(o => o.Filters.Add(typeof(HttpGlobalExceptionFilter)))
     .AddJsonOptions(o => o.JsonSerializerOptions.WriteIndented = true);
 
 var app = builder.Build();
 
-app.UseCustomConfiguredSwaggerWithUI(config, "Payment", "paymentswaggerui");
+app.UseCustomConfiguredSwaggerWithUI(configuration, "Payment", "paymentswaggerui");
 app.UseRouting();
+app.UseCors("CorsPolicy");
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -27,5 +31,5 @@ app.Run();
 
 Dictionary<string, string> GetScopes() => new Dictionary<string, string>
 {
-    { "payment", "payment" }
+    { "paypalPayment", "paypalPayment" }
 };

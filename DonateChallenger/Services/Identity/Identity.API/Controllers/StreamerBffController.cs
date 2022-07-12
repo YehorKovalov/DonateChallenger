@@ -1,4 +1,3 @@
-using System.Net;
 using Identity.API.Models.DTOs;
 using Identity.API.Models.Responses;
 using Identity.API.Services.Abstractions;
@@ -17,8 +16,8 @@ public class StreamerBffController : ControllerBase
 
     [HttpGet]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(SearchStreamersNicknamesResponse<string>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> SearchNicknames(string? nicknameAsFilter)
+    [ProducesResponseType(typeof(SearchStreamersByNicknameResponse<SearchedStreamerByNicknameDto>), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> SearchNicknames(string nicknameAsFilter)
     {
         var result = await _streamerService.FindStreamerByNicknameAsync(nicknameAsFilter);
         return Ok(result);

@@ -22,18 +22,25 @@ public class StreamerService : BaseDataService<AppDbContext>, IStreamerService
         _userManager = userManager;
     }
 
-    public async Task<SearchStreamersNicknamesResponse<string>> FindStreamerByNicknameAsync(string nickname)
+    public async Task<SearchStreamersByNicknameResponse<SearchedStreamerByNicknameDto>> FindStreamerByNicknameAsync(string nickname)
     {
         return await ExecuteSafeAsync(async () =>
         {
-            var nicknames = await _userManager
-                .Users.Select(s => s.Nickname).Where(w => w.Contains(nickname))
+            var nicknameToSearch = nickname.Trim().ToLower();
+            var streamers = await _userManager.Users
+                .Where(w => w.Nickname.Contains(nicknameToSearch))
+                .Select(s => new SearchedStreamerByNicknameDto
+                {
+                    StreamerId = s.Id,
+                    StreamerNickname = s.Nickname,
+                    MerchantId = s.MerchantId
+                })
                 .ToListAsync();
 
-            _userManager.Logger.LogInformation($"{nameof(FindStreamerByNicknameAsync)} ---> nicknames amount: {nicknames.Count}");
-            return new SearchStreamersNicknamesResponse<string>
+            _userManager.Logger.LogInformation($"{nameof(FindStreamerByNicknameAsync)} ---> nicknames amount: {streamers.Count}");
+            return new SearchStreamersByNicknameResponse<SearchedStreamerByNicknameDto>
             {
-                Data = nicknames
+                Data = streamers
             };
         });
     }

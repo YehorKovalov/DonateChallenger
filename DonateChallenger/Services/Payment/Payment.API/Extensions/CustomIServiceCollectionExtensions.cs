@@ -1,3 +1,4 @@
+using Infrastructure.MessageBus.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Payment.API.Configurations;
@@ -31,9 +32,40 @@ public static class CustomIServiceCollectionExtensions
         return services;
     }
 
+    public static IServiceCollection AddConfiguredMessageBus(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddMassTransit(x =>
+        {
+            x.UsingRabbitMq((context, config) =>
+            {
+                config.ConfigureRabbitMqConnectionProperties(configuration);
+            });
+        });
+
+        services.AddMassTransitHostedService(true);
+        return services;
+    }
+
     public static IServiceCollection AddAppDependencies(this IServiceCollection services)
     {
         services.AddTransient<IPaymentService, PaypalPaymentService>();
+        return services;
+    }
+
+    public static IServiceCollection AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddMassTransit(x =>
+        {
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.ConfigureRabbitMqConnectionProperties(configuration);
+                cfg.ReceiveEndpoint(configuration["RabbitMQ:OrderUserInfoQueue"], c =>
+                {
+                    // c.ConfigureConsumer<>(context);
+                });
+            });
+        });
+        services.AddMassTransitHostedService(true);
         return services;
     }
 }

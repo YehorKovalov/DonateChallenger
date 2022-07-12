@@ -1,6 +1,6 @@
 namespace Identity.API.Models.Responses;
 
-public class SearchStreamersNicknamesResponse<TData>
+public class SearchStreamersByNicknameResponse<TData>
 {
     public IEnumerable<TData> Data { get; set; } = null!;
 }
