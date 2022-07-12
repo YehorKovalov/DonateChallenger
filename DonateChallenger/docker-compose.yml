@@ -37,6 +37,12 @@ services:
       - "15672:15672"
       - "15692:15692"
   
+  redis:
+    image: redis
+    container_name: lde.redis
+    ports:
+      - "6380:6379"
+
   challenge-catalog.api:
     container_name: lde.challenge-catalog.api
     build:
@@ -67,6 +73,22 @@ services:
     command: dotnet run
     ports:
       - 4003:4003
+        
+  challenges-storage.api:
+    container_name: lde.challenges-storage.api
+    build:
+      context: .
+      dockerfile: ./Services/ChallengesTemporaryStorage/ChallengesTemporaryStorage.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:4004
+      - PathBase=http://donate-challenger.com:4004
+      - Authorization__Authority=http://donate-challenger.com:4000
+    command: dotnet run
+    depends_on:
+      - redis
+    ports:
+      - 4004:4004
   
   identity.api:
     container_name: lde.identity.api
