@@ -1,0 +1,28 @@
+"ClientId": "ASfTrOfd5DkYxry0IVtGcLCmcDfi7c_xgXNuGRbUPXr0ToKCOzykdAzw89YdfLa2F5wAROj2uCVqrKBc"
+"ClientSecret": "EPtAYhRWdzY73FHW61-qPewfusIloL4QDPEDjWZWTlkPyLo8qhJ3uiZC5N_om93PIgLFu4T3V1dAaJoT"
+
+Test Personal Account:
+-----------------------
+First name: John
+Last name: Doe
+Email ID: sb-uyxwq18376180@personal.example.com
+Password: qwerty1356
+Account ID: YCHH9XFF2HNBN
+-----------------------
+
+Test Business Account:
+-----------------------
+First name: John
+Last name: Doe
+Email ID: sb-rwfbx18376277@business.example.com
+Password: qwerty1356
+Account ID: MCB5L4ZBENTWC
+-----------------------
+
+Mock Credit Card:
+-----------------------
+Card Type: Visa
+Card Number: 4032031565678256
+Expiration Date: 04/2026
+CVV: 864
+-----------------------

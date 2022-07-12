@@ -17,6 +17,8 @@ namespace Identity.API
             new ApiScope("react", "React client"),
             new ApiScope("identity.api", "Identity API"),
             new ApiScope("challengeCatalog", "Challenge Catalog"),
+            new ApiScope("challengeOrder", "Challenge Order"),
+            new ApiScope("payment", "Payment"),
         };
 
         public static IEnumerable<Client> GetClients()
@@ -25,6 +27,7 @@ namespace Identity.API
             var reactClientUrl = _configuration?["ReactClientUrl"] ?? throw new ArgumentNullException();
             var challengeCatalogUrl = _configuration?["ChallengeCatalogUrl"] ?? throw new ArgumentNullException();
             var challengeOrderUrl = _configuration?["ChallengeOrderUrl"] ?? throw new ArgumentNullException();
+            var paymentUrl = _configuration?["PaymentUrl"] ?? throw new ArgumentNullException();
             var globalUrl = _configuration?["GlobalUrl"] ?? throw new ArgumentNullException();
             return new List<Client>
             {
@@ -67,7 +70,8 @@ namespace Identity.API
                         IdentityServerConstants.StandardScopes.Profile,
                         "challengeCatalog",
                         "react",
-                        "identity.api"
+                        "identity.api",
+                        "payment"
                     }
                 },
                 new Client
@@ -103,6 +107,18 @@ namespace Identity.API
                     {
                         "challengeOrder"
                     }
+                },
+                new Client
+                {
+                    ClientId = "paymentswaggerui",
+                    ClientName = "Payment",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
+
+                    ClientSecrets = { new Secret("secret".Sha256()) },
+
+                    RedirectUris = { $"{paymentUrl}/swagger/oauth2-redirect.html" },
+                    PostLogoutRedirectUris = { $"{paymentUrl}/swagger/" },
                 },
             };
         }
