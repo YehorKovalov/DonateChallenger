@@ -54,6 +54,20 @@ services:
     ports:
       - 4001:4001
   
+  payment.api:
+    container_name: lde.payment.api
+    build:
+      context: .
+      dockerfile: ./Services/Payment/Payment.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:4003
+      - PathBase=http://donate-challenger.com:4003
+      - Authorization__Authority=http://donate-challenger.com:4000
+    command: dotnet run
+    ports:
+      - 4003:4003
+  
   identity.api:
     container_name: lde.identity.api
     build:

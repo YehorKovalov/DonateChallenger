@@ -14,11 +14,9 @@ namespace Identity.API
 
         public static IEnumerable<ApiScope> Scopes => new List<ApiScope>
         {
-            new ApiScope("react", "React client"),
-            new ApiScope("identity.api", "Identity API"),
             new ApiScope("challengeCatalog", "Challenge Catalog"),
             new ApiScope("challengeOrder", "Challenge Order"),
-            new ApiScope("payment", "Payment"),
+            new ApiScope("paypalPayment", "Paypal Payment"),
         };
 
         public static IEnumerable<Client> GetClients()
@@ -68,10 +66,7 @@ namespace Identity.API
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "challengeCatalog",
-                        "react",
-                        "identity.api",
-                        "payment"
+                        "challengeCatalog", "paypalPayment", "challengeOrder"
                     }
                 },
                 new Client
@@ -119,6 +114,10 @@ namespace Identity.API
 
                     RedirectUris = { $"{paymentUrl}/swagger/oauth2-redirect.html" },
                     PostLogoutRedirectUris = { $"{paymentUrl}/swagger/" },
+                    AllowedScopes =
+                    {
+                        "paypalPayment"
+                    }
                 },
             };
         }

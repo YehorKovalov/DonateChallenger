@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Infrastructure.MessageBus.Messages;
+using MassTransit;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Payment.API.Configurations;
 using Payment.API.Models;
@@ -8,16 +10,23 @@ namespace Payment.API.Services
 {
     public class PaypalPaymentService : IPaymentService
     {
+        private const string PaypalPaymentEndpoint = "http://donate-challenger.com:4003/api/v1/paypalpayment/payment";
+        private const string GlobalUrl = "http://donate-challenger.com";
         private readonly PaypalConfiguration _paypalConfiguration;
         private readonly ILogger<PaypalPaymentService> _logger;
+        private readonly IPublishEndpoint _publishEndpoint;
 
-        public PaypalPaymentService(IOptions<PaypalConfiguration> appSettings, ILogger<PaypalPaymentService> logger)
+        public PaypalPaymentService(
+            IOptions<PaypalConfiguration> appSettings,
+            ILogger<PaypalPaymentService> logger,
+            IPublishEndpoint publishEndpoint)
         {
             _logger = logger;
+            _publishEndpoint = publishEndpoint;
             _paypalConfiguration = appSettings.Value;
         }
 
-        public PaymentResponse<string> CreatePaymentUrl(double unitPrice, string currencyCode, string returnUrl)
+        public PaymentResponse<string> CreatePaymentUrl(double unitPrice, string currencyCode, string merchantId, string? returnUrl = null)
         {
             var serviceResponse = new PaymentResponse<string>();
             try
@@ -27,8 +36,8 @@ namespace Payment.API.Services
                 {
                     intent = "sale",
                     payer = new Payer { payment_method = "paypal" },
-                    transactions = BuildTransactionList(currencyCode, unitPrice),
-                    redirect_urls = BuildRedirectUrls(returnUrl)
+                    transactions = BuildTransactionList(currencyCode, merchantId, unitPrice),
+                    redirect_urls = BuildRedirectUrls(returnUrl ?? PaypalPaymentEndpoint)
                 };
 
                 var createdPayment = processedPayment.Create(apiContext);
@@ -48,9 +57,9 @@ namespace Payment.API.Services
             return serviceResponse;
         }
 
-        public PaymentResponse<PayPal.Api.Payment> ExecutePayment(string paymentId, string token, string payerId)
+        public async Task<PaymentResponse<string>> ExecutePayment(string paymentId, string token, string payerId)
         {
-            var serviceResponse = new PaymentResponse<PayPal.Api.Payment>();
+            var serviceResponse = new PaymentResponse<string>();
             try
             {
                 var apiContext = GetAPIContext(_paypalConfiguration.ClientId, _paypalConfiguration.ClientSecret);
@@ -63,13 +72,12 @@ namespace Payment.API.Services
                 {
                     serviceResponse.Message = $"Payment {executedPayment.id} approved.";
                     serviceResponse.Success = true;
-                    serviceResponse.Response = executedPayment;
+                    serviceResponse.Response = GlobalUrl;
                 }
                 else
                 {
-                    serviceResponse.Message = $"Payment {executedPayment.state}.";
+                    serviceResponse.Message = $"Payment {executedPayment!.state}.";
                     serviceResponse.Success = false;
-                    serviceResponse.Response = executedPayment;
                 }
             }
             catch (Exception error)
@@ -79,10 +87,21 @@ namespace Payment.API.Services
                 serviceResponse.Success = false;
             }
 
+            await PublishPaymentStatus(serviceResponse.Success, paymentId);
             return serviceResponse;
         }
 
-        private List<Transaction> BuildTransactionList(string currencyCode, double unitPrice)
+        private async Task PublishPaymentStatus(bool succeeded, string paymentId)
+        {
+            _logger.LogInformation($"{nameof(PublishPaymentStatus)} ---> PaymentStatus published with {succeeded}");
+            await _publishEndpoint.Publish<MessagePaymentStatus>(new
+            {
+                Succeeded = succeeded,
+                PaymentId = paymentId
+            });
+        }
+
+        private List<Transaction> BuildTransactionList(string currencyCode, string merchantId, double unitPrice)
         {
             var paypalAmount = new Amount
             {
@@ -95,7 +114,8 @@ namespace Payment.API.Services
                 new Transaction
                 {
                     invoice_number = $"{Guid.NewGuid()}",
-                    amount = paypalAmount
+                    amount = paypalAmount,
+                    payee = new Payee { merchant_id = merchantId }
                 }
             };
         }

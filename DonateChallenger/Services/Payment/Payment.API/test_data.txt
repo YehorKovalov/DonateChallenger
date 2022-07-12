@@ -10,7 +10,23 @@ Password: qwerty1356
 Account ID: YCHH9XFF2HNBN
 -----------------------
 
-Test Business Account:
+Test Business Account 1:
+-----------------------
+First name: John
+Last name: Doe
+Email ID: sb-whlsq18058872@business.example.com
+Password: qwerty1356
+Account ID: 5WSFVT57ASS6U
+-----------------------
+Test Business Account 2:
+-----------------------
+First name: John
+Last name: Doe
+Email ID: sb-vqyr718065812@business.example.com
+Password: qwerty1356
+Account ID: V9YL22Q4UQ3PA
+-----------------------
+Test Business Account 3:
 -----------------------
 First name: John
 Last name: Doe
