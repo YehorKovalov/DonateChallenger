@@ -6,14 +6,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ChallengeCatalog.API.Repositories;
 
-public class ChallengeRepository : IChallengeRepository
+public class ChallengeCatalogCatalogRepository : IChallengeCatalogRepository
 {
     private readonly ChallengeCatalogDbContext _dbContext;
-    private readonly ILogger<ChallengeRepository> _logger;
+    private readonly ILogger<ChallengeCatalogCatalogRepository> _logger;
 
-    public ChallengeRepository(
+    public ChallengeCatalogCatalogRepository(
         IDbContextWrapper<ChallengeCatalogDbContext> dbContext,
-        ILogger<ChallengeRepository> logger)
+        ILogger<ChallengeCatalogCatalogRepository> logger)
     {
         _logger = logger;
         _dbContext = dbContext.DbContext;
@@ -39,6 +39,12 @@ public class ChallengeRepository : IChallengeRepository
         var result = await _dbContext.AddAsync(challenge);
         await _dbContext.SaveChangesAsync();
         return result.Entity.ChallengeId;
+    }
+
+    public async Task AddChallengeRangeForStreamerAsync(IEnumerable<ChallengeEntity> challenges)
+    {
+        await _dbContext.AddRangeAsync(challenges);
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task<bool?> UpdateChallengeStatusByIdAsync(long challengeId, bool skipped, bool completed)
