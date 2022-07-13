@@ -5,5 +5,5 @@ namespace ChallengesTemporaryStorage.API.Services.Abstractions;
 public interface IHttpContextAccessorService
 {
     ClaimsPrincipal? GetUser();
-    string GetUserId();   
+    string GetUserId();
 }

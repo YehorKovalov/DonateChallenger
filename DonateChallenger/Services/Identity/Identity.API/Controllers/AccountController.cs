@@ -199,7 +199,7 @@ namespace Identity.API.Controllers
             if (ModelState.IsValid)
             {
                 var nicknameAlreadyExists = await _userManager.Users.AnyAsync(f => f.Nickname == model.Nickname);
-                if (!nicknameAlreadyExists)
+                if (nicknameAlreadyExists)
                 {
                     ModelState.AddModelError(string.Empty, "Nickname already exists");
                     return View(model);
