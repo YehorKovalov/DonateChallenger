@@ -4,5 +4,5 @@ namespace ChallengesTemporaryStorage.API.Services.Abstractions;
 
 public interface IRedisCacheConnectionService
 {
-    IConnectionMultiplexer Connection { get; }   
+    IConnectionMultiplexer Connection { get; }
 }

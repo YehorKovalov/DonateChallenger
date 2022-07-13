@@ -3,8 +3,8 @@
     public class PaymentResponse<T>
     {
         public bool Success { get; set; }
-        public string Message { get; set; }
-        public T Response { get; set; }
-        public Exception Error { get; set; }
+        public string Message { get; set; } = null!;
+        public T Response { get; set; } = default!;
+        public Exception? Error { get; set; }
     }
 }

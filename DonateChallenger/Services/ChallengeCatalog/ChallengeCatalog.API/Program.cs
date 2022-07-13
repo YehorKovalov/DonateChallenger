@@ -4,11 +4,12 @@ using Infrastructure.Extensions;
 using Infrastructure.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var configuration = builder.Configuration;
 builder.Services
-    .AddDbContexts(builder.Configuration)
-    .AddCustomConfiguredSwagger("ChallengeCatalog", builder.Configuration, GetScopes())
-    .AddCustomAuthorization(builder.Configuration)
+    .AddDbContexts(configuration)
+    .AddConfiguredMessageBus(configuration)
+    .AddCustomConfiguredSwagger("ChallengeCatalog", configuration, GetScopes())
+    .AddCustomAuthorization(configuration)
     .AddAppDependencies()
     .AddAppCors()
     .AddAutoMapper(typeof(Program))
@@ -17,7 +18,7 @@ builder.Services
 
 var app = builder.Build();
 
-app.UseCustomConfiguredSwaggerWithUI(builder.Configuration, "ChallengeCatalog", "challengecatalogswaggerui");
+app.UseCustomConfiguredSwaggerWithUI(configuration, "ChallengeCatalog", "challengecatalogswaggerui");
 
 app.UseRouting();
 app.UseCors("CorsPolicy");

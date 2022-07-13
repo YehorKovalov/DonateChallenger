@@ -6,14 +6,14 @@ public static class StreamerIdsProvider
 
     static StreamerIdsProvider()
     {
-        Response = new GetIdsResponse()
+        StreamerIds = new GetIdsResponse()
         {
-            IdsAmount = Amount,
+            StreamersAmount = Amount,
             Ids = GetIds()
         };
     }
 
-    public static GetIdsResponse Response { get; }
+    public static GetIdsResponse StreamerIds { get; }
 
     private static string[] GetIds()
     {
