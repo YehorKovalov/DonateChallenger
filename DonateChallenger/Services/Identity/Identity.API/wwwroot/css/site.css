@@ -16,6 +16,10 @@ body{
   color: silver;
 }
 
+.color-white{
+  color: whitesmoke;
+}
+
 input:focus, textarea {
   outline: none !important;
 }

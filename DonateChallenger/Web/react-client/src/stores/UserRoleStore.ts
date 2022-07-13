@@ -3,11 +3,13 @@ import { makeAutoObservable } from "mobx";
 import { UserRoleEnum } from "../models/UserRoleEnum";
 import AuthStore from "../oidc/AuthStore";
 import iocStores from "../utilities/ioc/iocStores";
+import DonaterStore from "./DonaterStore";
 
 @injectable()
 export default class UserRoleStore {
 
      @inject(iocStores.authStore) private readonly authStore!: AuthStore;
+     @inject(iocStores.donaterStore) private readonly donaterStore!: DonaterStore;
 
      constructor() {
           makeAutoObservable(this);
@@ -15,12 +17,13 @@ export default class UserRoleStore {
 
      userRole: UserRoleEnum | null = null;
 
-     public continueAsStreamer = () => {
+     public continueAsStreamer = async () => {
           this.userRole = UserRoleEnum.Streamer;
-          this.authStore.signinRedirect();
+          await this.authStore.signinRedirect();
      }
 
      public continueAsDonater = () => {
           this.userRole = UserRoleEnum.Donater;
+          this.donaterStore.redirectToDonatingPage();
      }
 }

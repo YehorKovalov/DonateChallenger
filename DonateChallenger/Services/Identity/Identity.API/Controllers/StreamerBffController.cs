@@ -12,7 +12,7 @@ public class StreamerBffController : ControllerBase
 {
     private readonly IStreamerService _streamerService;
 
-    public StreamerBffController(IStreamerService streamerService) =>_streamerService = streamerService;
+    public StreamerBffController(IStreamerService streamerService) => _streamerService = streamerService;
 
     [HttpGet]
     [AllowAnonymous]

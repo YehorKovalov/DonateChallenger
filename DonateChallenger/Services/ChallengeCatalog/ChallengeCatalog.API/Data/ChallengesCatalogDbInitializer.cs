@@ -26,7 +26,7 @@ public class ChallengesCatalogDbInitializer : IDbInitializer<ChallengeCatalogDbC
     private IEnumerable<ChallengeEntity> GetChallenges(long? number = 30)
     {
         var challenges = new List<ChallengeEntity>();
-        var response = StreamerIdsProvider.Response;
+        var response = StreamerIdsProvider.StreamerIds;
         for (var i = 0; i < number; i++)
         {
             challenges.Add(new ChallengeEntity
@@ -34,7 +34,7 @@ public class ChallengesCatalogDbInitializer : IDbInitializer<ChallengeCatalogDbC
                 Title = $"Title {i}",
                 Description = $"It is a long description of challenge for streamer. Has Id = {i}",
                 DonateFrom = $"Donater {i}",
-                StreamerId = response.Ids[i % response.IdsAmount],
+                StreamerId = response.Ids[i % response.StreamersAmount],
                 DonatePrice = i * new Random().Next(1000),
                 CreatedTime = DateTime.UtcNow,
                 ChallengeStatusEntity = new ChallengeStatusEntity

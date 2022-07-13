@@ -1,5 +1,6 @@
 using AutoMapper;
 using ChallengeCatalog.API.Data;
+using ChallengeCatalog.API.Data.Entities;
 using ChallengeCatalog.API.Models;
 using ChallengeCatalog.API.Models.DTOs;
 using ChallengeCatalog.API.Models.Requests;
@@ -12,18 +13,18 @@ using Infrastructure.Services.Abstractions;
 
 namespace ChallengeCatalog.API.Services;
 
-public class ChallengeService : BaseDataService<ChallengeCatalogDbContext>, IChallengeService
+public class ChallengeCatalogCatalogService : BaseDataService<ChallengeCatalogDbContext>, IChallengeCatalogService
 {
-    private readonly IChallengeRepository _challengeRepository;
+    private readonly IChallengeCatalogRepository _challengeCatalogRepository;
     private readonly IMapper _mapper;
-    public ChallengeService(
+    public ChallengeCatalogCatalogService(
         IDbContextWrapper<ChallengeCatalogDbContext> dbContext,
         ILogger<BaseDataService<ChallengeCatalogDbContext>> logger,
-        IChallengeRepository challengeRepository,
+        IChallengeCatalogRepository challengeCatalogRepository,
         IMapper mapper)
             : base(dbContext, logger)
     {
-        _challengeRepository = challengeRepository;
+        _challengeCatalogRepository = challengeCatalogRepository;
         _mapper = mapper;
     }
 
@@ -37,9 +38,24 @@ public class ChallengeService : BaseDataService<ChallengeCatalogDbContext>, ICha
                 return null!;
             }
 
-            var result = await _challengeRepository.AddChallengeForStreamerAsync(description, donatePrice, donateFrom, streamerId, title);
+            var result = await _challengeCatalogRepository.AddChallengeForStreamerAsync(description, donatePrice, donateFrom, streamerId, title);
 
             return new AddChallengeForStreamerResponse<long?> { ChallengeId = result };
+        });
+    }
+
+    public async Task<AddChallengeRangeForStreamerResponse> AddChallengeRangeForStreamerAsync(IEnumerable<ChallengeDto> challengeDtos)
+    {
+        return await ExecuteSafeAsync(async () =>
+        {
+            var challengeEntities = challengeDtos.Select(s => _mapper.Map<ChallengeEntity>(s)).ToList();
+            await _challengeCatalogRepository.AddChallengeRangeForStreamerAsync(challengeEntities);
+            return new AddChallengeRangeForStreamerResponse
+            {
+                Succeeded = true,
+                ResultDonationPrice = CountSumDonationPrice(challengeDtos),
+                ChallengesAmount = challengeEntities.Count
+            };
         });
     }
 
@@ -74,7 +90,7 @@ public class ChallengeService : BaseDataService<ChallengeCatalogDbContext>, ICha
                 return null;
             }
 
-            var result = await _challengeRepository.UpdateChallengeStatusByIdAsync(challengeId!.Value, true, false);
+            var result = await _challengeCatalogRepository.UpdateChallengeStatusByIdAsync(challengeId!.Value, true, false);
             Logger.LogInformation($"{nameof(SkipChallengeAsync)} ---> {nameof(result)} = {result}");
 
             return result;
@@ -91,7 +107,7 @@ public class ChallengeService : BaseDataService<ChallengeCatalogDbContext>, ICha
                 return null;
             }
 
-            var result = await _challengeRepository.UpdateChallengeStatusByIdAsync(challengeId!.Value, false, true);
+            var result = await _challengeCatalogRepository.UpdateChallengeStatusByIdAsync(challengeId!.Value, false, true);
             Logger.LogInformation($"{nameof(CompleteChallengeAsync)} ---> {nameof(result)} = {result}");
 
             return result;
@@ -115,7 +131,7 @@ public class ChallengeService : BaseDataService<ChallengeCatalogDbContext>, ICha
 
             HandleFilters(request.Filters, out var minPriceFilter, out var sortByCreatedTimeFilter);
 
-            var result = await _challengeRepository.GetPaginatedCurrentChallengesAsync(request.CurrentPage, request.ChallengesPerPage, request.StreamerId, minPriceFilter, sortByCreatedTimeFilter, getSkippedChallenges, getCompletedChallenges);
+            var result = await _challengeCatalogRepository.GetPaginatedCurrentChallengesAsync(request.CurrentPage, request.ChallengesPerPage, request.StreamerId, minPriceFilter, sortByCreatedTimeFilter, getSkippedChallenges, getCompletedChallenges);
 
             return new GetPaginatedChallengesResponse<ChallengeDto>
             {
@@ -147,6 +163,8 @@ public class ChallengeService : BaseDataService<ChallengeCatalogDbContext>, ICha
             sortByCreatedTimeFilter = sortByCreatedTime;
         }
     }
+
+    private double CountSumDonationPrice(IEnumerable<ChallengeDto> challengeDtos) => challengeDtos.Sum(challenge => challenge.DonatePrice);
 
     private bool AddChallengeRequestStateIsValid(string donateFrom, string streamerId, double donatePrice, string description)
     {

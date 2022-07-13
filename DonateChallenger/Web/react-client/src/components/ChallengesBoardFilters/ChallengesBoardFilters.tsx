@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import { Col, Form, Row } from 'react-bootstrap';
 import ChallengesBoardStore from '../../stores/components/ChallengesBoardStore';
 import ChallengesStore from '../../stores/components/ChallengesStore';
-import { ChallengesFiltersConstants } from '../../utilities/ChallengesFiltersConstants';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
 import './styles.css';

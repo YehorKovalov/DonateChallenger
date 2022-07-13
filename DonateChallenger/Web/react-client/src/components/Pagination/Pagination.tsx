@@ -1,11 +1,10 @@
 import { observer } from 'mobx-react-lite';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import ChallengesBoardStore from '../../stores/components/ChallengesBoardStore';
 import ChallengesStore from '../../stores/components/ChallengesStore';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
-import { formPages } from '../../utilities/PagesProvider';
 import Arrow from '../Arrow';
 import { ArrowDirection } from '../Arrow/Arrow';
 import PaginationButton from '../PaginationButton';

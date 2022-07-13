@@ -1,3 +1,4 @@
+using ChallengeOrder.API.Consumer;
 using ChallengeOrder.API.Data;
 using ChallengeOrder.API.Repositories;
 using ChallengeOrder.API.Repositories.Abstractions;
@@ -5,6 +6,7 @@ using ChallengeOrder.API.Services;
 using ChallengeOrder.API.Services.Abstractions;
 using Infrastructure.MessageBus.Extensions;
 using Infrastructure.MessageBus.Messages;
+using Infrastructure.MessageBus.Messages.Requests;
 using Infrastructure.Services;
 using Infrastructure.Services.Abstractions;
 
@@ -16,12 +18,11 @@ public static class CustomIServiceCollectionExtensions
     {
         services.AddMassTransit(x =>
         {
+            x.AddConsumer<MessageAddingChallengesAndPaymentIdConsumer>();
             x.UsingRabbitMq((context, config) =>
             {
                 config.ConfigureRabbitMqConnectionProperties(configuration);
             });
-            x.AddRequestClient<CreatePaymentRequestMessage>(new Uri("exchange:payment-create"));
-            x.AddRequestClient<CreateCatalogChallengeRequestMessage>(new Uri("exchange:challenge-create"));
         });
 
         services.AddMassTransitHostedService(true);

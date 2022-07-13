@@ -12,7 +12,7 @@ import { ApiHeader, ContentType, HttpService, MethodType } from "./HttpService";
 import AuthStore from "../oidc/AuthStore";
 import iocStores from "../utilities/ioc/iocStores";
 
-export interface ChallengeService {
+export interface ChallengeCatalogService {
      addChallenge(description: string, donatePrice: number, donateFrom: string, title?: string)
           : Promise<AddChallengeForStreamerResponse>;
      getPaginatedCurrentChallenges(currentPage: number, challengesPerPage: number, sortByCreatedTime?: boolean, minPriceFilter?: number)
@@ -26,7 +26,7 @@ export interface ChallengeService {
 }
 
 @injectable()
-export default class DefaultChallengeService implements ChallengeService {
+export default class DefaultChallengeCatalogService implements ChallengeCatalogService {
 
      @inject(iocServices.httpService) private readonly httpService!: HttpService;
      @inject(iocStores.authStore) private readonly authStore!: AuthStore;
@@ -44,7 +44,8 @@ export default class DefaultChallengeService implements ChallengeService {
           
           const url = `${this.CHALLENGE_BOARD_ROUTE}/add`;
           const headers: ApiHeader = {
-               contentType: ContentType.Json
+               contentType: ContentType.Json,
+               authorization: this.authStore.user?.access_token
           }
           const response = await this.httpService.send<AddChallengeForStreamerResponse>(url, MethodType.POST, headers, request);
 
@@ -82,16 +83,23 @@ export default class DefaultChallengeService implements ChallengeService {
      public async skipChallengeByChallengeId(challengeId: number) : Promise<boolean> {
           const url = `${this.CHALLENGE_BOARD_ROUTE}/skip?challengeid=${challengeId}`;
           const method = MethodType.POST;
-          const response = await this.httpService.send<boolean>(url, method);
-
+          const headers: ApiHeader = {
+               contentType: ContentType.Json,
+               authorization: this.authStore.user?.access_token
+          }
+          const response = await this.httpService.send<boolean>(url, method, headers);
+          
           return response.data;
      }
 
      public async completeChallengeByChallengeId(challengeId: number) : Promise<boolean> {
           const url = `${this.CHALLENGE_BOARD_ROUTE}/complete?challengeid=${challengeId}`;
           const method = MethodType.POST;
-
-          const response = await this.httpService.send<boolean>(url, method);
+          const headers: ApiHeader = {
+               contentType: ContentType.Json,
+               authorization: this.authStore.user?.access_token
+          }
+          const response = await this.httpService.send<boolean>(url, method, headers);
 
           return response.data;
      }
@@ -99,7 +107,10 @@ export default class DefaultChallengeService implements ChallengeService {
      private async getPaginatedChallengesInternal<T>(url: string, currentPage: number, challengesPerPage: number, sortByCreatedTime?: boolean, minPriceFilter?: number)
           : Promise<T> {
 
-          const headers = { contentType: ContentType.Json };
+          const headers: ApiHeader = {
+               contentType: ContentType.Json,
+               authorization: this.authStore.user?.access_token
+          }
           const method = MethodType.POST;
 
           const filters = this.handleFilters(sortByCreatedTime, minPriceFilter);
