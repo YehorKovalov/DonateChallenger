@@ -1,5 +1,5 @@
 import { Container } from "inversify";
-import DefaultChallengeCatalogService, { ChallengeCatalogService } from "../../services/ChallengeService";
+import DefaultChallengeCatalogService, { ChallengeCatalogService } from "../../services/ChallengeCatalogService";
 import DefaultHttpService, { HttpService } from "../../services/HttpService";
 import AuthStore from "../../oidc/AuthStore";
 import ChallengesStore from "../../stores/components/ChallengesStore";

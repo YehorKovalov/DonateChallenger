@@ -43,10 +43,7 @@ export default class DefaultChallengeCatalogService implements ChallengeCatalogS
           }
           
           const url = `${this.CHALLENGE_BOARD_ROUTE}/add`;
-          const headers: ApiHeader = {
-               contentType: ContentType.Json,
-               authorization: this.authStore.user?.access_token
-          }
+          const headers = await this.authStore.getAuthorizedHeaders();
           const response = await this.httpService.send<AddChallengeForStreamerResponse>(url, MethodType.POST, headers, request);
 
           return { ...response.data };
@@ -83,10 +80,8 @@ export default class DefaultChallengeCatalogService implements ChallengeCatalogS
      public async skipChallengeByChallengeId(challengeId: number) : Promise<boolean> {
           const url = `${this.CHALLENGE_BOARD_ROUTE}/skip?challengeid=${challengeId}`;
           const method = MethodType.POST;
-          const headers: ApiHeader = {
-               contentType: ContentType.Json,
-               authorization: this.authStore.user?.access_token
-          }
+          const headers = await this.authStore.getAuthorizedHeaders();
+
           const response = await this.httpService.send<boolean>(url, method, headers);
           
           return response.data;
@@ -95,10 +90,8 @@ export default class DefaultChallengeCatalogService implements ChallengeCatalogS
      public async completeChallengeByChallengeId(challengeId: number) : Promise<boolean> {
           const url = `${this.CHALLENGE_BOARD_ROUTE}/complete?challengeid=${challengeId}`;
           const method = MethodType.POST;
-          const headers: ApiHeader = {
-               contentType: ContentType.Json,
-               authorization: this.authStore.user?.access_token
-          }
+          const headers = await this.authStore.getAuthorizedHeaders();
+
           const response = await this.httpService.send<boolean>(url, method, headers);
 
           return response.data;
@@ -121,7 +114,6 @@ export default class DefaultChallengeCatalogService implements ChallengeCatalogS
                filters: filters
           };
 
-          console.log(request)
           const response = await this.httpService.send<T>(url, method, headers, request);
 
           return { ...response.data };
@@ -139,9 +131,5 @@ export default class DefaultChallengeCatalogService implements ChallengeCatalogS
           }
 
           return Object.fromEntries(filters);
-     }
-
-     private decreaseCurrentPageValue = (currentPage: number): number => {
-          return currentPage === 0 ? currentPage : --currentPage;
      }
 }

@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { makeAutoObservable } from "mobx";
 import moment from "moment";
-import { ChallengeCatalogService } from "../../services/ChallengeService";
+import { ChallengeCatalogService } from "../../services/ChallengeCatalogService";
 import iocServices from "../../utilities/ioc/iocServices";
 import iocStores from "../../utilities/ioc/iocStores";
 import ChallengesStore from "./ChallengesStore";
