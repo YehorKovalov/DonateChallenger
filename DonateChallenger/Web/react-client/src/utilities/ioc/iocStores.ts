@@ -5,4 +5,7 @@ export default {
      challengesBoardStore: Symbol("challengesBoardStore"),
      userRoleStore: Symbol("userRoleStore"),
      streamerProfileStore: Symbol("streamerProfileStore"),
+     donaterStore: Symbol("donaterStore"),
+     streamersStore: Symbol("streamersStore"),
+     challengeOrderStore: Symbol("challengeOrderStore")
 }
