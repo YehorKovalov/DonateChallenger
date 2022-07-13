@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react';
 import { useEffect } from 'react';
 import AuthStore from '../../oidc/AuthStore';
+import DonaterStore from '../../stores/DonaterStore';
 import UserRoleStore from '../../stores/UserRoleStore';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
@@ -14,7 +15,7 @@ const SelectUserRolePage = observer(() => {
             await authStore.tryGetUser();
           };
       
-          getAuthentication().catch((error) => console.log(error));
+          getAuthentication();
         }, [authStore]);
 
      return (
