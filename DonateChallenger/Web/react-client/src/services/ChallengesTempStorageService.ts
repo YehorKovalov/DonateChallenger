@@ -8,7 +8,7 @@ import { HttpService, MethodType } from "./HttpService";
 
 export interface ChallengesTempStorageService {
      getStorage(): Promise<GetChallengesTemporaryStorageResponse<string>>;
-     updateStorage(dataJson: string): Promise<UpdateChallengesTemporaryStorageRequest<string>>;
+     updateStorage(dataJson: string): Promise<boolean>;
 }
 
 @injectable()
@@ -20,13 +20,19 @@ export default class DefaultChallengesTempStorageService implements ChallengesTe
 
      public async getStorage(): Promise<GetChallengesTemporaryStorageResponse<string>> {
           const headers = await this.authStore.getAuthorizedHeaders();
-          var response = await this.httpService.send<GetChallengesTemporaryStorageResponse<string>>(`${this.challengesTempStorageRoute}/get`, MethodType.POST, headers);
+          const url = `${this.challengesTempStorageRoute}/get`;
+          var response = await this.httpService.send<GetChallengesTemporaryStorageResponse<string>>(url, MethodType.GET, headers);
           return { ...response.data };
      }
 
-     public async updateStorage(dataJson: string): Promise<UpdateChallengesTemporaryStorageRequest<string>> {
+     public async updateStorage(dataJson: string): Promise<boolean> {
           const headers = await this.authStore.getAuthorizedHeaders();
-          var response = await this.httpService.send<UpdateChallengesTemporaryStorageRequest<string>>(`${this.challengesTempStorageRoute}/update`, MethodType.POST, headers);
+          const url = `${this.challengesTempStorageRoute}/update`;
+          const body: UpdateChallengesTemporaryStorageRequest<string> = {
+               data: dataJson
+          };
+
+          var response = await this.httpService.send<Promise<boolean>>(url, MethodType.POST, headers, body);
           return { ...response.data };
      }
 }

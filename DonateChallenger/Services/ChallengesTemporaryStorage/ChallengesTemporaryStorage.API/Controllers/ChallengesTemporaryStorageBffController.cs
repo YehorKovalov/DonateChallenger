@@ -2,11 +2,15 @@ using System.Net;
 using ChallengesTemporaryStorage.API.Models;
 using ChallengesTemporaryStorage.API.Services.Abstractions;
 using Infrastructure;
+using Infrastructure.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChallengesTemporaryStorage.API.Controllers;
 
 [ApiController]
+[Authorize(Policy = AuthPolicy.AllowEndUserPolicy)]
+[Scope("challengesTemporaryStorage")]
 [Route(Defaults.DefaultRoute)]
 public class ChallengesTemporaryStorageBffController : ControllerBase
 {
@@ -14,7 +18,8 @@ public class ChallengesTemporaryStorageBffController : ControllerBase
 
     public ChallengesTemporaryStorageBffController(IChallengesTemporaryStorageService temporaryStorage) => _temporaryStorage = temporaryStorage;
 
-    [HttpPost]
+    [HttpGet]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(GetChallengesTemporaryStorageResponse<string>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Get()
     {
@@ -24,6 +29,7 @@ public class ChallengesTemporaryStorageBffController : ControllerBase
     }
 
     [HttpPost]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Update(UpdateChallengesTemporaryStorageRequest<string> request)
     {
