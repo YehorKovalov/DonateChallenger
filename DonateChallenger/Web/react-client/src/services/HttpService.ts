@@ -49,7 +49,7 @@ export default class DefaultHttpService implements HttpService {
             headers: headersRequest,
             body: bodyRequest
         }
-        
+
         const response = await fetch(url, requestOptions);
         return this.handleResponse(response);
     }
@@ -64,7 +64,7 @@ export default class DefaultHttpService implements HttpService {
             data: await response.json()
         };
         return result;
-      }
+    }
 
     private getCredentials = (headers?: ApiHeader) : RequestCredentials => {
         return headers && !!headers.authorization 

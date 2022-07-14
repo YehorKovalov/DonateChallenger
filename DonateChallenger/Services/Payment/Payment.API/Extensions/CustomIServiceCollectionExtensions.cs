@@ -1,6 +1,4 @@
 using Infrastructure.MessageBus.Extensions;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Payment.API.Configurations;
 using Payment.API.Services;
 using Payment.API.Services.Abstractions;
@@ -59,10 +57,6 @@ public static class CustomIServiceCollectionExtensions
             x.UsingRabbitMq((context, cfg) =>
             {
                 cfg.ConfigureRabbitMqConnectionProperties(configuration);
-                cfg.ReceiveEndpoint(configuration["RabbitMQ:OrderUserInfoQueue"], c =>
-                {
-                    // c.ConfigureConsumer<>(context);
-                });
             });
         });
         services.AddMassTransitHostedService(true);

@@ -1,7 +1,5 @@
 ﻿using Infrastructure.Extensions;
 using Infrastructure.Filters;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using Payment.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
