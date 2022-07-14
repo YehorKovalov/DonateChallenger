@@ -17,7 +17,8 @@ export default class StreamersStore {
      selectedStreamer: SearchedStreamerByNickname = {
           streamerId: '',
           streamerNickname: '',
-          merchantId: ''
+          merchantId: '',
+          minDonatePrice: 0
      }
 
      public searchStreamersByNickname = async () => {
