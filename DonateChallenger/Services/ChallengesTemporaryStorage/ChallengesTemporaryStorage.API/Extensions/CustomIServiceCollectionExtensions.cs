@@ -16,7 +16,7 @@ public static class CustomIServiceCollectionExtensions
         services.AddMassTransit(x =>
         {
             x.AddConsumer<MessageChallengeOrderStatusConsumer>();
-            x.AddConsumer<GetChallengesFromStorageConsumer>();
+            x.AddConsumer<MessageGetChallengesFromStorageRequestConsumer>();
             x.UsingRabbitMq((context, cfg) =>
             {
                 cfg.ConfigureRabbitMqConnectionProperties(configuration);
@@ -26,7 +26,7 @@ public static class CustomIServiceCollectionExtensions
                 });
                 cfg.ReceiveEndpoint(configuration["RabbitMQ:GetChallengesFromStorageQueue"], c =>
                 {
-                     c.ConfigureConsumer<GetChallengesFromStorageConsumer>(context);
+                     c.ConfigureConsumer<MessageGetChallengesFromStorageRequestConsumer>(context);
                 });
             });
         });

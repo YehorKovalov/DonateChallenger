@@ -43,6 +43,7 @@ public class ChallengeCatalogCatalogRepository : IChallengeCatalogRepository
 
     public async Task AddChallengeRangeForStreamerAsync(IEnumerable<ChallengeEntity> challenges)
     {
+        _logger.LogInformation($"{nameof(AddChallengeRangeForStreamerAsync)} ---> Challenges Amount: {challenges.Count()}");
         await _dbContext.AddRangeAsync(challenges);
         await _dbContext.SaveChangesAsync();
     }
