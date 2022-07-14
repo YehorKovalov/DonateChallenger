@@ -14,3 +14,9 @@
 	font-size: 1.2rem;
 	border-bottom: 1px solid whitesmoke;
 }
+
+.streamer-parameter_text {
+	background: -webkit-linear-gradient(#eee, rgb(4, 56, 20));
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
