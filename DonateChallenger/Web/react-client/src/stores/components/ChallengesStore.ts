@@ -9,14 +9,12 @@ import iocServices from "../../utilities/ioc/iocServices";
 import iocStores from "../../utilities/ioc/iocStores";
 import { formPages } from "../../utilities/PagesProvider";
 import ChallengesBoardStore from "./ChallengesBoardStore";
-import StreamerProfileStore from "./StreamerProfileStore";
 
 @injectable()
 export default class ChallengesStore {
      
      @inject(iocServices.challengeCatalogService) private readonly challengeService!: ChallengeCatalogService;
      @inject(iocStores.challengesBoardStore) private readonly boardStore!: ChallengesBoardStore;
-     @inject(iocStores.streamerProfileStore) private readonly streamerProfile!: StreamerProfileStore;
      private readonly challengesPerPage: number = challengesConstants.APP_CHALLENGES_PER_PAGE;
 
      constructor() {

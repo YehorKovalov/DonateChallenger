@@ -3,6 +3,8 @@ import { makeAutoObservable } from "mobx";
 import { ChallengeForAddingDto } from "../dtos/DTOs/ChallengeForAddingDto";
 import { ChallengesTempStorageService } from "../services/ChallengesTempStorageService";
 import iocServices from "../utilities/ioc/iocServices";
+import iocStores from "../utilities/ioc/iocStores";
+import StreamersStore from "./components/StreamersStore";
 
 @injectable()
 export default class ChallengesTempStorageStore {
@@ -16,7 +18,8 @@ export default class ChallengesTempStorageStore {
      challengeForAdding: ChallengeForAddingDto = {
           description: '',
           donateFrom: '',
-          donatePrice: 0,
+          streamerId: '',
+          donatePrice: 0
      }
 
      public getStorage = async (): Promise<void> => {
@@ -29,9 +32,9 @@ export default class ChallengesTempStorageStore {
           }
      }
 
-     public addChallenge = async (): Promise<boolean> => {
+     public addChallenge = async (streamerId: string): Promise<boolean> => {
 
-          if (!this.challengeForAddingStateIsValid()) {
+          if (!this.challengeForAddingStateIsValid(streamerId)) {
                console.log("Challenge for adding state is not valid");
                return false;
           }
@@ -57,11 +60,12 @@ export default class ChallengesTempStorageStore {
           return sum;
      }
 
-     private challengeForAddingStateIsValid = (): boolean => {
+     private challengeForAddingStateIsValid = (streamerId: string): boolean => {
           const logicalPriceMinimum = 0.1;
           const state = this.challengeForAdding;
           return state.description.length > 0
                && state.donateFrom.length > 0
+               && streamerId.length > 0
                && state.donatePrice > logicalPriceMinimum;
      }
 }

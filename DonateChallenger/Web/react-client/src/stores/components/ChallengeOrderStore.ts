@@ -19,13 +19,14 @@ export default class ChallengeOrderStore {
      }
 
      public makeOrder = async () => {
-          const storageUpdatingResult = await this.challengesTempStorageStore.addChallenge();
+          const streamer = this.streamersStore.selectedStreamer;
+          const storageUpdatingResult = await this.challengesTempStorageStore.addChallenge(streamer.streamerId);
           if (!storageUpdatingResult) {
                throw OperationCanceledException;
           }
 
           const sum = this.challengesTempStorageStore.getDonationsSumPrice();
-          const response = await this.paymentService.getPayPalPaymentUrl(sum, "USD", this.streamersStore.selectedStreamer.merchantId);
+          const response = await this.paymentService.getPayPalPaymentUrl(sum, "USD", streamer.merchantId);
           window.location.replace(response.url);
      }
 }
