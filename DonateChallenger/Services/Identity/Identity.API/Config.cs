@@ -17,6 +17,7 @@ namespace Identity.API
             new ApiScope("challengeCatalog", "Challenge Catalog"),
             new ApiScope("challengeOrder", "Challenge Order"),
             new ApiScope("paypalPayment", "Paypal Payment"),
+            new ApiScope("challengesTemporaryStorage", "Challenges Temporary Storage"),
         };
 
         public static IEnumerable<Client> GetClients()
@@ -26,6 +27,7 @@ namespace Identity.API
             var challengeCatalogUrl = _configuration?["ChallengeCatalogUrl"] ?? throw new ArgumentNullException();
             var challengeOrderUrl = _configuration?["ChallengeOrderUrl"] ?? throw new ArgumentNullException();
             var paymentUrl = _configuration?["PaymentUrl"] ?? throw new ArgumentNullException();
+            var challengesTemporaryStorageUrl = _configuration?["ChallengesTemporaryStorageUrl"] ?? throw new ArgumentNullException();
             var globalUrl = _configuration?["GlobalUrl"] ?? throw new ArgumentNullException();
             return new List<Client>
             {
@@ -66,7 +68,7 @@ namespace Identity.API
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "challengeCatalog", "paypalPayment", "challengeOrder"
+                        "challengeCatalog", "paypalPayment", "challengeOrder", "challengesTemporaryStorage"
                     }
                 },
                 new Client
@@ -117,6 +119,22 @@ namespace Identity.API
                     AllowedScopes =
                     {
                         "paypalPayment"
+                    }
+                },
+                new Client
+                {
+                    ClientId = "challengestemporarystorageswaggerui",
+                    ClientName = "Challenges Temporary Storage",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
+
+                    ClientSecrets = { new Secret("secret".Sha256()) },
+
+                    RedirectUris = { $"{challengesTemporaryStorageUrl}/swagger/oauth2-redirect.html" },
+                    PostLogoutRedirectUris = { $"{challengesTemporaryStorageUrl}/swagger/" },
+                    AllowedScopes =
+                    {
+                        "challengesTemporaryStorage"
                     }
                 },
             };

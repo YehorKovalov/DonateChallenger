@@ -2,25 +2,21 @@ import { injectable, inject } from "inversify";
 import { SkippedChallengeDto } from "../dtos/DTOs/SkippedChallengeDto";
 import { CurrentChallengeDto } from "../dtos/DTOs/CurrentChallengeDto";
 import { CompletedChallengeDto } from "../dtos/DTOs/CompletedChallengeDto";
-import { AddChallengeForStreamerRequest } from "../dtos/requests/AddChallengeForStreamerRequest";
 import { GetPaginatedStreamerChallengesRequest } from "../dtos/requests/GetPaginatedStreamerChallengesRequest";
-import { AddChallengeForStreamerResponse } from "../dtos/response/AddChallengeForStreamerResponse";
-import { GetPaginatedStreamerChallengesResponse as GetPaginatedChallengesResponse } from "../dtos/response/GetPaginatedStreamerChallengesResponse";
 import { ChallengesBoardFilter } from "../models/ChallengesBoardFilter";
 import iocServices from "../utilities/ioc/iocServices";
 import { ApiHeader, ContentType, HttpService, MethodType } from "./HttpService";
 import AuthStore from "../oidc/AuthStore";
 import iocStores from "../utilities/ioc/iocStores";
+import { GetPaginatedStreamerChallengesResponse } from "../dtos/response/GetPaginatedStreamerChallengesResponse";
 
 export interface ChallengeCatalogService {
-     addChallenge(description: string, donatePrice: number, donateFrom: string, title?: string)
-          : Promise<AddChallengeForStreamerResponse>;
      getPaginatedCurrentChallenges(currentPage: number, challengesPerPage: number, sortByCreatedTime?: boolean, minPriceFilter?: number)
-          : Promise<GetPaginatedChallengesResponse<CurrentChallengeDto>>;
+          : Promise<GetPaginatedStreamerChallengesResponse<CurrentChallengeDto>>;
      getPaginatedCompletedChallenges(currentPage: number, challengesPerPage: number, sortByCreatedTime?: boolean, minPriceFilter?: number)
-     : Promise<GetPaginatedChallengesResponse<CompletedChallengeDto>>;
+     : Promise<GetPaginatedStreamerChallengesResponse<CompletedChallengeDto>>;
      getPaginatedSkippedChallenges(currentPage: number, challengesPerPage: number, sortByCreatedTime?: boolean, minPriceFilter?: number)
-          : Promise<GetPaginatedChallengesResponse<SkippedChallengeDto>>;
+          : Promise<GetPaginatedStreamerChallengesResponse<SkippedChallengeDto>>;
      skipChallengeByChallengeId(challengeId: number) : Promise<boolean>;
      completeChallengeByChallengeId(challengeId: number) : Promise<boolean>;
 }
@@ -30,75 +26,51 @@ export default class DefaultChallengeCatalogService implements ChallengeCatalogS
 
      @inject(iocServices.httpService) private readonly httpService!: HttpService;
      @inject(iocStores.authStore) private readonly authStore!: AuthStore;
-     private readonly CHALLENGE_BOARD_ROUTE = process.env.REACT_APP_CHALLENGES_BOARD_CONTROLLER_ROUTE;
+     private readonly ChallengeBoardApiRoute = process.env.REACT_APP_CHALLENGES_BOARD_CONTROLLER_ROUTE;
      
-     public async addChallenge(description: string, donatePrice: number, donateFrom: string, title?: string): Promise<AddChallengeForStreamerResponse> {
-          
-          const request: AddChallengeForStreamerRequest = {
-               title: title,
-               description: description,
-               donateFrom: donateFrom,
-               streamerId: this.authStore.user!.profile.sub!,
-               donatePrice: donatePrice,
-          }
-          
-          const url = `${this.CHALLENGE_BOARD_ROUTE}/add`;
-          const headers: ApiHeader = {
-               contentType: ContentType.Json,
-               authorization: this.authStore.user?.access_token
-          }
-          const response = await this.httpService.send<AddChallengeForStreamerResponse>(url, MethodType.POST, headers, request);
-
-          return { ...response.data };
-     }
-
      public async getPaginatedCurrentChallenges(currentPage: number, challengesPerPage: number, sortByCreatedTime?: boolean, minPriceFilter?: number)
-          : Promise<GetPaginatedChallengesResponse<CurrentChallengeDto>> {
+          : Promise<GetPaginatedStreamerChallengesResponse<CurrentChallengeDto>> {
           
-          const url = `${this.CHALLENGE_BOARD_ROUTE}/current`;
-          const response = await this.getPaginatedChallengesInternal<GetPaginatedChallengesResponse<CurrentChallengeDto>>(url, currentPage, challengesPerPage, sortByCreatedTime, minPriceFilter);
+          const url = `${this.ChallengeBoardApiRoute}/current`;
+          const response = await this.getPaginatedChallengesInternal<GetPaginatedStreamerChallengesResponse<CurrentChallengeDto>>(url, currentPage, challengesPerPage, sortByCreatedTime, minPriceFilter);
 
           return { ...response };
      }
 
 
      public async getPaginatedCompletedChallenges(currentPage: number, challengesPerPage: number, sortByCreatedTime?: boolean, minPriceFilter?: number)
-          : Promise<GetPaginatedChallengesResponse<CompletedChallengeDto>> {
+          : Promise<GetPaginatedStreamerChallengesResponse<CompletedChallengeDto>> {
 
-          const url = `${this.CHALLENGE_BOARD_ROUTE}/completed`;
-          const response = await this.getPaginatedChallengesInternal<GetPaginatedChallengesResponse<CurrentChallengeDto>>(url, currentPage, challengesPerPage, sortByCreatedTime, minPriceFilter);
+          const url = `${this.ChallengeBoardApiRoute}/completed`;
+          const response = await this.getPaginatedChallengesInternal<GetPaginatedStreamerChallengesResponse<CurrentChallengeDto>>(url, currentPage, challengesPerPage, sortByCreatedTime, minPriceFilter);
 
           return { ...response };
      }
 
      public async getPaginatedSkippedChallenges(currentPage: number, challengesPerPage: number, sortByCreatedTime?: boolean, minPriceFilter?: number)
-          : Promise<GetPaginatedChallengesResponse<SkippedChallengeDto>> {
+          : Promise<GetPaginatedStreamerChallengesResponse<SkippedChallengeDto>> {
 
-          const url = `${this.CHALLENGE_BOARD_ROUTE}/skipped`;
-          const response = await this.getPaginatedChallengesInternal<GetPaginatedChallengesResponse<CurrentChallengeDto>>(url, currentPage, challengesPerPage, sortByCreatedTime, minPriceFilter);
+          const url = `${this.ChallengeBoardApiRoute}/skipped`;
+          const response = await this.getPaginatedChallengesInternal<GetPaginatedStreamerChallengesResponse<CurrentChallengeDto>>(url, currentPage, challengesPerPage, sortByCreatedTime, minPriceFilter);
 
           return { ...response };
      }
      
      public async skipChallengeByChallengeId(challengeId: number) : Promise<boolean> {
-          const url = `${this.CHALLENGE_BOARD_ROUTE}/skip?challengeid=${challengeId}`;
+          const url = `${this.ChallengeBoardApiRoute}/skip?challengeid=${challengeId}`;
           const method = MethodType.POST;
-          const headers: ApiHeader = {
-               contentType: ContentType.Json,
-               authorization: this.authStore.user?.access_token
-          }
+          const headers = await this.authStore.getAuthorizedHeaders();
+
           const response = await this.httpService.send<boolean>(url, method, headers);
           
           return response.data;
      }
 
      public async completeChallengeByChallengeId(challengeId: number) : Promise<boolean> {
-          const url = `${this.CHALLENGE_BOARD_ROUTE}/complete?challengeid=${challengeId}`;
+          const url = `${this.ChallengeBoardApiRoute}/complete?challengeid=${challengeId}`;
           const method = MethodType.POST;
-          const headers: ApiHeader = {
-               contentType: ContentType.Json,
-               authorization: this.authStore.user?.access_token
-          }
+          const headers = await this.authStore.getAuthorizedHeaders();
+
           const response = await this.httpService.send<boolean>(url, method, headers);
 
           return response.data;
@@ -121,7 +93,6 @@ export default class DefaultChallengeCatalogService implements ChallengeCatalogS
                filters: filters
           };
 
-          console.log(request)
           const response = await this.httpService.send<T>(url, method, headers, request);
 
           return { ...response.data };
@@ -139,9 +110,5 @@ export default class DefaultChallengeCatalogService implements ChallengeCatalogS
           }
 
           return Object.fromEntries(filters);
-     }
-
-     private decreaseCurrentPageValue = (currentPage: number): number => {
-          return currentPage === 0 ? currentPage : --currentPage;
      }
 }

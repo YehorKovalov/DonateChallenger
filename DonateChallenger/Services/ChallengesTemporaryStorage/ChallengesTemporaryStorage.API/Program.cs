@@ -20,6 +20,8 @@ var app = builder.Build();
 app.UseCustomConfiguredSwaggerWithUI(configuration, "ChallengesTemporaryStorage", "challengestemporarystorageswaggerui");
 app.UseRouting();
 
+app.UseCors("CorsPolicy");
+
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -3,7 +3,7 @@ import { makeAutoObservable } from "mobx";
 import { ChallengeStatusEnum } from "../../models/ChallengeStatusEnum";
 import { CurrentChallenge } from "../../models/CurrentChallenge";
 import { PaginatedChallenges } from "../../models/PaginatedChallenges";
-import { ChallengeCatalogService } from "../../services/ChallengeService";
+import { ChallengeCatalogService } from "../../services/ChallengeCatalogService";
 import challengesConstants from "../../utilities/ChallengesConstants";
 import iocServices from "../../utilities/ioc/iocServices";
 import iocStores from "../../utilities/ioc/iocStores";

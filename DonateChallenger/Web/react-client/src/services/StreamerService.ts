@@ -21,38 +21,38 @@ export default class DefaultStreamerService implements StreamerService {
 
      @inject(iocServices.httpService) private readonly httpService!: HttpService;
 
-     private readonly STREAMER_API_ROUTE = process.env.REACT_APP_STREAMER_CONTROLLER_ROUTE;
+     private readonly streamerApiRoute = process.env.REACT_APP_STREAMER_CONTROLLER_ROUTE;
 
      public async searchStreamersByNickname(nicknameAsFilter: string) : Promise<SearchStreamersByNicknameResponse<SearchedStreamerByNicknameDto>> {
-          const url = `${this.STREAMER_API_ROUTE}/searchNicknames?nicknameAsFilter=${nicknameAsFilter}`;
+          const url = `${this.streamerApiRoute}/searchNicknames?nicknameAsFilter=${nicknameAsFilter}`;
           const method = MethodType.GET;
           var result = await this.httpService.send<SearchStreamersByNicknameResponse<SearchedStreamerByNicknameDto>>(url, method);
           return { ...result.data };
      }
 
      public async getMinDonatePrice(streamerId: string) : Promise<GetMinDonatePriceResponse> {
-          const url = `${this.STREAMER_API_ROUTE}/getMinDonatePriceResponse?streamerId=${streamerId}`;
+          const url = `${this.streamerApiRoute}/getMinDonatePriceResponse?streamerId=${streamerId}`;
           const method = MethodType.GET;
           var result = await this.httpService.send<GetMinDonatePriceResponse>(url, method);
           return { ... result.data };
      }
 
      public async changeMinDonatePrice(streamerId: string, changeOn: number) : Promise<ChangeStreamerProfileDataResponse<number>> {
-          const url = `${this.STREAMER_API_ROUTE}/changeMinDonatePrice?streamerId=${streamerId}&&changeOn=${changeOn}`;
+          const url = `${this.streamerApiRoute}/changeMinDonatePrice?streamerId=${streamerId}&&changeOn=${changeOn}`;
           const method = MethodType.POST;
           var result = await this.httpService.send<ChangeStreamerProfileDataResponse<number>>(url, method);
           return { ... result.data };
      }
 
      public async getStreamerProfileById(streamerId: string): Promise<GetStreamerProfileResponse<StreamerProfileDto>> {
-          const url = `${this.STREAMER_API_ROUTE}/userProfile?streamerId=${streamerId}`;
+          const url = `${this.streamerApiRoute}/userProfile?streamerId=${streamerId}`;
           const method = MethodType.GET;
           var result = await this.httpService.send<GetStreamerProfileResponse<StreamerProfileDto>>(url, method);
           return { ... result.data };
      }
 
      public async changeStreamerNickname(streamerId: string, changeOn: string): Promise<ChangeStreamerProfileDataResponse<string>> {
-          const url = `${this.STREAMER_API_ROUTE}/changeNickname?streamerId=${streamerId}&&newNickname=${changeOn}`;
+          const url = `${this.streamerApiRoute}/changeNickname?streamerId=${streamerId}&&newNickname=${changeOn}`;
           const method = MethodType.POST;
           var result = await this.httpService.send<ChangeStreamerProfileDataResponse<string>>(url, method);
           return { ... result.data };

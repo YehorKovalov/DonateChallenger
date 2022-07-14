@@ -114,6 +114,8 @@ services:
       - ASPNETCORE_URLS=http://+:4004
       - PathBase=http://donate-challenger.com:4004
       - Authorization__Authority=http://donate-challenger.com:4000
+      - Redis__Host=donate-challenger.com:6380
+      - Redis__CacheTimeout=48:00:00
       - RabbitMQ__Uri=rabbitmq://host.docker.internal:5672
       - RabbitMQ__Username=guest
       - RabbitMQ__Password=guest
