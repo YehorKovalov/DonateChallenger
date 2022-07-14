@@ -5,7 +5,6 @@ using Identity.API.Models.Responses;
 using Identity.API.Services.Abstractions;
 using Infrastructure.Services;
 using Infrastructure.Services.Abstractions;
-using Microsoft.EntityFrameworkCore;
 
 namespace Identity.API.Services;
 
@@ -33,15 +32,14 @@ public class StreamerService : BaseDataService<AppDbContext>, IStreamerService
                 {
                     StreamerId = s.Id,
                     StreamerNickname = s.Nickname,
-                    MerchantId = s.MerchantId
+                    MerchantId = s.MerchantId,
+                    MinDonatePrice = s.MinDonatePriceInDollars
                 })
                 .ToListAsync();
 
             _userManager.Logger.LogInformation($"{nameof(FindStreamerByNicknameAsync)} ---> nicknames amount: {streamers.Count}");
-            return new SearchStreamersByNicknameResponse<SearchedStreamerByNicknameDto>
-            {
-                Data = streamers
-            };
+
+            return new SearchStreamersByNicknameResponse<SearchedStreamerByNicknameDto> { Data = streamers };
         });
     }
 
@@ -79,10 +77,7 @@ public class StreamerService : BaseDataService<AppDbContext>, IStreamerService
                 Logger.LogWarning($"{nameof(GetMinDonatePriceAsync)} ---> Streamer with id: {streamer} doesn't exist");
             }
 
-            return new GetMinDonatePriceResponse<double?>
-            {
-                Data = streamer?.MinDonatePriceInDollars
-            };
+            return new GetMinDonatePriceResponse<double?> { Data = streamer?.MinDonatePriceInDollars };
         });
     }
 
