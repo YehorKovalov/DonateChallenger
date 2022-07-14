@@ -15,6 +15,9 @@ import StreamerProfileStore from "../../stores/components/StreamerProfileStore";
 import DonaterStore from "../../stores/DonaterStore";
 import StreamersStore from "../../stores/components/StreamersStore";
 import ChallengeOrderStore from "../../stores/components/ChallengeOrderStore";
+import DefaultChallengesTempStorageService, { ChallengesTempStorageService } from "../../services/ChallengesTempStorageService";
+import ChallengesTempStorageStore from "../../stores/ChallengesTempStorageStore";
+import DefaultPaymentService, { PaymentService } from "../../services/PaymentService";
 
 export const container = new Container();
 container.bind<HttpService>(iocServices.httpService).to(DefaultHttpService).inSingletonScope();
@@ -22,6 +25,8 @@ container.bind<ChallengeCatalogService>(iocServices.challengeCatalogService).to(
 container.bind<AuthenticationService>(iocServices.authenticationService).to(DefaultAuthenticationService).inSingletonScope();
 container.bind<LocalStorageService>(iocServices.localStorageService).to(DefaultLocalStorageService).inTransientScope();
 container.bind<StreamerService>(iocServices.streamerService).to(DefaultStreamerService).inTransientScope();
+container.bind<ChallengesTempStorageService>(iocServices.challengesTempStorageService).to(DefaultChallengesTempStorageService).inTransientScope();
+container.bind<PaymentService>(iocServices.paymentService).to(DefaultPaymentService).inTransientScope();
 
 container.bind<ChallengesStore>(iocStores.challengesStore).to(ChallengesStore).inSingletonScope();
 container.bind<ChallengeStore>(iocStores.challengeStore).to(ChallengeStore).inSingletonScope();
@@ -32,3 +37,4 @@ container.bind<StreamerProfileStore>(iocStores.streamerProfileStore).to(Streamer
 container.bind<DonaterStore>(iocStores.donaterStore).to(DonaterStore).inTransientScope();
 container.bind<StreamersStore>(iocStores.streamersStore).to(StreamersStore).inSingletonScope();
 container.bind<ChallengeOrderStore>(iocStores.challengeOrderStore).to(ChallengeOrderStore).inSingletonScope();
+container.bind<ChallengesTempStorageStore>(iocStores.challengesTempStorageStore).to(ChallengesTempStorageStore).inSingletonScope();

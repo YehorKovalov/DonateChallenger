@@ -7,5 +7,6 @@ export default {
      streamerProfileStore: Symbol("streamerProfileStore"),
      donaterStore: Symbol("donaterStore"),
      streamersStore: Symbol("streamersStore"),
-     challengeOrderStore: Symbol("challengeOrderStore")
+     challengeOrderStore: Symbol("challengeOrderStore"),
+     challengesTempStorageStore: Symbol("challengesTempStorageStore")
 }
