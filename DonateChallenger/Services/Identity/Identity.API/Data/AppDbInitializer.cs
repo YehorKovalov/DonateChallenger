@@ -47,7 +47,7 @@ namespace Identity.API.Data
                         UserName = userName,
                         NormalizedUserName = userName.Normalize(),
                         Nickname = $"Donater {i}",
-                        MinDonatePriceInDollars = random.Next(100000),
+                        MinDonatePriceInDollars = random.Next(1, 100),
                         MerchantId = testMerchantIds[i % 3],
                         SecurityStamp = Guid.NewGuid().ToString(),
                         EmailConfirmed = true,

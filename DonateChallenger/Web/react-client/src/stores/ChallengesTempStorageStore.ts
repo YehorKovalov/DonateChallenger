@@ -30,13 +30,14 @@ export default class ChallengesTempStorageStore {
      }
 
      public addChallenge = async (): Promise<boolean> => {
-          if (this.challengeForAddingStateIsValid()) {
+
+          if (!this.challengeForAddingStateIsValid()) {
                console.log("Challenge for adding state is not valid");
                return false;
           }
 
           this.storageChallenges.unshift(this.challengeForAdding);
-          return true;
+          return await this.updateStorage();
      }
 
      public updateStorage = async (): Promise<boolean> => {
