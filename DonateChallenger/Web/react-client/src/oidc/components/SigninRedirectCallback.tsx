@@ -7,9 +7,7 @@ import AuthStore from '../AuthStore';
 const SigninRedirectCallback = () => {
      const authStore = useInjection<AuthStore>(iocStores.authStore);
      useEffect(() => {
-          const signinRedirectCallback = async (): Promise<void> => {
-               await authStore.signinRedirectCallback();
-          };
+          const signinRedirectCallback = async (): Promise<void> => { await authStore.signinRedirectCallback(); };
           signinRedirectCallback();
      }, [authStore, authStore.user]);
 

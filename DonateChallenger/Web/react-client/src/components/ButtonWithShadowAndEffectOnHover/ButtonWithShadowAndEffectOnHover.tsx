@@ -8,7 +8,9 @@ interface ButtonWithShadowAndEffectOnHoverProps {
 }
 
 const ButtonWithShadowAndEffectOnHover = (props: ButtonWithShadowAndEffectOnHoverProps) => {
+
      const resultClassName = `btn ${props.className}`;
+
      return (
           <span role='button' onClick={props.onClick} className={resultClassName}>
                <span className='btn-text'>{props.title}</span>

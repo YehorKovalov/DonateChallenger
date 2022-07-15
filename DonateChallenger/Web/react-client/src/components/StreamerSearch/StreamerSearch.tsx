@@ -1,7 +1,7 @@
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import { Container, Row } from "react-bootstrap";
-import StreamersStore from "../../stores/components/StreamersStore";
+import StreamersStore from "../../stores/states/StreamersStore";
 import { useInjection } from "../../utilities/ioc/ioc.react";
 import iocStores from "../../utilities/ioc/iocStores";
 import MovableInput from "../MovableInput";
@@ -14,16 +14,12 @@ const StreamerSearch = observer(() => {
      const [showSearchedStreamers, setShowSearchedStreamers] = useState(false);
 
      useEffect(() => {
-          const handleSearchingStreamersByNickname = async () => {
-               await streamersStore.searchStreamersByNickname();
-          }
+          const handleSearchingStreamersByNickname = async () => { await streamersStore.searchStreamersByNickname(); }
           handleSearchingStreamersByNickname();
      }, [streamersStore.nicknameForSearching]);
 
      const handleBluring = () => {
-          setTimeout(() => {
-               setShowSearchedStreamers(false)
-          }, 100);
+          setTimeout(() => { setShowSearchedStreamers(false) }, 100);
      }
 
      return (

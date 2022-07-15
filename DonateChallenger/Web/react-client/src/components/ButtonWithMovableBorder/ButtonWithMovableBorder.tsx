@@ -7,7 +7,9 @@ interface ButtonWithMovableBorderProps {
 }
 
 const ButtonWithMovableBorder = (props: ButtonWithMovableBorderProps) => {
+
      const resultClassName=`animated-button ${props.className}`;
+
      return (
           <a role='button' className={resultClassName} onClick={props.onClick}>
                <span></span>
