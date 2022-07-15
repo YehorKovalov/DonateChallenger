@@ -23,15 +23,17 @@ namespace Identity.API.Data
             if (!await dbContext.Users.AnyAsync())
             {
                 var random = new Random();
-                var response = StreamerIdsProvider.Response;
+                var response = StreamerIdsProvider.StreamerIds;
                 var password = new PasswordHasher<ApplicationUser>();
                 var userStore = new UserStore<ApplicationUser>(dbContext);
                 var email = string.Empty;
                 var userName = string.Empty;
                 var id = string.Empty;
                 var hashed = string.Empty;
-                
-                for (var i = 0; i < response.IdsAmount; i++)
+                var merchantId = string.Empty;
+                var testMerchantIds = new string[] { "5WSFVT57ASS6U", "V9YL22Q4UQ3PA", "MCB5L4ZBENTWC" };
+
+                for (var i = 0; i < response.StreamersAmount; i++)
                 {
                     email = $"challenger.test{i}@mail.com";
                     userName = $"challenger.test{i}@mail.com";
@@ -45,7 +47,8 @@ namespace Identity.API.Data
                         UserName = userName,
                         NormalizedUserName = userName.Normalize(),
                         Nickname = $"Donater {i}",
-                        MinDonatePriceInDollars = random.Next(100000),
+                        MinDonatePriceInDollars = random.Next(1, 100),
+                        MerchantId = testMerchantIds[i % 3],
                         SecurityStamp = Guid.NewGuid().ToString(),
                         EmailConfirmed = true,
                         LockoutEnabled = false

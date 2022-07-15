@@ -38,7 +38,7 @@ public static class SwaggerConfigurationExtension
 
             if (scopes == null || config == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("Scopes and config cannot be null");
             }
 
             var authority = config["Authorization:Authority"] ?? throw new ArgumentNullException();
@@ -71,13 +71,13 @@ public static class SwaggerConfigurationExtension
     {
         if (config == null || string.IsNullOrWhiteSpace(serviceName))
         {
-            throw new ArgumentException();
+            throw new ArgumentException("ServiceName and config cannot be null or empty");
         }
 
         app.UseSwagger()
             .UseSwaggerUI(setup =>
             {
-                var pathBase = config["PathBase"] ?? throw new ArgumentException();
+                var pathBase = config["PathBase"] ?? throw new ArgumentException("PathBase");
                 setup.SwaggerEndpoint($"{pathBase}/swagger/v1/swagger.json", $"{serviceName}.API V1");
                 if (!string.IsNullOrWhiteSpace(oAuthClientId))
                 {

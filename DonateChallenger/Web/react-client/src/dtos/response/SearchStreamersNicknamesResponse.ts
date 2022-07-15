@@ -1,3 +1,3 @@
-export interface SearchStreamersNicknamesResponse {
-     data: string[]
+export interface SearchStreamersByNicknameResponse<T> {
+     data: T[]
 }

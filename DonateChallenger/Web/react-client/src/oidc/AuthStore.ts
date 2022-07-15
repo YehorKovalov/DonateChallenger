@@ -1,6 +1,7 @@
 import { inject, injectable } from "inversify";
 import { makeAutoObservable } from "mobx";
 import { User } from "oidc-client";
+import { ApiHeader, ContentType } from "../services/HttpService";
 import { LocalStorageService } from "../services/LocalStorageService";
 import iocServices from "../utilities/ioc/iocServices";
 import { AuthenticationService } from "./AuthenticationService";
@@ -71,4 +72,14 @@ export default class AuthStore {
           this.replaceLocation();
           this.removeRedirectLocation();
      };
+
+     public getAuthorizedHeaders = async (): Promise<ApiHeader> => {
+          await this.tryGetUser();
+          const headers: ApiHeader = {
+               contentType: ContentType.Json,
+               authorization: this.user?.access_token
+          }
+
+          return headers;
+     }
 }

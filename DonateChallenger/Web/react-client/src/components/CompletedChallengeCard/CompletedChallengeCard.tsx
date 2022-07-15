@@ -4,8 +4,6 @@ import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
 import { ChallengeCardProps } from '../CurrentChallengeCard/CurrentChallengeCard';
 
-
-
 const CompletedChallengeCard = (props: ChallengeCardProps) => {
      const store = useInjection<ChallengeStore>(iocStores.challengeStore);
 

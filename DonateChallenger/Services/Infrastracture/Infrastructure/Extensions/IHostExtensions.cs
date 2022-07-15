@@ -20,10 +20,11 @@ public static class IHostExtensions
         }
     }
 
-    private static async Task RetryActionOnFailureWithDelay(Func<Task> action, int delayInMilliseconds = 1000)
+    private static async Task RetryActionOnFailureWithDelay(Func<Task> action, int delayInMilliseconds = 5000)
     {
         try
         {
+            Console.WriteLine($"CreateDbIfNotExist ---> I am trying to initialize database ");
             await action.Invoke();
         }
         catch

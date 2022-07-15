@@ -6,20 +6,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ChallengeCatalog.API.Repositories;
 
-public class ChallengeRepository : IChallengeRepository
+public class ChallengeCatalogCatalogRepository : IChallengeCatalogRepository
 {
     private readonly ChallengeCatalogDbContext _dbContext;
-    private readonly ILogger<ChallengeRepository> _logger;
+    private readonly ILogger<ChallengeCatalogCatalogRepository> _logger;
 
-    public ChallengeRepository(
+    public ChallengeCatalogCatalogRepository(
         IDbContextWrapper<ChallengeCatalogDbContext> dbContext,
-        ILogger<ChallengeRepository> logger)
+        ILogger<ChallengeCatalogCatalogRepository> logger)
     {
         _logger = logger;
         _dbContext = dbContext.DbContext;
     }
 
-    public async Task<long?> AddChallengeForStreamerAsync(string description, decimal donatePrice, string donateFrom, string streamerId, string? title)
+    public async Task<long?> AddChallengeForStreamerAsync(string description, double donatePrice, string donateFrom, string streamerId, string? title)
     {
         var challenge = new ChallengeEntity
         {
@@ -39,6 +39,13 @@ public class ChallengeRepository : IChallengeRepository
         var result = await _dbContext.AddAsync(challenge);
         await _dbContext.SaveChangesAsync();
         return result.Entity.ChallengeId;
+    }
+
+    public async Task AddChallengeRangeForStreamerAsync(IEnumerable<ChallengeEntity> challenges)
+    {
+        _logger.LogInformation($"{nameof(AddChallengeRangeForStreamerAsync)} ---> Challenges Amount: {challenges.Count()}");
+        await _dbContext.AddRangeAsync(challenges);
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task<bool?> UpdateChallengeStatusByIdAsync(long challengeId, bool skipped, bool completed)

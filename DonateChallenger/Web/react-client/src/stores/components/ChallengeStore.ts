@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { makeAutoObservable } from "mobx";
 import moment from "moment";
-import { ChallengeService } from "../../services/ChallengeService";
+import { ChallengeCatalogService } from "../../services/ChallengeCatalogService";
 import iocServices from "../../utilities/ioc/iocServices";
 import iocStores from "../../utilities/ioc/iocStores";
 import ChallengesStore from "./ChallengesStore";
@@ -9,7 +9,7 @@ import ChallengesStore from "./ChallengesStore";
 @injectable()
 export default class ChallengeStore {
      
-     @inject(iocServices.challengeService) private readonly challengeService!: ChallengeService;
+     @inject(iocServices.challengeCatalogService) private readonly challengeService!: ChallengeCatalogService;
      @inject(iocStores.challengesStore) private readonly challengesStore!: ChallengesStore;
 
      constructor() {

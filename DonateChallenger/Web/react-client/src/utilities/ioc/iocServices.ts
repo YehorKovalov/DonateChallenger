@@ -1,7 +1,9 @@
 export default {
      httpService: Symbol('httpService'),
-     challengeService: Symbol('challengeService'),
+     challengeCatalogService: Symbol('challengeCatalogService'),
      authenticationService: Symbol('authenticationService'),
      localStorageService: Symbol('localStorageService'),
-     streamerService: Symbol('streamerService')
+     streamerService: Symbol('streamerService'),
+     challengesTempStorageService: Symbol('challengesTempStorageService'),
+     paymentService: Symbol('paymentService')
 }

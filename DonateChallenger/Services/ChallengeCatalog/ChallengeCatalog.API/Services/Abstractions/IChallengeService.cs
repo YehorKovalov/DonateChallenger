@@ -5,9 +5,10 @@ using ChallengeCatalog.API.Models.Response;
 
 namespace ChallengeCatalog.API.Services.Abstractions;
 
-public interface IChallengeService
+public interface IChallengeCatalogService
 {
-    Task<AddChallengeForStreamerResponse<long?>?> AddChallengeForStreamerAsync(AddChallengeForStreamerRequest request);
+    Task<AddChallengeForStreamerResponse<long?>?> AddChallengeForStreamerAsync(string donateFrom, string streamerId, double donatePrice, string description, string? title);
+    Task<AddChallengeRangeForStreamerResponse> AddChallengeRangeForStreamerAsync(IEnumerable<ChallengeForAddingDto> challengeDtos);
 
     Task<GetPaginatedChallengesResponse<CurrentChallengeDto>?> GetPaginatedCurrentChallengesAsync(GetPaginatedStreamerChallengesRequest<ChallengeFilter> request);
 
