@@ -100,7 +100,7 @@ public class ChallengeCatalogCatalogRepository : IChallengeCatalogRepository
         return challenge;
     }
 
-    public async Task<PaginatedChallenges> GetPaginatedCurrentChallengesAsync(int currentPage, int challengesPerPage, string streamerId, int? minPriceFilter = null, int? sortByCreatedTime = 0, bool sortBySkipped = false, bool sortByCompleted = false)
+    public async Task<PaginatedChallenges> GetPaginatedCurrentChallengesAsync(int currentPage, int challengesPerPage, string streamerId, int? minPriceFilter = null, bool? sortByCreatedTime = true, bool? sortByMinDonatePrice = true, bool getSkippedChallengesFilter = false, bool getCompletedChallengesFilter = false)
     {
         var query = _dbContext.Challenges.AsQueryable();
 
@@ -121,12 +121,17 @@ public class ChallengeCatalogCatalogRepository : IChallengeCatalogRepository
         }
 
         query = query.Include(q => q.ChallengeStatusEntity)
-            .Where(q => q.ChallengeStatusEntity.IsCompleted == sortByCompleted)
-            .Where(q => q.ChallengeStatusEntity.IsSkipped == sortBySkipped);
+            .Where(q => q.ChallengeStatusEntity.IsCompleted == getCompletedChallengesFilter)
+            .Where(q => q.ChallengeStatusEntity.IsSkipped == getSkippedChallengesFilter);
 
-        if (sortByCreatedTime.HasValue && sortByCreatedTime.Value != 0)
+        if (sortByCreatedTime.HasValue && sortByCreatedTime.Value)
         {
             query = query.OrderByDescending(q => q.CreatedTime);
+        }
+
+        if (sortByMinDonatePrice.HasValue && sortByMinDonatePrice.Value)
+        {
+            query = query.OrderByDescending(q => q.DonatePrice);
         }
 
         var totalCount = await query.LongCountAsync();
