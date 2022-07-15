@@ -6,6 +6,7 @@ interface PaginationButtonProps {
 }
 
 const PaginationButton = (props: PaginationButtonProps) => {
+
      return (
           <span role="button" className={props.className} onClick={props.onClick}>{props.content}</span>
      );

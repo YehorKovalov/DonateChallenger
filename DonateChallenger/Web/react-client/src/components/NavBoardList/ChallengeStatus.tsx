@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import React from 'react';
-import ChallengesStore from '../../stores/components/ChallengesStore';
+import ChallengesBoardStore from '../../stores/containers/ChallengesBoardStore';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
 
@@ -10,8 +10,8 @@ interface ChallengeStatusProps {
 }
 
 const ChallengeStatus = observer((props: ChallengeStatusProps) => {
-     const store = useInjection<ChallengesStore>(iocStores.challengesStore);
 
+     const store = useInjection<ChallengesBoardStore>(iocStores.challengesBoardStore);
      const className = props.title !== store.currentChallengeStatus ? 'fs-4 color-silver' : 'fs-3 color-white';
 
      return (

@@ -1,5 +1,5 @@
 import { Card, Col, Row } from 'react-bootstrap';
-import ChallengeStore from '../../stores/components/ChallengeStore';
+import ChallengeStore from '../../stores/states/ChallengeStore';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
 import { ChallengeCardProps } from '../CurrentChallengeCard/CurrentChallengeCard';
