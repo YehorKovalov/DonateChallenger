@@ -64,7 +64,7 @@ services:
     command: dotnet run
     ports:
       - 4001:4001
-        
+  
   challenge-order.api:
     container_name: lde.challenge-order.api
     build:
@@ -73,7 +73,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:4002
-      - OrderConnectionString=server=host.docker.internal;database=DonateChallenger.Services.Order;User ID=sa;Password=MSSQLServerStrongPassword123!;
+      - ConnectionStrings__OrderConnectionString=server=host.docker.internal;database=DonateChallenger.Services.Order;User ID=sa;Password=MSSQLServerStrongPassword123!;
       - PathBase=http://donate-challenger.com:4002
       - Authorization__Authority=http://donate-challenger.com:4000
       - RabbitMQ__Uri=rabbitmq://host.docker.internal:5672

@@ -23,12 +23,33 @@ public class ChallengeOrderService : BaseDataService<AppDbContext>,  IChallengeO
     {
         return await ExecuteSafeAsync(async () =>
         {
-            var result = await _orderRepository.Add(paymentId, challengesAmount, resultDonationPrice);
+            if (!AddChallengeOrderStateIsValid(paymentId, challengesAmount, resultDonationPrice))
+            {
+                var errorMessage = "Add Challenge Order State Is Valid";
+                Logger.LogError($"{nameof(AddChallengeOrderAsync)} ---> {errorMessage}");
+                return new AddChallengeOrderResponse<Guid?>
+                {
+                    ErrorMessage = errorMessage,
+                    Succeeded = false,
+                    OrderId = null
+                };
+            }
+
+            var orderId = await _orderRepository.Add(paymentId, challengesAmount, resultDonationPrice);
+            Logger.LogInformation($"{nameof(AddChallengeOrderAsync)} ---> {nameof(orderId)}: {orderId}");
             return new AddChallengeOrderResponse<Guid?>
             {
-                OrderId = result,
+                OrderId = orderId,
                 Succeeded = true
             };
         });
+    }
+
+    private bool AddChallengeOrderStateIsValid(string paymentId, int challengesAmount, double resultDonationPrice)
+    {
+        const double logicalMinimumDonationPriceValue = 0.1;
+        return !string.IsNullOrWhiteSpace(paymentId)
+               && challengesAmount > 0
+               && resultDonationPrice > logicalMinimumDonationPriceValue;
     }
 }

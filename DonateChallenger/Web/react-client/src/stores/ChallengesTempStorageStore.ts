@@ -39,6 +39,7 @@ export default class ChallengesTempStorageStore {
                return false;
           }
 
+          this.challengeForAdding.streamerId = streamerId;
           this.storageChallenges.unshift(this.challengeForAdding);
           return await this.updateStorage();
      }

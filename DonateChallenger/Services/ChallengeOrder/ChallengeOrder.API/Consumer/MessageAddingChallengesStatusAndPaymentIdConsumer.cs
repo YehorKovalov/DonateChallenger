@@ -1,18 +1,19 @@
 using ChallengeOrder.API.Services.Abstractions;
 using Infrastructure.MessageBus.Enums;
 using Infrastructure.MessageBus.Messages;
+using MassTransit;
 
 namespace ChallengeOrder.API.Consumer;
 
-public class MessageAddingChallengesAndPaymentIdConsumer : IConsumer<MessageAddingChallengesAndPaymentId>
+public class MessageAddingChallengesStatusAndPaymentIdConsumer : IConsumer<MessageAddingChallengesStatusAndPaymentId>
 {
     private readonly IChallengeOrderService _challengeOrderService;
-    private readonly ILogger<MessageAddingChallengesAndPaymentIdConsumer> _logger;
+    private readonly ILogger<MessageAddingChallengesStatusAndPaymentIdConsumer> _logger;
     private readonly IPublishEndpoint _publishEndpoint;
 
-    public MessageAddingChallengesAndPaymentIdConsumer(
+    public MessageAddingChallengesStatusAndPaymentIdConsumer(
         IChallengeOrderService challengeOrderService,
-        ILogger<MessageAddingChallengesAndPaymentIdConsumer> logger,
+        ILogger<MessageAddingChallengesStatusAndPaymentIdConsumer> logger,
         IPublishEndpoint publishEndpoint)
     {
         _challengeOrderService = challengeOrderService;
@@ -20,10 +21,16 @@ public class MessageAddingChallengesAndPaymentIdConsumer : IConsumer<MessageAddi
         _publishEndpoint = publishEndpoint;
     }
 
-    public async Task Consume(ConsumeContext<MessageAddingChallengesAndPaymentId> context)
+    public async Task Consume(ConsumeContext<MessageAddingChallengesStatusAndPaymentId> context)
     {
         var message = context.Message;
         _logger.LogInformation($"MessageAddingChallengesAndPaymentId ---> {nameof(message.PaymentId)}: {message.PaymentId}; {nameof(message.AddingIsSucceeded)}: {message.AddingIsSucceeded};");
+        if (!message.AddingIsSucceeded || string.IsNullOrWhiteSpace(message.PaymentId))
+        {
+            _logger.LogError("MessageAddingChallengesAndPaymentId ---> Message state is not valid");
+            return;
+        }
+
         var result = await _challengeOrderService.AddChallengeOrderAsync(message.PaymentId, message.ChallengesAmount, message.ResultDonationPrice);
         if (result.Succeeded)
         {
@@ -31,12 +38,15 @@ public class MessageAddingChallengesAndPaymentIdConsumer : IConsumer<MessageAddi
         }
         else
         {
-            _logger.LogInformation("Order is failed");
+            _logger.LogError("Order is failed");
         }
 
+        var orderStatus = result.Succeeded ? ChallengeOrderStatus.Created : ChallengeOrderStatus.Canceled;
         await _publishEndpoint.Publish<MessageChallengeOrderStatus>(new
         {
-            ChallengeOrderStatus = result.Succeeded ? ChallengeOrderStatus.Created : ChallengeOrderStatus.Canceled
+            ChallengeOrderStatus = orderStatus
         });
+
+        _logger.LogInformation($"MessageChallengeOrderStatus ---> Status is sent with value: {orderStatus}");
     }
 }

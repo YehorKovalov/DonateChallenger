@@ -1,6 +1,7 @@
 using ChallengeOrder.API.Data.Entities;
 using Infrastructure;
 using Infrastructure.Seeding;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChallengeOrder.API.Data;
 
@@ -22,20 +23,24 @@ public class AppDbContextInitializer : IDbInitializer<AppDbContext>
         }
     }
 
-    private IEnumerable<ChallengeOrderEntity> GetChallengeOrders(long? amount = 30)
+    private IEnumerable<ChallengeOrderEntity> GetChallengeOrders(long? challengesAmount = 30)
     {
+        var random = new Random();
         var merchantIds = new string[] { "V9YL22Q4UQ3PA", "5WSFVT57ASS6U", "MCB5L4ZBENTWC" };
         var orders = new List<ChallengeOrderEntity>();
-        for (var i = 0; i < amount; i++)
+        do
         {
+            var orderChallengesAmount = random.Next(1, 4);
             orders.Add(new ChallengeOrderEntity
             {
                 ChallengeOrderId = Guid.NewGuid(),
-                PaymentId = merchantIds[i % 3],
-                ChallengesAmount = (i % 3) + 1,
-                ResultDonationPrice = 12342
+                PaymentId = merchantIds[random.Next(merchantIds.Length - 1)],
+                ChallengesAmount = orderChallengesAmount,
+                ResultDonationPrice = random.Next(20, 100)
             });
+            challengesAmount -= orderChallengesAmount;
         }
+        while (challengesAmount > 0);
 
         return orders;
     }

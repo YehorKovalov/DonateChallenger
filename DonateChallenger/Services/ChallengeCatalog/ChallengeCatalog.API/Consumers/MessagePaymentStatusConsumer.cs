@@ -46,7 +46,7 @@ public class MessagePaymentStatusConsumer : IConsumer<MessagePaymentStatus>
 
         var result = await _challengeCatalogService.AddChallengeRangeForStreamerAsync(challengesForAdding);
 
-        await _publishEndpoint.Publish<MessageAddingChallengesAndPaymentId>(new
+        await _publishEndpoint.Publish<MessageAddingChallengesStatusAndPaymentId>(new
         {
             AddingIsSucceeded = result.Succeeded,
             PaymentId = context.Message.PaymentId,
