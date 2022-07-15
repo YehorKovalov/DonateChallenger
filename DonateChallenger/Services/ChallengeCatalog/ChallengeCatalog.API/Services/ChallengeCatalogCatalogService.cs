@@ -44,11 +44,22 @@ public class ChallengeCatalogCatalogService : BaseDataService<ChallengeCatalogDb
         });
     }
 
-    public async Task<AddChallengeRangeForStreamerResponse> AddChallengeRangeForStreamerAsync(IEnumerable<ChallengeDto> challengeDtos)
+    public async Task<AddChallengeRangeForStreamerResponse> AddChallengeRangeForStreamerAsync(IEnumerable<ChallengeForAddingDto> challengeDtos)
     {
         return await ExecuteSafeAsync(async () =>
         {
-            var challengeEntities = challengeDtos.Select(s => _mapper.Map<ChallengeEntity>(s)).ToList();
+            Logger.LogInformation($"{nameof(AddChallengeRangeForStreamerAsync)} ---> Arrived challenges length: {challengeDtos.Count()}");
+            var challengeEntities = challengeDtos.Select(s => new ChallengeEntity
+            {
+                ChallengeStatusEntity = new ChallengeStatusEntity(),
+                CreatedTime = DateTime.UtcNow,
+                Description = s.Description,
+                DonateFrom = s.DonateFrom,
+                DonatePrice = s.DonatePrice,
+                Title = s.Title,
+                StreamerId = s.StreamerId
+            }).ToList();
+
             await _challengeCatalogRepository.AddChallengeRangeForStreamerAsync(challengeEntities);
             return new AddChallengeRangeForStreamerResponse
             {
@@ -164,7 +175,7 @@ public class ChallengeCatalogCatalogService : BaseDataService<ChallengeCatalogDb
         }
     }
 
-    private double CountSumDonationPrice(IEnumerable<ChallengeDto> challengeDtos) => challengeDtos.Sum(challenge => challenge.DonatePrice);
+    private double CountSumDonationPrice(IEnumerable<ChallengeForAddingDto> challengeDtos) => challengeDtos.Sum(challenge => challenge.DonatePrice);
 
     private bool AddChallengeRequestStateIsValid(string donateFrom, string streamerId, double donatePrice, string description)
     {

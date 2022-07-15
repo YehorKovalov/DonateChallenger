@@ -1,6 +1,6 @@
 namespace Infrastructure.MessageBus.Messages;
 
-public interface MessageAddingChallengesAndPaymentId
+public interface MessageAddingChallengesStatusAndPaymentId
 {
     public bool AddingIsSucceeded { get; set; }
     public string PaymentId { get; set; }

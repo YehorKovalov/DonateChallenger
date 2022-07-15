@@ -11,4 +11,8 @@
       <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Messages\MessageChallengesFromStorageWithPaymentId.cs" />
+    </ItemGroup>
+
 </Project>

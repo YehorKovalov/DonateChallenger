@@ -1,3 +1,4 @@
+using AutoMapper;
 using ChallengeCatalog.API.Models.DTOs;
 using ChallengeCatalog.API.Services.Abstractions;
 using Infrastructure.MessageBus.Messages;
@@ -12,6 +13,7 @@ public class MessagePaymentStatusConsumer : IConsumer<MessagePaymentStatus>
 {
     private readonly IChallengeCatalogService _challengeCatalogService;
     private readonly ILogger<MessagePaymentStatusConsumer> _logger;
+    private readonly IMapper _mapper;
     private readonly IJsonSerializerWrapper _jsonSerializer;
     private readonly IRequestClient<MessageGetChallengesFromStorageRequest> _getChallengesFromStorageRequestClient;
     private readonly IPublishEndpoint _publishEndpoint;
@@ -21,13 +23,15 @@ public class MessagePaymentStatusConsumer : IConsumer<MessagePaymentStatus>
         ILogger<MessagePaymentStatusConsumer> logger,
         IRequestClient<MessageGetChallengesFromStorageRequest> getChallengesFromStorageRequestClient,
         IJsonSerializerWrapper jsonSerializer,
-        IPublishEndpoint publishEndpoint)
+        IPublishEndpoint publishEndpoint,
+        IMapper mapper)
     {
         _challengeCatalogService = challengeCatalogService;
         _logger = logger;
         _getChallengesFromStorageRequestClient = getChallengesFromStorageRequestClient;
         _jsonSerializer = jsonSerializer;
         _publishEndpoint = publishEndpoint;
+        _mapper = mapper;
     }
 
     public async Task Consume(ConsumeContext<MessagePaymentStatus> context)
@@ -37,12 +41,12 @@ public class MessagePaymentStatusConsumer : IConsumer<MessagePaymentStatus>
         var response = await _getChallengesFromStorageRequestClient.GetResponse<MessageGetChallengesFromStorageResponse>(new { });
         _logger.LogInformation($"MessageGetChallengesFromStorageResponse ---> Data: {response.Message.Data}");
 
-        var challenges = _jsonSerializer.Deserialize<IEnumerable<ChallengeDto>>(response.Message.Data).ToList();
-        _logger.LogInformation($"Deserialized data ---> Challenges amount: {challenges.Count}");
+        var challengesForAdding = _jsonSerializer.Deserialize<IEnumerable<ChallengeForAddingDto>>(response.Message.Data).ToList();
+        _logger.LogInformation($"Deserialized challenges ---> Arrived Storage Challenges amount: {challengesForAdding.Count}");
 
-        var result = await _challengeCatalogService.AddChallengeRangeForStreamerAsync(challenges);
+        var result = await _challengeCatalogService.AddChallengeRangeForStreamerAsync(challengesForAdding);
 
-        await _publishEndpoint.Publish<MessageAddingChallengesAndPaymentId>(new
+        await _publishEndpoint.Publish<MessageAddingChallengesStatusAndPaymentId>(new
         {
             AddingIsSucceeded = result.Succeeded,
             PaymentId = context.Message.PaymentId,

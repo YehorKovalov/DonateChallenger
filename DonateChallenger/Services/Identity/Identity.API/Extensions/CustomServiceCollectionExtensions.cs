@@ -5,7 +5,6 @@ using Identity.API.Services.Abstractions;
 using Infrastructure.Services;
 using Infrastructure.Services.Abstractions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Identity.API.Extensions;
@@ -31,17 +30,25 @@ public static class CustomServiceCollectionExtensions
 
     public static IServiceCollection AddConfiguredCors(this IServiceCollection services, IConfiguration configuration)
     {
-        var reactClientUrl = configuration?["ReactClientUrl"] ?? throw new ArgumentNullException("ReactClientUrl");
-        var challengeCatalogUrl = configuration?["ChallengeCatalogUrl"] ?? throw new ArgumentNullException("ChallengeCatalogUrl");
-        var challengeOrderUrl = configuration?["ChallengeOrderUrl"] ?? throw new ArgumentNullException("ChallengeOrderUrl");
-        var globalUrl = configuration?["GlobalUrl"] ?? throw new ArgumentNullException("GlobalUrl");
+            var reactClientUrl = configuration?["ReactClientUrl"] ?? throw new ArgumentNullException();
+            var challengeCatalogUrl = configuration?["ChallengeCatalogUrl"] ?? throw new ArgumentNullException();
+            var challengeOrderUrl = configuration?["ChallengeOrderUrl"] ?? throw new ArgumentNullException();
+            var paymentUrl = configuration?["PaymentUrl"] ?? throw new ArgumentNullException();
+            var challengesTemporaryStorageUrl = configuration?["ChallengesTemporaryStorageUrl"] ?? throw new ArgumentNullException();
+            var globalUrl = configuration?["GlobalUrl"] ?? throw new ArgumentNullException();
         services.AddCors(
             options => options
                 .AddPolicy(
                     "CorsPolicy",
                     builder => builder
                         .SetIsOriginAllowed(host => true)
-                        .WithOrigins(challengeOrderUrl, challengeCatalogUrl, reactClientUrl, globalUrl)
+                        .WithOrigins(
+                            challengesTemporaryStorageUrl,
+                            challengeOrderUrl,
+                            paymentUrl,
+                            challengeCatalogUrl,
+                            reactClientUrl,
+                            globalUrl)
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials()));

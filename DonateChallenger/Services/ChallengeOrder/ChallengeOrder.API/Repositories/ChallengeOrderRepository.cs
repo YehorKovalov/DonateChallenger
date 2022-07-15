@@ -20,7 +20,7 @@ public class ChallengeOrderRepository : IChallengeOrderRepository
 
     public async Task<Guid> Add(string paymentId, int challengesAmount, double resultDonationPrice)
     {
-        _logger.LogInformation($"{nameof(Add)} ---> {nameof(paymentId)}: {paymentId};");
+        _logger.LogInformation($"{nameof(Add)} ---> {nameof(paymentId)}: {paymentId}; {nameof(challengesAmount)}: {challengesAmount}; {nameof(resultDonationPrice)}: {resultDonationPrice}; ");
         var order = new ChallengeOrderEntity
         {
             ChallengeOrderId = Guid.NewGuid(),

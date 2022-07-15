@@ -18,15 +18,15 @@ export default class ChallengeOrderStore {
           makeAutoObservable(this);
      }
 
-
      public makeOrder = async () => {
-          const storageUpdatingResult = await this.challengesTempStorageStore.addChallenge();
+          const streamer = this.streamersStore.selectedStreamer;
+          const storageUpdatingResult = await this.challengesTempStorageStore.addChallenge(streamer.streamerId);
           if (!storageUpdatingResult) {
                throw OperationCanceledException;
           }
 
-          const streamer = this.streamersStore.selectedStreamer;
           const sum = this.challengesTempStorageStore.getDonationsSumPrice();
-          this.paymentService.goToPayPalPayment(sum, "USD", streamer.merchantId);
+          const response = await this.paymentService.getPayPalPaymentUrl(sum, "USD", streamer.merchantId);
+          window.location.replace(response.url);
      }
 }

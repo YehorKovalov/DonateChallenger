@@ -1,5 +1,6 @@
 using ChallengeOrder.API.Data.Entities;
 using ChallengeOrder.API.Data.EntitiesConfigurations;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChallengeOrder.API.Data;
 

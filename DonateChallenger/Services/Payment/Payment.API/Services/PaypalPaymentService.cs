@@ -1,6 +1,4 @@
 ﻿using Infrastructure.MessageBus.Messages;
-using MassTransit;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Payment.API.Configurations;
 using Payment.API.Models;
@@ -26,11 +24,12 @@ namespace Payment.API.Services
             _paypalConfiguration = appSettings.Value;
         }
 
-        public PaymentResponse<string> CreatePaymentUrl(double unitPrice, string currencyCode, string merchantId, string? returnUrl = null)
+        public GetPayPalPaymentUrlResponse CreatePaymentUrl(double unitPrice, string currencyCode, string merchantId, string? returnUrl = null)
         {
-            var serviceResponse = new PaymentResponse<string>();
+            var response = new GetPayPalPaymentUrlResponse();
             try
             {
+                _logger.LogInformation($"{nameof(CreatePaymentUrl)} ---> {nameof(unitPrice)}: {unitPrice}; {nameof(currencyCode)}: {currencyCode}; {nameof(merchantId)}: {merchantId}; {nameof(returnUrl)}: {returnUrl}; ");
                 var apiContext = GetAPIContext(_paypalConfiguration.ClientId, _paypalConfiguration.ClientSecret);
                 var processedPayment = new PayPal.Api.Payment
                 {
@@ -43,18 +42,15 @@ namespace Payment.API.Services
                 var createdPayment = processedPayment.Create(apiContext);
                 var link = createdPayment.links.Single(l => l.rel.ToLower().Trim().Equals("approval_url"));
 
-                serviceResponse.Message = "Success";
-                serviceResponse.Success = true;
-                serviceResponse.Response = link.href;
+                response.Url = link.href;
             }
-            catch (Exception error)
+            catch
             {
-                serviceResponse.Message = "Error while generating payment url, please retry.";
-                serviceResponse.Error = error;
-                serviceResponse.Success = false;
+                _logger.LogError($"{nameof(CreatePaymentUrl)} ---> Error while generating payment url, please retry.");
             }
 
-            return serviceResponse;
+            _logger.LogInformation($"{nameof(CreatePaymentUrl)} ---> Url = {response.Url}");
+            return response;
         }
 
         public async Task<PaymentResponse<string>> ExecutePayment(string paymentId, string token, string payerId)
