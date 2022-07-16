@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react';
-import { Button, CloseButton, ListGroup, Toast } from 'react-bootstrap';
+import { Button, ListGroup, Toast } from 'react-bootstrap';
+import MovableInput from '../MovableInput';
 import './styles.css';
 
 interface StreamerProfileFormControlProps {
@@ -22,7 +23,7 @@ const StreamerProfileForm = observer((props: StreamerProfileFormControlProps) =>
                               {props.errorList.map(e => <ListGroup className='color-red fs-5'>{e}</ListGroup>)}
                          </ListGroup>
                          }
-                         <input value={props.inputValue} className="ps-2 w-50 border border-success fs-5 me-5" onChange={props.onChangeInput}/>
+                         <MovableInput value={props.inputValue} onChange={props.onChangeInput} className="ps-2 me-5"/>
                          <Button variant="outline-light" onClick={props.onSubmit}>Apply</Button>
                     </Toast.Body>
                </Toast>

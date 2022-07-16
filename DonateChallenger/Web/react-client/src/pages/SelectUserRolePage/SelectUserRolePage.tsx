@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
 import { useEffect } from 'react';
 import AuthStore from '../../oidc/AuthStore';
-import UserRoleStore from '../../stores/UserRoleStore';
+import UserRoleStore from '../../stores/global/UserRoleStore';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
 
@@ -10,11 +10,8 @@ const SelectUserRolePage = observer(() => {
      const authStore = useInjection<AuthStore>(iocStores.authStore);
 
      useEffect(() => {
-          const getAuthentication = async (): Promise<void> => {
-            await authStore.tryGetUser();
-          };
-      
-          getAuthentication().catch((error) => console.log(error));
+          const getAuthentication = async (): Promise<void> => { await authStore.tryGetUser(); };
+          getAuthentication();
         }, [authStore]);
 
      return (

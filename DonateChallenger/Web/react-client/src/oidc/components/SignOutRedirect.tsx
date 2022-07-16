@@ -7,9 +7,7 @@ import AuthStore from '../AuthStore';
 const SignOutRedirect = () => {
      const authStore = useInjection<AuthStore>(iocStores.authStore);
      useEffect(() => {
-          const signoutRedirect = async (): Promise<void> => {
-               await authStore.signoutRedirect();
-          };
+          const signoutRedirect = async (): Promise<void> => { await authStore.signoutRedirect(); };
           signoutRedirect();
      }, [authStore, authStore.user]);
 

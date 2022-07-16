@@ -5,7 +5,6 @@ using Identity.API.Models.Responses;
 using Identity.API.Services.Abstractions;
 using Infrastructure.Services;
 using Infrastructure.Services.Abstractions;
-using Microsoft.EntityFrameworkCore;
 
 namespace Identity.API.Services;
 
@@ -22,19 +21,25 @@ public class StreamerService : BaseDataService<AppDbContext>, IStreamerService
         _userManager = userManager;
     }
 
-    public async Task<SearchStreamersNicknamesResponse<string>> FindStreamerByNicknameAsync(string nickname)
+    public async Task<SearchStreamersByNicknameResponse<SearchedStreamerByNicknameDto>> FindStreamerByNicknameAsync(string nickname)
     {
         return await ExecuteSafeAsync(async () =>
         {
-            var nicknames = await _userManager
-                .Users.Select(s => s.Nickname).Where(w => w.Contains(nickname))
+            var nicknameToSearch = nickname.Trim().ToLower();
+            var streamers = await _userManager.Users
+                .Where(w => w.Nickname.Contains(nicknameToSearch))
+                .Select(s => new SearchedStreamerByNicknameDto
+                {
+                    StreamerId = s.Id,
+                    StreamerNickname = s.Nickname,
+                    MerchantId = s.MerchantId,
+                    MinDonatePrice = s.MinDonatePriceInDollars
+                })
                 .ToListAsync();
 
-            _userManager.Logger.LogInformation($"{nameof(FindStreamerByNicknameAsync)} ---> nicknames amount: {nicknames.Count}");
-            return new SearchStreamersNicknamesResponse<string>
-            {
-                Data = nicknames
-            };
+            _userManager.Logger.LogInformation($"{nameof(FindStreamerByNicknameAsync)} ---> nicknames amount: {streamers.Count}");
+
+            return new SearchStreamersByNicknameResponse<SearchedStreamerByNicknameDto> { Data = streamers };
         });
     }
 
@@ -72,10 +77,7 @@ public class StreamerService : BaseDataService<AppDbContext>, IStreamerService
                 Logger.LogWarning($"{nameof(GetMinDonatePriceAsync)} ---> Streamer with id: {streamer} doesn't exist");
             }
 
-            return new GetMinDonatePriceResponse<double?>
-            {
-                Data = streamer?.MinDonatePriceInDollars
-            };
+            return new GetMinDonatePriceResponse<double?> { Data = streamer?.MinDonatePriceInDollars };
         });
     }
 

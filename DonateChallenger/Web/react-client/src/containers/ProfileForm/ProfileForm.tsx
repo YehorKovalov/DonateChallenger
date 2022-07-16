@@ -14,11 +14,8 @@ const ProfileForm = observer(() => {
      const toggleShow = () => setShow(!show);
 
      useEffect(() => {
-          const init = async () => {
-               await streamerProfileStore.getStreamerProfile();
-          }
-
-          init();
+          const fetchGetStreamerProfile = async () => { await streamerProfileStore.getStreamerProfile(); }
+          fetchGetStreamerProfile();
      }, []);
 
      return (

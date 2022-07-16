@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import CompletedChallengeCard from '../../components/CompletedChallengeCard';
-import ChallengesStore from '../../stores/components/ChallengesStore';
+import ChallengesStore from '../../stores/states/ChallengesStore';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
 

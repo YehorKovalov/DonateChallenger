@@ -5,15 +5,16 @@ using ChallengeCatalog.API.Models.Response;
 
 namespace ChallengeCatalog.API.Services.Abstractions;
 
-public interface IChallengeService
+public interface IChallengeCatalogService
 {
-    Task<AddChallengeForStreamerResponse<long?>?> AddChallengeForStreamerAsync(AddChallengeForStreamerRequest request);
+    Task<AddChallengeForStreamerResponse<long?>?> AddChallengeForStreamerAsync(string donateFrom, string streamerId, double donatePrice, string description, string? title);
+    Task<AddChallengeRangeForStreamerResponse> AddChallengeRangeForStreamerAsync(IEnumerable<ChallengeForAddingDto> challengeDtos);
 
-    Task<GetPaginatedChallengesResponse<CurrentChallengeDto>?> GetPaginatedCurrentChallengesAsync(GetPaginatedStreamerChallengesRequest<ChallengeFilter> request);
+    Task<GetPaginatedChallengesResponse<CurrentChallengeDto>?> GetPaginatedCurrentChallengesAsync(GetPaginatedStreamerChallengesRequest<ChallengeFilter, SortChallengeBy> request);
 
-    Task<GetPaginatedChallengesResponse<CompletedChallengeDto>?> GetPaginatedCompletedChallengesAsync(GetPaginatedStreamerChallengesRequest<ChallengeFilter> request);
+    Task<GetPaginatedChallengesResponse<CompletedChallengeDto>?> GetPaginatedCompletedChallengesAsync(GetPaginatedStreamerChallengesRequest<ChallengeFilter, SortChallengeBy> request);
 
-    Task<GetPaginatedChallengesResponse<SkippedChallengeDto>?> GetPaginatedSkippedChallengesAsync(GetPaginatedStreamerChallengesRequest<ChallengeFilter> request);
+    Task<GetPaginatedChallengesResponse<SkippedChallengeDto>?> GetPaginatedSkippedChallengesAsync(GetPaginatedStreamerChallengesRequest<ChallengeFilter, SortChallengeBy> request);
 
     Task<bool?> SkipChallengeAsync(long? challengeId);
 

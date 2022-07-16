@@ -6,20 +6,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ChallengeCatalog.API.Repositories;
 
-public class ChallengeRepository : IChallengeRepository
+public class ChallengeCatalogCatalogRepository : IChallengeCatalogRepository
 {
     private readonly ChallengeCatalogDbContext _dbContext;
-    private readonly ILogger<ChallengeRepository> _logger;
+    private readonly ILogger<ChallengeCatalogCatalogRepository> _logger;
 
-    public ChallengeRepository(
+    public ChallengeCatalogCatalogRepository(
         IDbContextWrapper<ChallengeCatalogDbContext> dbContext,
-        ILogger<ChallengeRepository> logger)
+        ILogger<ChallengeCatalogCatalogRepository> logger)
     {
         _logger = logger;
         _dbContext = dbContext.DbContext;
     }
 
-    public async Task<long?> AddChallengeForStreamerAsync(string description, decimal donatePrice, string donateFrom, string streamerId, string? title)
+    public async Task<long?> AddChallengeForStreamerAsync(string description, double donatePrice, string donateFrom, string streamerId, string? title)
     {
         var challenge = new ChallengeEntity
         {
@@ -39,6 +39,13 @@ public class ChallengeRepository : IChallengeRepository
         var result = await _dbContext.AddAsync(challenge);
         await _dbContext.SaveChangesAsync();
         return result.Entity.ChallengeId;
+    }
+
+    public async Task AddChallengeRangeForStreamerAsync(IEnumerable<ChallengeEntity> challenges)
+    {
+        _logger.LogInformation($"{nameof(AddChallengeRangeForStreamerAsync)} ---> Challenges Amount: {challenges.Count()}");
+        await _dbContext.AddRangeAsync(challenges);
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task<bool?> UpdateChallengeStatusByIdAsync(long challengeId, bool skipped, bool completed)
@@ -93,7 +100,7 @@ public class ChallengeRepository : IChallengeRepository
         return challenge;
     }
 
-    public async Task<PaginatedChallenges> GetPaginatedCurrentChallengesAsync(int currentPage, int challengesPerPage, string streamerId, int? minPriceFilter = null, int? sortByCreatedTime = 0, bool sortBySkipped = false, bool sortByCompleted = false)
+    public async Task<PaginatedChallenges> GetPaginatedCurrentChallengesAsync(int currentPage, int challengesPerPage, string streamerId, int? minPriceFilter = null, bool? sortByCreatedTime = true, bool? sortByMinDonatePrice = true, bool getSkippedChallengesFilter = false, bool getCompletedChallengesFilter = false)
     {
         var query = _dbContext.Challenges.AsQueryable();
 
@@ -114,12 +121,17 @@ public class ChallengeRepository : IChallengeRepository
         }
 
         query = query.Include(q => q.ChallengeStatusEntity)
-            .Where(q => q.ChallengeStatusEntity.IsCompleted == sortByCompleted)
-            .Where(q => q.ChallengeStatusEntity.IsSkipped == sortBySkipped);
+            .Where(q => q.ChallengeStatusEntity.IsCompleted == getCompletedChallengesFilter)
+            .Where(q => q.ChallengeStatusEntity.IsSkipped == getSkippedChallengesFilter);
 
-        if (sortByCreatedTime.HasValue && sortByCreatedTime.Value != 0)
+        if (sortByCreatedTime.HasValue && sortByCreatedTime.Value)
         {
             query = query.OrderByDescending(q => q.CreatedTime);
+        }
+
+        if (sortByMinDonatePrice.HasValue && sortByMinDonatePrice.Value)
+        {
+            query = query.OrderByDescending(q => q.DonatePrice);
         }
 
         var totalCount = await query.LongCountAsync();

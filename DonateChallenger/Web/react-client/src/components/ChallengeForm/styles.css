@@ -1,0 +1,24 @@
+
+.order_challenge__title {
+
+}
+
+.order_challenge__price {
+
+}
+
+.order_challenge__nickname {
+
+}
+
+.order_challenge textarea:focus  {
+	background: #000;
+	box-shadow: none;
+	color: whitesmoke;
+}
+
+.order_challenge input:focus {
+	background: #000;
+	box-shadow: none;
+	color: whitesmoke;
+}

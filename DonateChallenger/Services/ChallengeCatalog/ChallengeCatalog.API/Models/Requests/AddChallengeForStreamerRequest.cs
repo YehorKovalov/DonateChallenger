@@ -6,7 +6,7 @@ public class AddChallengeForStreamerRequest
 
     public string Description { get; set; } = null!;
 
-    public decimal DonatePrice { get; set; }
+    public double DonatePrice { get; set; }
 
     public string StreamerId { get; set; } = null!;
 

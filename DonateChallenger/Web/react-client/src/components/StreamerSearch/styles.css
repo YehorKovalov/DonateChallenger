@@ -1,0 +1,22 @@
+.order_search {
+}
+
+.nicknames_list {
+	max-height: 30rem;
+     overflow: scroll;
+}
+.order_search__nickname {
+	color: silver;
+	text-align: center;
+	background-color: black;
+	margin: 2rem 0 2rem 0;
+	padding-right: 4rem;
+	font-size: 1.2rem;
+	border-bottom: 1px solid whitesmoke;
+}
+
+.streamer-parameter_text {
+	background: -webkit-linear-gradient(#eee, rgb(4, 56, 20));
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+}

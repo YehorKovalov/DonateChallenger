@@ -10,5 +10,7 @@ namespace Identity.API.Models
 
         [Range(ValidationConstants.LogicalMinimumDonatePrice, ValidationConstants.LogicalMaximumMinimumDonatePrice)]
         public double MinDonatePriceInDollars { get; set; }
+
+        public string MerchantId { get; set; }
     }
 }

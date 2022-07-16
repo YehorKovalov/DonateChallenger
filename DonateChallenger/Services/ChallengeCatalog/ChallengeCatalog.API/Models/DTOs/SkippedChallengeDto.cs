@@ -8,7 +8,7 @@ public class SkippedChallengeDto
 
     public string Description { get; set; } = null!;
 
-    public decimal DonatePrice { get; set; }
+    public double DonatePrice { get; set; }
 
     public string DonateFrom { get; set; } = null!;
 

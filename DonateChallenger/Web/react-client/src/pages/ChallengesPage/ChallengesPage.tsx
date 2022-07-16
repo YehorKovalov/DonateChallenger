@@ -7,33 +7,36 @@ import CompletedChallengesBoard from '../../containers/CompletedChallengesBoard'
 import CurrentChallengesBoard from '../../containers/CurrentChallengesBoard';
 import SkippedChallengesBoard from '../../containers/SkippedChallengesBoard';
 import { ChallengeStatusEnum } from '../../models/ChallengeStatusEnum';
-import ChallengesBoardStore from '../../stores/components/ChallengesBoardStore';
-import ChallengesStore from '../../stores/components/ChallengesStore';
+import ChallengesBoardStore from '../../stores/containers/ChallengesBoardStore';
+import ChallengesStore from '../../stores/states/ChallengesStore';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
-import { formPages } from '../../utilities/PagesProvider';
 
 const ChallengesPage = observer(() => {
 
-     const challengesStore = useInjection<ChallengesStore>(iocStores.challengesStore);
      const boardStore = useInjection<ChallengesBoardStore>(iocStores.challengesBoardStore);
+     const challengesStore = useInjection<ChallengesStore>(iocStores.challengesStore);
 
      useEffect(() => {
-          console.log("i am page")
-          const fetch = async () => {
-              await challengesStore.getChallengesByCurrentStatus();
-          }
+          const fetch = async () => { await boardStore.getChallengesByCurrentStatus(); }
           fetch();
      }, []);
 
      return (
           <div>
-               <PageTitle title={challengesStore.getBoardTitle()}/>
-               <ChallengesBoardFilters />
-               {challengesStore.currentChallengeStatus === ChallengeStatusEnum.Current && <CurrentChallengesBoard/>}
-               {challengesStore.currentChallengeStatus === ChallengeStatusEnum.Skipped && <SkippedChallengesBoard/>}
-               {challengesStore.currentChallengeStatus === ChallengeStatusEnum.Completed && <CompletedChallengesBoard/>}
-               <Pagination/>
+               <PageTitle title={boardStore.getBoardTitle()}/>
+               {challengesStore.paginatedChallenges?.data?.length
+               ? <>
+                    <ChallengesBoardFilters />
+                    {boardStore.currentChallengeStatus === ChallengeStatusEnum.Current && <CurrentChallengesBoard/>}
+                    {boardStore.currentChallengeStatus === ChallengeStatusEnum.Skipped && <SkippedChallengesBoard/>}
+                    {boardStore.currentChallengeStatus === ChallengeStatusEnum.Completed && <CompletedChallengesBoard/>}
+                    <Pagination/>
+               </>
+               :
+               <div className='center-block'>
+                    <span className='fs-1 color-silver'>You don't have any {boardStore.currentChallengeStatus.toLowerCase()} challenge...</span>
+               </div>}
           </div>
      );
 });
