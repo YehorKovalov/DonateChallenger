@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import { Card, Col, Row, Stack } from 'react-bootstrap';
-import ChallengeStore from '../../stores/components/ChallengeStore';
+import ChallengeStore from '../../stores/states/ChallengeStore';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
 import ButtonWithMovableBorder from '../ButtonWithMovableBorder';
@@ -17,8 +17,10 @@ export interface ChallengeCardProps {
 }
 
 const CurrentChallengeCard = observer((props: ChallengeCardProps) => {
+
      const store = useInjection<ChallengeStore>(iocStores.challengeStore);
      const className = props.challengeId === store.lastUsedChallengeId ? 'color-silver border  blur' : 'color-silver border';
+
      return (
           <Card bg='dark' key={props.challengeId} className={className}>
                <Card.Body>

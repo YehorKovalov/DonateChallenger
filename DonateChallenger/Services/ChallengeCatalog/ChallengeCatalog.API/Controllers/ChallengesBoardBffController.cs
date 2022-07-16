@@ -23,7 +23,7 @@ public class ChallengesBoardBffController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(typeof(GetPaginatedChallengesResponse<CurrentChallengeDto>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> Current(GetPaginatedStreamerChallengesRequest<ChallengeFilter> request)
+    public async Task<IActionResult> Current(GetPaginatedStreamerChallengesRequest<ChallengeFilter, SortChallengeBy> request)
     {
         var result = await _challengeCatalogService.GetPaginatedCurrentChallengesAsync(request);
         return Ok(result);
@@ -47,7 +47,7 @@ public class ChallengesBoardBffController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(typeof(GetPaginatedChallengesResponse<SkippedChallengeDto>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> Skipped(GetPaginatedStreamerChallengesRequest<ChallengeFilter> request)
+    public async Task<IActionResult> Skipped(GetPaginatedStreamerChallengesRequest<ChallengeFilter, SortChallengeBy> request)
     {
         var result = await _challengeCatalogService.GetPaginatedSkippedChallengesAsync(request);
         return Ok(result);
@@ -55,7 +55,7 @@ public class ChallengesBoardBffController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(typeof(GetPaginatedChallengesResponse<CompletedChallengeDto>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> Completed(GetPaginatedStreamerChallengesRequest<ChallengeFilter> request)
+    public async Task<IActionResult> Completed(GetPaginatedStreamerChallengesRequest<ChallengeFilter, SortChallengeBy> request)
     {
         var result = await _challengeCatalogService.GetPaginatedCompletedChallengesAsync(request);
         return Ok(result);

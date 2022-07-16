@@ -2,22 +2,25 @@ import { Container } from "inversify";
 import DefaultChallengeCatalogService, { ChallengeCatalogService } from "../../services/ChallengeCatalogService";
 import DefaultHttpService, { HttpService } from "../../services/HttpService";
 import AuthStore from "../../oidc/AuthStore";
-import ChallengesStore from "../../stores/components/ChallengesStore";
-import ChallengeStore from "../../stores/components/ChallengeStore";
+import ChallengesStore from "../../stores/states/ChallengesStore";
+import ChallengeStore from "../../stores/states/ChallengeStore";
 import iocServices from "./iocServices";
 import iocStores from "./iocStores";
 import DefaultAuthenticationService, { AuthenticationService } from "../../oidc/AuthenticationService";
 import DefaultLocalStorageService, { LocalStorageService } from "../../services/LocalStorageService";
-import ChallengesBoardStore from "../../stores/components/ChallengesBoardStore";
-import UserRoleStore from "../../stores/UserRoleStore";
+import UserRoleStore from "../../stores/global/UserRoleStore";
 import DefaultStreamerService, { StreamerService } from "../../services/StreamerService";
 import StreamerProfileStore from "../../stores/components/StreamerProfileStore";
 import DonaterStore from "../../stores/DonaterStore";
-import StreamersStore from "../../stores/components/StreamersStore";
-import ChallengeOrderStore from "../../stores/components/ChallengeOrderStore";
+import StreamersStore from "../../stores/states/StreamersStore";
+import ChallengeOrderStore from "../../stores/containers/ChallengeOrderStore";
 import DefaultChallengesTempStorageService, { ChallengesTempStorageService } from "../../services/ChallengesTempStorageService";
-import ChallengesTempStorageStore from "../../stores/ChallengesTempStorageStore";
+import ChallengesTempStorageStore from "../../stores/global/ChallengesTempStorageStore";
 import DefaultPaymentService, { PaymentService } from "../../services/PaymentService";
+import ChallengesBoardPaginationStore from "../../stores/components/ChallengesBoardPaginationStore";
+import ChallengesBoardFiltersStore from "../../stores/components/ChallengesBoardFiltersStore";
+import ChallengesBoardStore from "../../stores/containers/ChallengesBoardStore";
+import ChallengeForAddingStore from "../../stores/states/ChallengeForAddingStore";
 
 export const container = new Container();
 container.bind<HttpService>(iocServices.httpService).to(DefaultHttpService).inSingletonScope();
@@ -30,7 +33,6 @@ container.bind<PaymentService>(iocServices.paymentService).to(DefaultPaymentServ
 
 container.bind<ChallengesStore>(iocStores.challengesStore).to(ChallengesStore).inSingletonScope();
 container.bind<ChallengeStore>(iocStores.challengeStore).to(ChallengeStore).inSingletonScope();
-container.bind<ChallengesBoardStore>(iocStores.challengesBoardStore).to(ChallengesBoardStore).inSingletonScope();
 container.bind<AuthStore>(iocStores.authStore).to(AuthStore).inSingletonScope();
 container.bind<UserRoleStore>(iocStores.userRoleStore).to(UserRoleStore).inTransientScope();
 container.bind<StreamerProfileStore>(iocStores.streamerProfileStore).to(StreamerProfileStore).inSingletonScope();
@@ -38,3 +40,7 @@ container.bind<DonaterStore>(iocStores.donaterStore).to(DonaterStore).inTransien
 container.bind<StreamersStore>(iocStores.streamersStore).to(StreamersStore).inSingletonScope();
 container.bind<ChallengeOrderStore>(iocStores.challengeOrderStore).to(ChallengeOrderStore).inSingletonScope();
 container.bind<ChallengesTempStorageStore>(iocStores.challengesTempStorageStore).to(ChallengesTempStorageStore).inSingletonScope();
+container.bind<ChallengesBoardPaginationStore>(iocStores.challengesBoardPaginationStore).to(ChallengesBoardPaginationStore).inSingletonScope();
+container.bind<ChallengesBoardFiltersStore>(iocStores.challengesBoardFiltersStore).to(ChallengesBoardFiltersStore).inSingletonScope();
+container.bind<ChallengesBoardStore>(iocStores.challengesBoardStore).to(ChallengesBoardStore).inSingletonScope();
+container.bind<ChallengeForAddingStore>(iocStores.challengeForAddingStore).to(ChallengeForAddingStore).inSingletonScope();

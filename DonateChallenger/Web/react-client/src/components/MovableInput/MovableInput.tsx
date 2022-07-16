@@ -1,5 +1,6 @@
 import React from 'react';
 import './styles.css';
+
 export interface MovableInputProps {
      onChange: React.ChangeEventHandler<HTMLInputElement>;
      className?: string;
@@ -10,9 +11,18 @@ export interface MovableInputProps {
 }
 
 const MovableInput = (props: MovableInputProps) => {
+
      const className = `movable_input ${props.className}`
+
      return (
-          <input onBlur={props.onBlur} onFocus={props.onFocus} placeholder={props.placeholder} value={props.value} spellCheck={false} className={className} onChange={props.onChange}/>
+          <input onBlur={props.onBlur}
+               onFocus={props.onFocus}
+               placeholder={props.placeholder}
+               value={props.value}
+               spellCheck={false}
+               className={className}
+               onChange={props.onChange}
+          />
      );
 };
 

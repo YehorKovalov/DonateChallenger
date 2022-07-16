@@ -33,9 +33,7 @@ export default class StreamerProfileStore {
      }
 
      profile: StreamerProfile = null!;
-
      nicknameInput: InputWithValidation<string> = null!;
-
      minDonatePriceInput: InputWithValidation<string> = null!;
 
      public getStreamerProfile = async () => {

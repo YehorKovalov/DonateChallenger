@@ -1,11 +1,10 @@
 import { inject, injectable } from "inversify";
 import { makeAutoObservable } from "mobx";
-import { OperationCanceledException } from "typescript";
 import { PaymentService } from "../../services/PaymentService";
 import iocServices from "../../utilities/ioc/iocServices";
 import iocStores from "../../utilities/ioc/iocStores";
-import ChallengesTempStorageStore from "../ChallengesTempStorageStore";
-import StreamersStore from "./StreamersStore";
+import ChallengesTempStorageStore from "../global/ChallengesTempStorageStore";
+import StreamersStore from "../states/StreamersStore";
 
 @injectable()
 export default class ChallengeOrderStore {
@@ -19,10 +18,11 @@ export default class ChallengeOrderStore {
      }
 
      public makeOrder = async () => {
+
           const streamer = this.streamersStore.selectedStreamer;
-          const storageUpdatingResult = await this.challengesTempStorageStore.addChallenge(streamer.streamerId);
+          const storageUpdatingResult = await this.challengesTempStorageStore.addChallengeToStorage(streamer.streamerId);
           if (!storageUpdatingResult) {
-               throw OperationCanceledException;
+               return;
           }
 
           const sum = this.challengesTempStorageStore.getDonationsSumPrice();

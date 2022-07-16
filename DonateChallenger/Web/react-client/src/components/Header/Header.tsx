@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react';
 import { Container, Nav, Navbar } from 'react-bootstrap';
 import AuthStore from '../../oidc/AuthStore';
-import StreamerProfile from '../../pages/StreamerProfilePage';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
 import Brand from '../Brand';

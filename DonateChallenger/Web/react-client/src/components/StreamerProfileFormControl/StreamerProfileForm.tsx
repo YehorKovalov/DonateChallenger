@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react';
-import { Button, CloseButton, ListGroup, Toast } from 'react-bootstrap';
+import { Button, ListGroup, Toast } from 'react-bootstrap';
 import MovableInput from '../MovableInput';
 import './styles.css';
 

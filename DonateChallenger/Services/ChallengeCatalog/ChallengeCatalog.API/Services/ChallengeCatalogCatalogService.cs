@@ -70,21 +70,21 @@ public class ChallengeCatalogCatalogService : BaseDataService<ChallengeCatalogDb
         });
     }
 
-    public async Task<GetPaginatedChallengesResponse<CurrentChallengeDto>?> GetPaginatedCurrentChallengesAsync(GetPaginatedStreamerChallengesRequest<ChallengeFilter> request)
+    public async Task<GetPaginatedChallengesResponse<CurrentChallengeDto>?> GetPaginatedCurrentChallengesAsync(GetPaginatedStreamerChallengesRequest<ChallengeFilter, SortChallengeBy> request)
     {
         var result = await GetPaginatedChallengesAsyncInternal(request);
 
         return result is not null ? _mapper.Map<GetPaginatedChallengesResponse<CurrentChallengeDto>>(result) : null;
     }
 
-    public async Task<GetPaginatedChallengesResponse<CompletedChallengeDto>?> GetPaginatedCompletedChallengesAsync(GetPaginatedStreamerChallengesRequest<ChallengeFilter> request)
+    public async Task<GetPaginatedChallengesResponse<CompletedChallengeDto>?> GetPaginatedCompletedChallengesAsync(GetPaginatedStreamerChallengesRequest<ChallengeFilter, SortChallengeBy> request)
     {
         var result = await GetPaginatedChallengesAsyncInternal(request, getCompletedChallenges: true);
 
         return result is not null ? _mapper.Map<GetPaginatedChallengesResponse<CompletedChallengeDto>>(result) : null;
     }
 
-    public async Task<GetPaginatedChallengesResponse<SkippedChallengeDto>?> GetPaginatedSkippedChallengesAsync(GetPaginatedStreamerChallengesRequest<ChallengeFilter> request)
+    public async Task<GetPaginatedChallengesResponse<SkippedChallengeDto>?> GetPaginatedSkippedChallengesAsync(GetPaginatedStreamerChallengesRequest<ChallengeFilter, SortChallengeBy> request)
     {
         var result = await GetPaginatedChallengesAsyncInternal(request, getSkippedChallenges: true);
 
@@ -126,7 +126,7 @@ public class ChallengeCatalogCatalogService : BaseDataService<ChallengeCatalogDb
     }
 
     private async Task<GetPaginatedChallengesResponse<ChallengeDto>?> GetPaginatedChallengesAsyncInternal(
-        GetPaginatedStreamerChallengesRequest<ChallengeFilter> request, bool getSkippedChallenges = false, bool getCompletedChallenges = false)
+        GetPaginatedStreamerChallengesRequest<ChallengeFilter, SortChallengeBy> request, bool getSkippedChallenges = false, bool getCompletedChallenges = false)
     {
         return await ExecuteSafeAsync(async () =>
         {
@@ -140,9 +140,10 @@ public class ChallengeCatalogCatalogService : BaseDataService<ChallengeCatalogDb
                 return null;
             }
 
-            HandleFilters(request.Filters, out var minPriceFilter, out var sortByCreatedTimeFilter);
+            HandleFilters(request.Filters, out var minPriceFilter);
+            HandleSorting(request.SortBy, out var sortByCreatedTime, out var sortByMinDonatePrice);
 
-            var result = await _challengeCatalogRepository.GetPaginatedCurrentChallengesAsync(request.CurrentPage, request.ChallengesPerPage, request.StreamerId, minPriceFilter, sortByCreatedTimeFilter, getSkippedChallenges, getCompletedChallenges);
+            var result = await _challengeCatalogRepository.GetPaginatedCurrentChallengesAsync(request.CurrentPage, request.ChallengesPerPage, request.StreamerId, minPriceFilter, sortByCreatedTime, sortByMinDonatePrice, getSkippedChallenges, getCompletedChallenges);
 
             return new GetPaginatedChallengesResponse<ChallengeDto>
             {
@@ -155,10 +156,9 @@ public class ChallengeCatalogCatalogService : BaseDataService<ChallengeCatalogDb
         });
     }
 
-    private void HandleFilters(IDictionary<ChallengeFilter, int>? filters, out int? minPriceFilter, out int? sortByCreatedTimeFilter)
+    private void HandleFilters(IDictionary<ChallengeFilter, int>? filters, out int? minPriceFilter)
     {
         minPriceFilter = null;
-        sortByCreatedTimeFilter = null;
         if (filters == null)
         {
             return;
@@ -168,10 +168,25 @@ public class ChallengeCatalogCatalogService : BaseDataService<ChallengeCatalogDb
         {
             minPriceFilter = minPrice;
         }
+    }
 
-        if (filters!.TryGetValue(ChallengeFilter.SortByCreatedTime, out var sortByCreatedTime))
+    private void HandleSorting(IDictionary<SortChallengeBy, bool>? sorting, out bool? sortByCreatedTime, out bool? sortByMinDonatePrice)
+    {
+        sortByCreatedTime = null;
+        sortByMinDonatePrice = null;
+        if (sorting == null)
         {
-            sortByCreatedTimeFilter = sortByCreatedTime;
+            return;
+        }
+
+        if (sorting.TryGetValue(SortChallengeBy.CreatedTime, out var byCreatedTime))
+        {
+            sortByCreatedTime = byCreatedTime;
+        }
+
+        if (sorting.TryGetValue(SortChallengeBy.MinDonatePrice, out var byMinDonatePrice))
+        {
+            sortByCreatedTime = byMinDonatePrice;
         }
     }
 
@@ -185,7 +200,7 @@ public class ChallengeCatalogCatalogService : BaseDataService<ChallengeCatalogDb
                && donatePrice > 0;
     }
 
-    private bool GetPaginatedChallengesRequestStateIsValid(GetPaginatedStreamerChallengesRequest<ChallengeFilter> request)
+    private bool GetPaginatedChallengesRequestStateIsValid(GetPaginatedStreamerChallengesRequest<ChallengeFilter, SortChallengeBy> request)
     {
         return request.CurrentPage >= 0
                && request.ChallengesPerPage > 0;

@@ -1,6 +1,7 @@
 import { observer } from "mobx-react";
+import { useEffect } from "react";
 import { ChallengeStatusEnum } from "../../models/ChallengeStatusEnum";
-import ChallengesStore from "../../stores/components/ChallengesStore";
+import ChallengesBoardStore from "../../stores/containers/ChallengesBoardStore";
 import { useInjection } from "../../utilities/ioc/ioc.react";
 import iocStores from "../../utilities/ioc/iocStores";
 import NavLink from "../NavLink";
@@ -9,7 +10,12 @@ import './styles.css';
 
 const NavChallengeStatusList = observer(() => {
 
-     const store = useInjection<ChallengesStore>(iocStores.challengesStore);
+     const store = useInjection<ChallengesBoardStore>(iocStores.challengesBoardStore);
+
+     useEffect(() => {
+          const fetchGetChallengesByCurrentStatus = async () => { await store.getChallengesByCurrentStatus(); }
+          fetchGetChallengesByCurrentStatus();
+     }, [store.currentChallengeStatus])
 
      return (
           <li>
@@ -18,15 +24,15 @@ const NavChallengeStatusList = observer(() => {
                     <ul className="menu-dropdown">
                          <li>
                               <ChallengeStatus title={ChallengeStatusEnum.Current}
-                                   onClick={async () => await store.getChallengesByStatus(ChallengeStatusEnum.Current)}/>
+                                   onClick={() => store.currentChallengeStatus = ChallengeStatusEnum.Current}/>
                          </li>
                          <li>
                               <ChallengeStatus title={ChallengeStatusEnum.Completed}
-                                   onClick={async () => await store.getChallengesByStatus(ChallengeStatusEnum.Completed)}/>
+                                   onClick={() => store.currentChallengeStatus = ChallengeStatusEnum.Completed}/>
                          </li>
                          <li>
                               <ChallengeStatus title={ChallengeStatusEnum.Skipped}
-                                   onClick={async () => await store.getChallengesByStatus(ChallengeStatusEnum.Skipped)}/>
+                                   onClick={() => store.currentChallengeStatus = ChallengeStatusEnum.Skipped}/>
                          </li>
                     </ul>
                </span>

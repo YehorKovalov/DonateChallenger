@@ -3,7 +3,7 @@ import React from 'react';
 import ButtonWithMovableBorder from '../../components/ButtonWithMovableBorder';
 import ChallengeForm from '../../components/ChallengeForm';
 import OrderSearch from '../../components/StreamerSearch';
-import ChallengeOrderStore from '../../stores/components/ChallengeOrderStore';
+import ChallengeOrderStore from '../../stores/containers/ChallengeOrderStore';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
 import './styles.css';
@@ -28,7 +28,8 @@ const OrderForm = observer(() => {
                          <ChallengeForm />
                     </div>
                </div>
-               <ButtonWithMovableBorder onClick={challengeOrderStore.makeOrder} title='Send Challenge' className='d-block m-auto p-auto'/>
+               <ButtonWithMovableBorder onClick={challengeOrderStore.makeOrder}
+                    title='Send' className='d-block m-auto p-auto'/>
           </div>
      );
 });
