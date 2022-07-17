@@ -23,14 +23,15 @@ namespace Identity.API.Extensions
             }
         }
 
-        private static async Task RetryActionOnFailureWithDelay(Func<Task> action, int delayInMilliseconds = 1000)
+        private static async Task RetryActionOnFailureWithDelay(Func<Task> action, int delayInMilliseconds = 10000)
         {
             try
             {
                 await action.Invoke();
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"{ex} An error occurred creating the DB.");
                 await Task.Delay(delayInMilliseconds);
                 await RetryActionOnFailureWithDelay(async () => await action.Invoke());
             }
