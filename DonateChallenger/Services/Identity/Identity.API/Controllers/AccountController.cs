@@ -1,5 +1,6 @@
-﻿using Identity.API.Models.Account;
-
+﻿using System.Security.Claims;
+using Identity.API.Data.Entities;
+using Identity.API.Models.Account;
 
 namespace Identity.API.Controllers
 {
@@ -68,6 +69,10 @@ namespace Identity.API.Controllers
                 if (result.Succeeded)
                 {
                     var user = await _userManager.FindByNameAsync(model.Username);
+                    var roles = await _userManager.GetRolesAsync(user);
+                    var roleClaims = roles.Select(role => new Claim(JwtClaimTypes.Role, role)).ToList();
+                    await _userManager.AddClaimsAsync(user, roleClaims);
+                    
                     await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.Client.ClientId));
 
                     if (context != null)
@@ -198,7 +203,8 @@ namespace Identity.API.Controllers
         {
             if (ModelState.IsValid)
             {
-                var nicknameAlreadyExists = await _userManager.Users.AnyAsync(f => f.Nickname == model.Nickname);
+                var nicknameAlreadyExists = await _userManager.Users
+                    .AnyAsync(f => f.Nickname == model.Nickname);
                 if (nicknameAlreadyExists)
                 {
                     ModelState.AddModelError(string.Empty, "Nickname already exists");

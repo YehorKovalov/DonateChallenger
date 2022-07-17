@@ -30,7 +30,6 @@ public class StreamerBffController : ControllerBase
         var result = await _streamerService.GetMinDonatePriceAsync(streamerId);
         return Ok(result);
     }
-
     
     [HttpPost]
     [ProducesResponseType(typeof(ChangeStreamerProfileDataResponse<double>), (int) HttpStatusCode.OK)]
