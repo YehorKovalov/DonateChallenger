@@ -3,7 +3,7 @@ using Infrastructure.MessageBus.Enums;
 using Infrastructure.MessageBus.Messages;
 using MassTransit;
 
-namespace ChallengeOrder.API.Consumer;
+namespace ChallengeOrder.API.Consumers;
 
 public class MessageAddingChallengesStatusAndPaymentIdConsumer : IConsumer<MessageAddingChallengesStatusAndPaymentId>
 {
@@ -25,6 +25,7 @@ public class MessageAddingChallengesStatusAndPaymentIdConsumer : IConsumer<Messa
     {
         var message = context.Message;
         _logger.LogInformation($"MessageAddingChallengesAndPaymentId ---> {nameof(message.PaymentId)}: {message.PaymentId}; {nameof(message.AddingIsSucceeded)}: {message.AddingIsSucceeded};");
+
         if (!message.AddingIsSucceeded || string.IsNullOrWhiteSpace(message.PaymentId))
         {
             _logger.LogError("MessageAddingChallengesAndPaymentId ---> Message state is not valid");

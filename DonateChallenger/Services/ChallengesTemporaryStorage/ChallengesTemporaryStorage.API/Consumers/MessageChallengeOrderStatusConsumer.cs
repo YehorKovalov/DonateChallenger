@@ -19,17 +19,17 @@ public class MessageChallengeOrderStatusConsumer : IConsumer<MessageChallengeOrd
     public async Task Consume(ConsumeContext<MessageChallengeOrderStatus> context)
     {
         var status = context.Message.ChallengeOrderStatus;
-        _logger.LogInformation($"---> MessageChallengeOrderStatusConsumer's received message with OrderStatus: {status}");
+        _logger.LogInformation($"---> {nameof(MessageChallengeOrderStatus)} ---> Message arrived with OrderStatus: {status}");
         if (status == ChallengeOrderStatus.Created)
         {
             var basketIsDeleted = await _temporaryStorage.DeleteAsync();
             _logger.LogInformation(basketIsDeleted
-                ? "MessageChallengeOrderStatusConsumer ---> Basket is deleted while consuming"
-                : "MessageChallengeOrderStatusConsumer ---> Basket is not deleted consuming");
+                ? $"{nameof(MessageChallengeOrderStatus)} ---> Basket is deleted while consuming"
+                : $"{nameof(MessageChallengeOrderStatus)} ---> Basket is not deleted consuming");
         }
         else if (status == ChallengeOrderStatus.Canceled)
         {
-            _logger.LogError("MessageChallengeOrderStatusConsumer ---> OrderStatus = status");
+            _logger.LogError($"{nameof(MessageChallengeOrderStatus)} ---> OrderStatus = status");
         }
     }
 }
