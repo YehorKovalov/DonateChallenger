@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Identity.API.Helpers;
 
-namespace Identity.API.Models
+namespace Identity.API.Data.Entities
 {
     public class ApplicationUser : IdentityUser
     {
