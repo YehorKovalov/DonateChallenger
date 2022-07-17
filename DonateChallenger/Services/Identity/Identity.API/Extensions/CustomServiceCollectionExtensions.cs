@@ -96,6 +96,7 @@ public static class CustomServiceCollectionExtensions
     public static IServiceCollection AddAppDependencies(this IServiceCollection services)
     {
         services.AddTransient<IStreamerService, StreamerService>();
+        services.AddScoped<IProfileService, IdentityProfileService>();
         services.AddScoped<IDbContextWrapper<AppDbContext>, DbContextWrapper<AppDbContext>>();
 
         return services;
