@@ -9,8 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ChallengesTemporaryStorage.API.Controllers;
 
 [ApiController]
-[Authorize(Policy = AuthPolicy.AllowEndUserPolicy)]
-[Scope("challengesTemporaryStorage")]
+[Scope("challenges-temporary-storage.bff")]
 [Route(Defaults.DefaultRoute)]
 public class ChallengesTemporaryStorageBffController : ControllerBase
 {
@@ -19,7 +18,6 @@ public class ChallengesTemporaryStorageBffController : ControllerBase
     public ChallengesTemporaryStorageBffController(IChallengesTemporaryStorageService temporaryStorage) => _temporaryStorage = temporaryStorage;
 
     [HttpGet]
-    [AllowAnonymous]
     [ProducesResponseType(typeof(GetChallengesTemporaryStorageResponse<string>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Get()
     {
@@ -29,7 +27,6 @@ public class ChallengesTemporaryStorageBffController : ControllerBase
     }
 
     [HttpPost]
-    [AllowAnonymous]
     [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Update(UpdateChallengesTemporaryStorageRequest<string> request)
     {

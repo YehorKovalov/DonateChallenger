@@ -5,19 +5,60 @@ namespace Identity.API
     public static class Config
     {
         private static IConfiguration _configuration;
-
-        public static IEnumerable<IdentityResource> Resources => new List<IdentityResource>
+        private const string RoleClaim = "role";
+        public static IEnumerable<IdentityResource> IdentityResources => new List<IdentityResource>
         {
             new IdentityResources.OpenId(),
-            new IdentityResources.Profile()
+            new IdentityResources.Profile(),
+            new IdentityResource
+            {
+                Name = RoleClaim,
+                UserClaims = new List<string> { RoleClaim }
+            }
+        };
+
+        public static IEnumerable<ApiResource> ApiResources => new[]
+        {
+            new ApiResource
+            {
+                Name = "challenge-catalog",
+                DisplayName = "Challenge Catalog",
+                Scopes = new List<string> { "challenge-catalog.bff" },
+                ApiSecrets = new List<Secret> { new Secret("secret".Sha256()) },
+                UserClaims = new List<string> { RoleClaim }
+            },
+            new ApiResource
+            {
+                Name = "challenge-order",
+                DisplayName = "Challenge Order",
+                Scopes = new List<string> { "challenge-order.bff" },
+                ApiSecrets = new List<Secret> { new Secret("secret".Sha256()) },
+                UserClaims = new List<string> { RoleClaim }
+            },
+            new ApiResource
+            {
+                Name = "payment",
+                DisplayName = "Payment",
+                Scopes = new List<string> { "paypal-payment.bff", "paypal-payment.execute" },
+                ApiSecrets = new List<Secret> { new Secret("secret".Sha256()) },
+                UserClaims = new List<string> { RoleClaim }
+            },
+            new ApiResource
+            {
+                Name = "challenges-temporary-storage",
+                DisplayName = "Challenges Temporary Storage",
+                Scopes = new List<string> { "challenge-temporary-storage.bff" },
+                ApiSecrets = new List<Secret> { new Secret("secret".Sha256()) },
+                UserClaims = new List<string> { RoleClaim }
+            },
         };
 
         public static IEnumerable<ApiScope> Scopes => new List<ApiScope>
         {
-            new ApiScope("challengeCatalog", "Challenge Catalog"),
-            new ApiScope("challengeOrder", "Challenge Order"),
-            new ApiScope("paypalPayment", "Paypal Payment"),
-            new ApiScope("challengesTemporaryStorage", "Challenges Temporary Storage"),
+            new ApiScope("challenge-catalog.bff", "Challenge Catalog BFF") { UserClaims = { RoleClaim } },
+            new ApiScope("challenge-order.bff", "Challenge Order BFF") { UserClaims = { RoleClaim } },
+            new ApiScope("paypal-payment.bff", "Paypal Payment BFF") { UserClaims = { RoleClaim} },
+            new ApiScope("challenges-temporary-storage.bff", "Challenges Temporary Storage BFF") { UserClaims = { RoleClaim } },
         };
 
         public static IEnumerable<Client> GetClients()
@@ -29,6 +70,7 @@ namespace Identity.API
             var paymentUrl = _configuration?["PaymentUrl"] ?? throw new ArgumentNullException();
             var challengesTemporaryStorageUrl = _configuration?["ChallengesTemporaryStorageUrl"] ?? throw new ArgumentNullException();
             var globalUrl = _configuration?["GlobalUrl"] ?? throw new ArgumentNullException();
+
             return new List<Client>
             {
                 new Client
@@ -42,6 +84,8 @@ namespace Identity.API
                     RequirePkce = true,
                     RequireClientSecret = false,
                     AllowAccessTokensViaBrowser = true,
+                    AlwaysIncludeUserClaimsInIdToken = true,
+                    AlwaysSendClientClaims = true,
 
                     // ClientUri = globalUrl,
                     // RedirectUris =
@@ -68,7 +112,9 @@ namespace Identity.API
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "challengeCatalog", "paypalPayment", "challengeOrder", "challengesTemporaryStorage"
+                        "challenge-catalog.bff", "paypal-payment.bff",
+                        "challenge-order.bff", "challenges-temporary-storage.bff",
+                        RoleClaim
                     }
                 },
                 new Client
@@ -85,7 +131,7 @@ namespace Identity.API
 
                     AllowedScopes =
                     {
-                        "challengeCatalog"
+                        "challenge-catalog.bff"
                     }
                 },
                 new Client
@@ -102,7 +148,7 @@ namespace Identity.API
 
                     AllowedScopes =
                     {
-                        "challengeOrder"
+                        "challenge-order.bff"
                     }
                 },
                 new Client
@@ -118,7 +164,8 @@ namespace Identity.API
                     PostLogoutRedirectUris = { $"{paymentUrl}/swagger/" },
                     AllowedScopes =
                     {
-                        "paypalPayment"
+                        "paypal-payment.bff",
+                        "paypal-payment.execute"
                     }
                 },
                 new Client
@@ -134,7 +181,7 @@ namespace Identity.API
                     PostLogoutRedirectUris = { $"{challengesTemporaryStorageUrl}/swagger/" },
                     AllowedScopes =
                     {
-                        "challengesTemporaryStorage"
+                        "challenges-temporary-storage.bff"
                     }
                 },
             };

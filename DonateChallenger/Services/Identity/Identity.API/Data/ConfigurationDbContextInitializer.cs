@@ -22,32 +22,29 @@ namespace Identity.API.Data
         {
             if (!await context.Clients.AnyAsync())
             {
-                var clients = Config.GetClients();
-                foreach (var client in clients)
-                {
-                    await context.Clients.AddAsync(client.ToEntity());
-                }
+                var clients = Config.GetClients().Select(s => s.ToEntity());
+                await context.Clients.AddRangeAsync(clients);
+                await context.SaveChangesAsync();
+            }
 
+            if (!await context.ApiResources.AnyAsync())
+            {
+                var apiResources = Config.ApiResources.Select(s => s.ToEntity());
+                await context.ApiResources.AddRangeAsync(apiResources);
                 await context.SaveChangesAsync();
             }
 
             if (!await context.IdentityResources.AnyAsync())
             {
-                foreach (var resource in Config.Resources)
-                {
-                    await context.IdentityResources.AddAsync(resource.ToEntity());
-                }
-
+                var identityResources = Config.IdentityResources.Select(s => s.ToEntity());
+                await context.IdentityResources.AddRangeAsync(identityResources);
                 await context.SaveChangesAsync();
             }
 
             if (!await context.ApiScopes.AnyAsync())
             {
-                foreach (var api in Config.Scopes)
-                {
-                    await context.ApiScopes.AddAsync(api.ToEntity());
-                }
-
+                var apiScopes = Config.Scopes.Select(s => s.ToEntity());
+                await context.ApiScopes.AddRangeAsync(apiScopes);
                 await context.SaveChangesAsync();
             }
         }

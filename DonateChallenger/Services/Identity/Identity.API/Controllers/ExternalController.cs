@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Identity.API.Data.Entities;
 using Microsoft.AspNetCore.Http;
 
 namespace Identity.API.Controllers

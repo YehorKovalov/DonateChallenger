@@ -1,4 +1,5 @@
 using Identity.API.Data;
+using Identity.API.Data.Entities;
 using Identity.API.Helpers;
 using Identity.API.Models.DTOs;
 using Identity.API.Models.Responses;

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Identity.API.Data.Entities;
 
 namespace Identity.API.Models.Account;
 

@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ChallengeOrder.API.Controllers;
 
-[Authorize]
-[Scope("challengeOrder")]
+[Authorize(Policy = AuthPolicy.AdminOnlyPolicy)]
+[Scope("challenge-order.bff")]
 [ApiController]
 [Route(Defaults.DefaultRoute)]
 public class ChallengeOrderBffController : ControllerBase
