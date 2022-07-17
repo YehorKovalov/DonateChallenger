@@ -19,14 +19,14 @@ export default class DefaultChallengesTempStorageService implements ChallengesTe
      private readonly challengesTempStorageRoute = process.env.REACT_APP_CHALLENGES_TEMP_STORAGE_CONTROLLER_ROUTE;
 
      public async getStorage(): Promise<GetChallengesTemporaryStorageResponse<string>> {
-          const headers = await this.authStore.getAuthorizedHeaders();
+          const headers = await this.authStore.tryGetAuthorizedHeaders();
           const url = `${this.challengesTempStorageRoute}/get`;
           var response = await this.httpService.send<GetChallengesTemporaryStorageResponse<string>>(url, MethodType.GET, headers);
           return { ...response.data };
      }
 
      public async updateStorage(dataJson: string): Promise<boolean> {
-          const headers = await this.authStore.getAuthorizedHeaders();
+          const headers = await this.authStore.tryGetAuthorizedHeaders();
           const url = `${this.challengesTempStorageRoute}/update`;
           const body: UpdateChallengesTemporaryStorageRequest<string> = {
                data: dataJson
