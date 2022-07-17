@@ -10,6 +10,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.6" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.5" />
         <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -19,6 +21,15 @@
 
     <ItemGroup>
       <Folder Include="Controllers" />
+      <Folder Include="Data\Entities" />
+      <Folder Include="Data\EntitiesConfigurations" />
+      <Folder Include="Models" />
+      <Folder Include="Repositories" />
+      <Folder Include="Services" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Infrastracture\Infrastructure\Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>
