@@ -1,7 +1,7 @@
+using Identity.API.Data.Entities;
 using Infrastructure;
 using Infrastructure.Seeding;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 
 namespace Identity.API.Data
 {
@@ -15,6 +15,7 @@ namespace Identity.API.Data
                 await dbContext.Database.MigrateAsync();
             }
 
+            await EnsureSeedRoles(dbContext);
             await EnsureSeedUsers(dbContext);
         }
 
@@ -26,40 +27,68 @@ namespace Identity.API.Data
                 var response = StreamerIdsProvider.StreamerIds;
                 var password = new PasswordHasher<ApplicationUser>();
                 var userStore = new UserStore<ApplicationUser>(dbContext);
-                var email = string.Empty;
-                var userName = string.Empty;
-                var id = string.Empty;
-                var hashed = string.Empty;
-                var merchantId = string.Empty;
                 var testMerchantIds = new string[] { "5WSFVT57ASS6U", "V9YL22Q4UQ3PA", "MCB5L4ZBENTWC" };
 
                 for (var i = 0; i < response.StreamersAmount; i++)
                 {
-                    email = $"challenger.test{i}@mail.com";
-                    userName = $"challenger.test{i}@mail.com";
-                    id = response.Ids[i];
-
+                    var email = $"challenger.test{i}@mail.com";
+                    var userName = $"challenger.test{i}@mail.com";
+                    var merchantId = testMerchantIds[i % 3];
+                    var nickname = $"Donater {i}";
+                    var minDonatePriceInDollars = random.Next(1, 100);
+                    
                     var user = new ApplicationUser
                     {
-                        Id = id,
+                        Id = response.Ids[i],
                         Email = email,
                         NormalizedEmail = email.Normalize(),
                         UserName = userName,
                         NormalizedUserName = userName.Normalize(),
-                        Nickname = $"Donater {i}",
-                        MinDonatePriceInDollars = random.Next(1, 100),
-                        MerchantId = testMerchantIds[i % 3],
+                        Nickname = nickname,
+                        MinDonatePriceInDollars = minDonatePriceInDollars,
+                        MerchantId = merchantId,
                         SecurityStamp = Guid.NewGuid().ToString(),
                         EmailConfirmed = true,
                         LockoutEnabled = false
                     };
                     
-                    hashed = password.HashPassword(user,"secret");
-                    user.PasswordHash = hashed;
-
+                    user.PasswordHash = password.HashPassword(user,"secret");
+                    await userStore.AddToRoleAsync(user, "streamer");
                     await userStore.CreateAsync(user);
                 }
 
+                await dbContext.SaveChangesAsync();
+            }
+        }
+
+        private async Task EnsureSeedRoles(AppDbContext dbContext)
+        {
+            if (!await dbContext.Roles.AnyAsync())
+            {
+                var roles = new List<IdentityRole>
+                {
+                    new IdentityRole
+                    {
+                        Name = "admin",
+                        NormalizedName = "admin"
+                    },
+                    new IdentityRole
+                    {
+                        Name = "manager",
+                        NormalizedName = "manager"
+                    },
+                    new IdentityRole
+                    {
+                        Name = "streamer",
+                        NormalizedName = "streamer"
+                    },
+                    new IdentityRole
+                    {
+                        Name = "donater",
+                        NormalizedName = "donater"
+                    },
+                };
+                await dbContext.AddRangeAsync(roles);
                 await dbContext.SaveChangesAsync();
             }
         }
