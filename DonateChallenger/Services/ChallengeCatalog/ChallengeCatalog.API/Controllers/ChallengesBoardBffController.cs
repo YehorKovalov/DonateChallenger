@@ -12,8 +12,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace ChallengeCatalog.API.Controllers;
 
 [ApiController]
-[Scope("challengeCatalog")]
-[Authorize(Policy = AuthPolicy.AllowEndUserPolicy)]
+[Authorize(Policy = AuthPolicy.StreamerPolicy)]
+[Scope("challenge-catalog.bff")]
 [Route(Defaults.DefaultRoute)]
 public class ChallengesBoardBffController : ControllerBase
 {
