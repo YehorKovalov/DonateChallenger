@@ -60,7 +60,7 @@ export default class DefaultChallengeCatalogService implements ChallengeCatalogS
      public async skipChallengeByChallengeId(challengeId: number) : Promise<boolean> {
           const url = `${this.ChallengeBoardApiRoute}/skip?challengeid=${challengeId}`;
           const method = MethodType.POST;
-          const headers = await this.authStore.getAuthorizedHeaders();
+          const headers = await this.authStore.tryGetAuthorizedHeaders();
 
           const response = await this.httpService.send<boolean>(url, method, headers);
           
@@ -70,7 +70,7 @@ export default class DefaultChallengeCatalogService implements ChallengeCatalogS
      public async completeChallengeByChallengeId(challengeId: number) : Promise<boolean> {
           const url = `${this.ChallengeBoardApiRoute}/complete?challengeid=${challengeId}`;
           const method = MethodType.POST;
-          const headers = await this.authStore.getAuthorizedHeaders();
+          const headers = await this.authStore.tryGetAuthorizedHeaders();
 
           const response = await this.httpService.send<boolean>(url, method, headers);
 
@@ -80,10 +80,7 @@ export default class DefaultChallengeCatalogService implements ChallengeCatalogS
      private async getPaginatedChallengesInternal<T>(url: string, currentPage: number, challengesPerPage: number, sortByCreatedTime?: boolean, sortByMinDonatePrice?: boolean, minPriceFilter?: number)
           : Promise<T> {
 
-          const headers: ApiHeader = {
-               contentType: ContentType.Json,
-               authorization: this.authStore.user?.access_token
-          }
+          const headers = await this.authStore.tryGetAuthorizedHeaders();
           const method = MethodType.POST;
 
           const filters = this.handleFilters(minPriceFilter);
