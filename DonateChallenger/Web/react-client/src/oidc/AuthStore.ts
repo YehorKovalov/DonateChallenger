@@ -73,7 +73,7 @@ export default class AuthStore {
           this.removeRedirectLocation();
      };
 
-     public getAuthorizedHeaders = async (): Promise<ApiHeader> => {
+     public tryGetAuthorizedHeaders = async (): Promise<ApiHeader> => {
           await this.tryGetUser();
           const headers: ApiHeader = {
                contentType: ContentType.Json,

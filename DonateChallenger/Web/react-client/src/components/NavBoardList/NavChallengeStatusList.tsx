@@ -1,5 +1,4 @@
 import { observer } from "mobx-react";
-import { useEffect } from "react";
 import { ChallengeStatusEnum } from "../../models/ChallengeStatusEnum";
 import ChallengesBoardStore from "../../stores/containers/ChallengesBoardStore";
 import { useInjection } from "../../utilities/ioc/ioc.react";
@@ -11,11 +10,6 @@ import './styles.css';
 const NavChallengeStatusList = observer(() => {
 
      const store = useInjection<ChallengesBoardStore>(iocStores.challengesBoardStore);
-
-     useEffect(() => {
-          const fetchGetChallengesByCurrentStatus = async () => { await store.getChallengesByCurrentStatus(); }
-          fetchGetChallengesByCurrentStatus();
-     }, [store.currentChallengeStatus])
 
      return (
           <li>

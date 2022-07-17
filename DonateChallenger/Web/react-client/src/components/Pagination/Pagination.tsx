@@ -1,8 +1,6 @@
 import { observer } from 'mobx-react-lite';
-import { useEffect } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import ChallengesBoardPaginationStore from '../../stores/components/ChallengesBoardPaginationStore';
-import ChallengesBoardStore from '../../stores/containers/ChallengesBoardStore';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
 import Arrow from '../Arrow';
@@ -11,13 +9,7 @@ import PaginationButton from '../PaginationButton';
 
 const Pagination = observer(() => {
 
-     const board = useInjection<ChallengesBoardStore>(iocStores.challengesBoardStore);
      const pagination = useInjection<ChallengesBoardPaginationStore>(iocStores.challengesBoardPaginationStore);
-
-     useEffect(() => {
-          const fetchGetChallengesByCurrentStatus = async () => { await board.getChallengesByCurrentStatus(); }
-          fetchGetChallengesByCurrentStatus();
-     }, [pagination.currentPage]);
 
           return (
           <Row className='justify-content-md-center text-center pb-5 pt-5'>
