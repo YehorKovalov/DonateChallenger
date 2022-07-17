@@ -21,9 +21,11 @@ public class ChallengesTemporaryStorageService : IChallengesTemporaryStorageServ
     public async Task<GetChallengesTemporaryStorageResponse<TResult?>> GetAsync<TResult>(string? userId = null)
     {
         var key = _httpContextAccessor.GetUserId();
-        _logger.LogWarning($"{nameof(UpdateAsync)} ---> key is : {key}");
+        _logger.LogWarning($"{nameof(GetAsync)} ---> key is : {key}");
 
         var result = await _cacheService.GetAsync<TResult>(key);
+        _logger.LogWarning($"{nameof(GetAsync)} ---> result: {result}");
+
         return new GetChallengesTemporaryStorageResponse<TResult?> { Data = result };
     }
 

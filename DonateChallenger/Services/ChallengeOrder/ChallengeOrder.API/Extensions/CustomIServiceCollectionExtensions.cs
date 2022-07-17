@@ -1,4 +1,4 @@
-using ChallengeOrder.API.Consumer;
+using ChallengeOrder.API.Consumers;
 using ChallengeOrder.API.Data;
 using ChallengeOrder.API.Repositories;
 using ChallengeOrder.API.Repositories.Abstractions;
