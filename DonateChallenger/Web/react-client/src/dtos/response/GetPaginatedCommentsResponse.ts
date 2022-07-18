@@ -1,3 +1,7 @@
 export interface GetPaginatedCommentsResponse<TComment> {
-     data: TComment
+     totalCount: number;
+     totalPages: number;
+     commentsPerPage: number;
+     currentPage: number;
+     data: TComment[];
 }
