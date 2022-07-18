@@ -21,11 +21,7 @@
 
     <ItemGroup>
       <Folder Include="Controllers" />
-      <Folder Include="Data\Entities" />
-      <Folder Include="Data\EntitiesConfigurations" />
-      <Folder Include="Models" />
-      <Folder Include="Repositories" />
-      <Folder Include="Services" />
+      <Folder Include="Models\Requests" />
     </ItemGroup>
 
     <ItemGroup>

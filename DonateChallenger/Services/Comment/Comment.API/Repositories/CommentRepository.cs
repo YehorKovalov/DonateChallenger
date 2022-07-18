@@ -17,9 +17,9 @@ public class CommentRepository : ICommentRepository
         _logger = logger;
     }
 
-    public async Task<PaginatedComments> GetPaginated(int currentPage, int messagesPerPage, long challengeId, string? userId = null)
+    public async Task<PaginatedComments> GetPaginated(int currentPage, int commentsPerPage, long challengeId, string? userId = null)
     {
-        _logger.LogInformation($"{nameof(GetPaginated)} ---> {nameof(currentPage)}: {currentPage}; {nameof(messagesPerPage)}: {messagesPerPage}; {nameof(challengeId)}: {challengeId}");
+        _logger.LogInformation($"{nameof(GetPaginated)} ---> {nameof(currentPage)}: {currentPage}; {nameof(commentsPerPage)}: {commentsPerPage}; {nameof(challengeId)}: {challengeId}");
         var query = _context.Comments.AsQueryable();
 
         query = query.Where(q => q.ChallengeId == challengeId);
@@ -31,8 +31,8 @@ public class CommentRepository : ICommentRepository
 
         var totalCount = await query.LongCountAsync();
 
-        var comments = await query.Skip(currentPage * messagesPerPage)
-            .Take(messagesPerPage)
+        var comments = await query.Skip(currentPage * commentsPerPage)
+            .Take(commentsPerPage)
             .ToListAsync();
 
         _logger.LogInformation($"{nameof(GetPaginated)} ---> {nameof(totalCount)}: {totalCount}; {nameof(comments)} amount: {comments.Count};");
@@ -87,7 +87,7 @@ public class CommentRepository : ICommentRepository
         return result?.Entity?.CommentId;
     }
 
-    public async Task<bool?> Delete(long commentId)
+    public async Task<bool> Delete(long commentId)
     {
         _logger.LogInformation($"{nameof(Delete)} ---> {nameof(commentId)}: {commentId}");
         var comment = new CommentEntity { CommentId = commentId };

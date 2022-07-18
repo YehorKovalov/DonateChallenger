@@ -1,6 +1,6 @@
-namespace Comment.API.Data.Entities;
+namespace Comment.API.Models.DTOs;
 
-public class CommentEntity
+public class CommentDto
 {
     public long CommentId { get; set; }
 
