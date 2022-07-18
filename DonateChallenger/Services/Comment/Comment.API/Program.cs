@@ -7,6 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 builder.Services
     .AddDbContexts(configuration)
+    .AddAppCors()
+    .AddAppDependencies()
     .AddCustomAuthorization(configuration)
     .AddCustomConfiguredSwagger("Comment", configuration, Scopes())
     .AddControllers(o => o.Filters.Add(typeof(HttpGlobalExceptionFilter)))
@@ -17,6 +19,7 @@ var app = builder.Build();
 app.UseCustomConfiguredSwaggerWithUI(configuration, "Comment", "commentswaggerui");
 
 app.UseRouting();
+app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
 app.UseAuthorization();
@@ -28,5 +31,6 @@ app.Run();
 
 Dictionary<string, string> Scopes() => new Dictionary<string, string>
 {
-    { "comment", "comment" }
+    { "comment.bff", "comment.bff" },
+    { "comment.manager", "comment.manager" },
 };

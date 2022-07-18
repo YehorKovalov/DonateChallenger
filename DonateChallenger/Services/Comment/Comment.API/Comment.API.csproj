@@ -20,11 +20,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers" />
-      <Folder Include="Models\Requests" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\..\Infrastracture\Infrastructure\Infrastructure.csproj" />
     </ItemGroup>
 
