@@ -12,4 +12,6 @@ export default {
      challengesBoardFiltersStore: Symbol("challengesBoardFiltersStore"),
      challengesBoardStore: Symbol("challengesBoardStore"),
      challengeForAddingStore: Symbol("challengeForAddingStore"),
+     commentPagination: Symbol("commentPagination"),
+     commentsStore: Symbol("commentsStore"),
 }

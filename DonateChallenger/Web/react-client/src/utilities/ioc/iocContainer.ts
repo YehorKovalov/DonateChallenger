@@ -21,6 +21,9 @@ import ChallengesBoardPaginationStore from "../../stores/components/ChallengesBo
 import ChallengesBoardFiltersStore from "../../stores/components/ChallengesBoardFiltersStore";
 import ChallengesBoardStore from "../../stores/containers/ChallengesBoardStore";
 import ChallengeForAddingStore from "../../stores/states/ChallengeForAddingStore";
+import DefaultCommentService, { CommentService } from "../../services/CommentService";
+import CommentsStore from "../../stores/states/CommentsStore";
+import CommentPagination from "../../stores/components/CommentPagination";
 
 export const container = new Container();
 container.bind<HttpService>(iocServices.httpService).to(DefaultHttpService).inSingletonScope();
@@ -30,6 +33,7 @@ container.bind<LocalStorageService>(iocServices.localStorageService).to(DefaultL
 container.bind<StreamerService>(iocServices.streamerService).to(DefaultStreamerService).inTransientScope();
 container.bind<ChallengesTempStorageService>(iocServices.challengesTempStorageService).to(DefaultChallengesTempStorageService).inTransientScope();
 container.bind<PaymentService>(iocServices.paymentService).to(DefaultPaymentService).inTransientScope();
+container.bind<CommentService>(iocServices.commentService).to(DefaultCommentService).inTransientScope();
 
 container.bind<ChallengesStore>(iocStores.challengesStore).to(ChallengesStore).inSingletonScope();
 container.bind<ChallengeStore>(iocStores.challengeStore).to(ChallengeStore).inSingletonScope();
@@ -44,3 +48,5 @@ container.bind<ChallengesBoardPaginationStore>(iocStores.challengesBoardPaginati
 container.bind<ChallengesBoardFiltersStore>(iocStores.challengesBoardFiltersStore).to(ChallengesBoardFiltersStore).inSingletonScope();
 container.bind<ChallengesBoardStore>(iocStores.challengesBoardStore).to(ChallengesBoardStore).inSingletonScope();
 container.bind<ChallengeForAddingStore>(iocStores.challengeForAddingStore).to(ChallengeForAddingStore).inSingletonScope();
+container.bind<CommentPagination>(iocStores.commentPagination).to(CommentPagination).inSingletonScope();
+container.bind<CommentsStore>(iocStores.commentsStore).to(CommentsStore).inSingletonScope();
