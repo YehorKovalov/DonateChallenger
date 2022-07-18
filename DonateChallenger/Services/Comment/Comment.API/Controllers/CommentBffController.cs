@@ -27,7 +27,7 @@ public class CommentBffController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(AddCommentResponse<CommentDto>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(AddCommentResponse<long?>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Add(AddCommentRequest request)
     {
         var result = await _commentService.AddCommentAsync(request.UserId, request.ChallengeId, request.Message);
