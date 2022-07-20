@@ -1,6 +1,6 @@
 namespace Identity.API.Models.Responses;
 
-public class ChangeStreamerProfileDataResponse<TData>
+public class ChangeProfileDataResponse<TData>
 {
     public TData ChangedData { get; set; } = default!;
     
