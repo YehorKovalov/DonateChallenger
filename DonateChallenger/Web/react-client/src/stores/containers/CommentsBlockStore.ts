@@ -5,7 +5,6 @@ import { CommentService } from "../../services/CommentService";
 import CommentsConstants from "../../utilities/CommentsConstants";
 import iocServices from "../../utilities/ioc/iocServices";
 import iocStores from "../../utilities/ioc/iocStores";
-import { formPages } from "../../utilities/PagesProvider";
 import CommentPaginationStore from "../components/CommentPaginationStore";
 import CommentsStore from "../states/CommentsStore";
 import CommentStore from "../states/CommentStore";
@@ -27,18 +26,28 @@ export default class CommentsBlockStore {
 
      showBlock = false;
 
-     public getComments = async (challengeId: number, notIngoreGettingCommentsIfChallengeIdDuplicated = false) => {
+     public getComments = async (challengeId: number) => {
 
-          if (notIngoreGettingCommentsIfChallengeIdDuplicated || challengeId != this.commentStore.currentChallengeId) {
+          if (challengeId != this.commentStore.currentChallengeId) {
+
+               this.pagination.currentPage = 0;
                await this.commentsStore.getChallengeComments(this.pagination.currentPage, this.commentsPerPage, challengeId);
                
                const totalPages = this.commentsStore.paginatedComments!.totalPages;
 
                this.pagination.pagesAmount = totalPages;
-               this.pagination.buttons = formPages(totalPages);
           }
 
           this.commentStore.currentChallengeId = challengeId;
+     }
+
+     public getCommentsWithcurrentChallengeId = async () => {
+
+               await this.commentsStore.getChallengeComments(this.pagination.currentPage, this.commentsPerPage, this.commentStore.currentChallengeId);
+               
+               const totalPages = this.commentsStore.paginatedComments!.totalPages;
+
+               this.pagination.pagesAmount = totalPages;
      }
 
      public addComment = async () => {
@@ -54,12 +63,10 @@ export default class CommentsBlockStore {
                const message = this.commentStore.message;
                const challengeId = this.commentStore.currentChallengeId;
                
-               console.log(`${message}; ${challengeId}; ${userId}`);
 
                const response = await this.commentService.addCommentToChallenge(message, challengeId, userId);
                if (response.data) {
-                    console.log(response.data)
-                    await this.getComments(challengeId, true);
+                    await this.getCommentsWithcurrentChallengeId()
                     this.commentStore.message = "";
                }
           }

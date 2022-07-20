@@ -1,5 +1,7 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { makeAutoObservable } from "mobx";
+import iocStores from "../../utilities/ioc/iocStores";
+import CommentsBlockStore from "../containers/CommentsBlockStore";
 
 @injectable()
 export default class CommentPaginationStore {
@@ -10,17 +12,16 @@ export default class CommentPaginationStore {
 
      currentPage = 0;
      pagesAmount = 0;
-     buttons: number[] = [];
 
-     public changePageOnNext = async () => {
+     public changePageOnNext = () => {
           this.changePageOn(this.currentPage + 1);
      }
 
-     public changePageOnPrevious = async () => {
+     public changePageOnPrevious = () => {
           this.changePageOn(this.currentPage - 1);
      }
      
-     public changePageOn = async (pageNumber: number) => {
+     private changePageOn = (pageNumber: number) => {
           if ((pageNumber >= this.pagesAmount) || pageNumber < 0) {
                return;
           }
