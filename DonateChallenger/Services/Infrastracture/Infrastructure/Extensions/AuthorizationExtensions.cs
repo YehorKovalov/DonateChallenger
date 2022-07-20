@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using IdentityModel;
 using Infrastructure.Identity;
 using Infrastructure.Identity.Configurations;
 using Microsoft.AspNetCore.Authorization;
@@ -26,10 +27,15 @@ public static class AuthorizationExtensions
             });
         services.AddAuthorization(options =>
         {
-            options.AddRolePolicy(AuthPolicy.DonaterPolicy, AppRoles.Donater);
+            options.AddPolicy(AuthPolicy.AuthorizedWithScope, policy =>
+            {
+                policy.AuthenticationSchemes.Add(AuthScheme.Bearer);
+                policy.AddRequirements(new ScopeRequirement());
+                policy.RequireClaim(JwtClaimTypes.Role);
+            });
+            options.AddRolePolicy(AuthPolicy.StreamerPolicy, AppRoles.Streamer);
             options.AddRolePolicy(AuthPolicy.AdminOnlyPolicy, AppRoles.Admin);
             options.AddRolePolicy(AuthPolicy.ManagerMinimumPolicy, AppRoles.Manager, AppRoles.Admin);
-            options.AddRolePolicy(AuthPolicy.StreamerPolicy, AppRoles.Streamer);
         });
 
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -42,7 +48,7 @@ public static class AuthorizationExtensions
         {
             policy.AuthenticationSchemes.Add(AuthScheme.Bearer);
             policy.AddRequirements(new ScopeRequirement());
-            policy.RequireClaim("role", role);
+            policy.RequireClaim(JwtClaimTypes.Role, role);
         });
     }
 }

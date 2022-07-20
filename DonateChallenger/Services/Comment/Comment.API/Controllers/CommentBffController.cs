@@ -5,13 +5,15 @@ using Comment.API.Models.Responses;
 using Comment.API.Services.Abstractions;
 using Infrastructure;
 using Infrastructure.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Comment.API.Controllers;
 
 [ApiController]
-[Route(Defaults.DefaultRoute)]
+[Authorize(Policy = AuthPolicy.AuthorizedWithScope)]
 [Scope("comment.bff")]
+[Route(Defaults.DefaultRoute)]
 public class CommentBffController : ControllerBase
 {
     private readonly ICommentService _commentService;
@@ -19,6 +21,7 @@ public class CommentBffController : ControllerBase
     public CommentBffController(ICommentService commentService) => _commentService = commentService;
 
     [HttpPost]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(GetPaginatedCommentsResponse<CommentDto>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> PaginatedComments(GetPaginatedCommentsRequest request)
     {
