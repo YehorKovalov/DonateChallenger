@@ -21,18 +21,20 @@ export default class CommentsStore {
      paginatedComments: PaginatedComments<Comment> | null = null;
 
      public getChallengeComments = async (currentPage: number, commentsPerPage: number, challengeId: number) => {
+          console.log(`get comments ${challengeId}`)
 
-          const paginatedChallenges = await this.commentService.getPaginatedComments(currentPage, commentsPerPage, challengeId);
-          this.paginatedComments = paginatedChallenges;
+          const paginatedComments = await this.commentService.getPaginatedComments(currentPage, commentsPerPage, challengeId);
+          this.paginatedComments = paginatedComments
      }
 
      public getUserCommentsForChallenge = async (currentPage: number, commentsPerPage: number, challengeId: number, userId: string) => {
 
           if (!this.authStore.user || !(this.authStore.userRole == UserRole.Manager)) {
+               alert("You don't have an access")
                return;
           }
 
-          const paginatedChallenges = await this.commentService.getUserPaginatedComments(currentPage, commentsPerPage, challengeId, userId);
-          this.paginatedComments = paginatedChallenges;
+          const paginatedComments = await this.commentService.getUserPaginatedComments(currentPage, commentsPerPage, challengeId, userId);
+          this.paginatedComments = paginatedComments;
      }
 }
