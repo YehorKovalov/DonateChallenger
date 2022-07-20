@@ -6,7 +6,10 @@ public class CommentDto
 
     public string Message { get; set; } = null!;
 
+    public DateTime Date { get; set; }
+
     public long ChallengeId { get; set; }
 
     public string UserId { get; set; } = null!;
+    public string Username { get; set; } = null!;
 }
