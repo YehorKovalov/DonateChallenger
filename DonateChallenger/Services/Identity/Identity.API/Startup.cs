@@ -28,7 +28,8 @@ namespace Identity.API
                 .AddConfiguredCors(_configuration)
                 .AddAppDependencies()
                 .AddConfiguredIdentityServer<ApplicationUser>(_configuration)
-                .ConfigureMvc();
+                .ConfigureMvc()
+                .AddConfiguredMessageBus(_configuration);
         }
 
         public void Configure(IApplicationBuilder app)
