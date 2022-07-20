@@ -7,4 +7,5 @@ export default {
      challengesTempStorageService: Symbol('challengesTempStorageService'),
      paymentService: Symbol('paymentService'),
      commentService: Symbol('commentService'),
+     userService: Symbol('userService'),
 }
