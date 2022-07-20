@@ -16,6 +16,8 @@ public class CommentConfiguration : IEntityTypeConfiguration<CommentEntity>
 
         builder.Property(s => s.ChallengeId).IsRequired();
 
+        builder.Property(s => s.Date).IsRequired();
+
         builder.Property(s => s.UserId).IsRequired();
     }
 }

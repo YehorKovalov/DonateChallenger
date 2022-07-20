@@ -24,23 +24,31 @@ public class CommentRepository : ICommentRepository
 
         query = query.Where(q => q.ChallengeId == challengeId);
 
-        if (string.IsNullOrWhiteSpace(userId))
+        if (!string.IsNullOrWhiteSpace(userId))
         {
             query = query.Where(q => q.UserId == userId);
         }
 
         var totalCount = await query.LongCountAsync();
 
-        var comments = await query.Skip(currentPage * commentsPerPage)
-            .Take(commentsPerPage)
+        query = query
+            .Skip(currentPage * commentsPerPage)
+            .Take(commentsPerPage);
+
+        var usersIdsForFindingNicknames = await query
+            .Select(s => s.UserId)
+            .Distinct()
             .ToListAsync();
+
+        var comments = await query.ToListAsync();
 
         _logger.LogInformation($"{nameof(GetPaginated)} ---> {nameof(totalCount)}: {totalCount}; {nameof(comments)} amount: {comments.Count};");
 
         return new PaginatedComments
         {
             Comments = comments,
-            TotalCount = totalCount
+            TotalCount = totalCount,
+            UsersIdsForFindingNicknames = usersIdsForFindingNicknames
         };
     }
 
@@ -65,7 +73,8 @@ public class CommentRepository : ICommentRepository
         {
             UserId = userId,
             ChallengeId = challengeId,
-            Message = message
+            Message = message,
+            Date = DateTime.UtcNow
         });
 
         await _context.SaveChangesAsync();
