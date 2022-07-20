@@ -4,21 +4,28 @@ using Comment.API.Models.Responses;
 using Comment.API.Repositories.Abstractions;
 using Comment.API.Services.Abstractions;
 using Infrastructure.Helpers;
+using Infrastructure.MessageBus.Messages.Requests;
+using Infrastructure.MessageBus.Messages.Responses;
 using Infrastructure.Services;
 using Infrastructure.Services.Abstractions;
+using MassTransit;
 
 namespace Comment.API.Services;
 
 public class CommentService : BaseDataService<AppDbContext>, ICommentService
 {
     private readonly ICommentRepository _repository;
+    private readonly IRequestClient<MessageFindUsernamesByIdsRequest> _findUsernamesByIdsRequestClient;
+
     public CommentService(
         IDbContextWrapper<AppDbContext> dbContext,
         ILogger<BaseDataService<AppDbContext>> logger,
-        ICommentRepository repository)
+        ICommentRepository repository,
+        IRequestClient<MessageFindUsernamesByIdsRequest> findUsernamesByIdsRequestClient)
         : base(dbContext, logger)
     {
         _repository = repository;
+        _findUsernamesByIdsRequestClient = findUsernamesByIdsRequestClient;
     }
 
     public async Task<GetPaginatedCommentsResponse<CommentDto>> GetPaginatedCommentsAsync(int currentPage, int commentsPerPage, long challengeId, string? userId = null)
@@ -36,15 +43,34 @@ public class CommentService : BaseDataService<AppDbContext>, ICommentService
             }
 
             var paginatedComments = await _repository.GetPaginated(currentPage, commentsPerPage, challengeId, userId);
+            var usersIds = paginatedComments.UsersIdsForFindingNicknames.ToList();
 
             var totalCount = paginatedComments.TotalCount;
             var totalPages = PageCounter.Count(totalCount, commentsPerPage);
+            var userNames = await GetUsernames(usersIds);
+
+            if (userNames == null)
+            {
+                Logger.LogError($"{nameof(GetPaginatedCommentsAsync)} ---> userNames is null");
+                return new GetPaginatedCommentsResponse<CommentDto>
+                {
+                    Data = Enumerable.Empty<CommentDto>()
+                };
+            }
+
+            foreach (var name in userNames)
+            {
+                Logger.LogInformation($"key: {name.Key}; value: {name.Value};");
+            }
+
             var data = paginatedComments.Comments.Select(s => new CommentDto
             {
                 CommentId = s.CommentId,
                 ChallengeId = s.ChallengeId,
                 Message = s.Message,
-                UserId = s.UserId
+                UserId = s.UserId,
+                Date = s.Date,
+                Username = userNames[s.UserId]
             }).ToList();
 
             Logger.LogInformation($"{nameof(GetPaginatedCommentsAsync)} ---> {nameof(data)} amount: {data.Count()}; {nameof(totalPages)}: {totalPages}");
@@ -85,7 +111,8 @@ public class CommentService : BaseDataService<AppDbContext>, ICommentService
                     CommentId = comment.CommentId,
                     ChallengeId = comment.ChallengeId,
                     Message = comment.Message,
-                    UserId = comment.UserId
+                    UserId = comment.UserId,
+                    Date = comment.Date
                 }
             };
         });
@@ -149,6 +176,20 @@ public class CommentService : BaseDataService<AppDbContext>, ICommentService
 
             return new DeleteCommentResponse<bool> { Data = result };
         });
+    }
+
+    private async Task<IDictionary<string, string>?> GetUsernames<TId>(IList<TId> usersIds)
+    {
+        Logger.LogInformation($"{nameof(GetCommentByCommentIdAsync)} ---> {nameof(GetUsernames)} ---> users ids is sent with amount: {usersIds.Count()}");
+
+        var response = await _findUsernamesByIdsRequestClient.GetResponse<MessageFindUsernamesByIdsResponse>(new
+        {
+            Data = usersIds
+        });
+
+        Logger.LogInformation($"{nameof(GetCommentByCommentIdAsync)} ---> {nameof(GetUsernames)} ---> Response is received - data amount: {response.Message.Data?.Count()}");
+
+        return response.Message?.Data;
     }
 
     private bool GetPaginatedCommentsStateIsValid(int currentPage, int commentsPerPage, long challengeId, string? userId = null)
