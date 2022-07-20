@@ -10,6 +10,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="MassTransit" Version="7.3.1" />
+        <PackageReference Include="MassTransit.AspNetCore" Version="7.3.1" />
+        <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.3.1" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.6" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.5" />
         <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
@@ -20,6 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Infrastracture\Infrastructure.MessageBus\Infrastructure.MessageBus.csproj" />
       <ProjectReference Include="..\..\Infrastracture\Infrastructure\Infrastructure.csproj" />
     </ItemGroup>
 

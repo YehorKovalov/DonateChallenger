@@ -9,6 +9,7 @@ builder.Services
     .AddDbContexts(configuration)
     .AddAppCors()
     .AddAppDependencies()
+    .AddConfiguredMessageBus(configuration)
     .AddCustomAuthorization(configuration)
     .AddCustomConfiguredSwagger("Comment", configuration, Scopes())
     .AddControllers(o => o.Filters.Add(typeof(HttpGlobalExceptionFilter)))
