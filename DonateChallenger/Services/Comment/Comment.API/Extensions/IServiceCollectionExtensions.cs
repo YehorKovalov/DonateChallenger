@@ -3,8 +3,11 @@ using Comment.API.Repositories;
 using Comment.API.Repositories.Abstractions;
 using Comment.API.Services;
 using Comment.API.Services.Abstractions;
+using Infrastructure.MessageBus.Extensions;
+using Infrastructure.MessageBus.Messages.Requests;
 using Infrastructure.Services;
 using Infrastructure.Services.Abstractions;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace Comment.API.Extensions;
@@ -45,6 +48,21 @@ public static class IServiceCollectionExtensions
             });
         });
 
+        return services;
+    }
+
+    public static IServiceCollection AddConfiguredMessageBus(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddMassTransit(x =>
+        {
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.ConfigureRabbitMqConnectionProperties(configuration);
+            });
+            x.AddRequestClient<MessageFindUsernamesByIdsRequest>();
+        });
+
+        services.AddMassTransitHostedService(true);
         return services;
     }
 }
