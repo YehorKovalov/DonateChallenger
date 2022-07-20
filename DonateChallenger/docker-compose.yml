@@ -138,6 +138,9 @@ services:
       - PathBase=http://donate-challenger.com:4005
       - Authorization__Authority=http://donate-challenger.com:4000
       - ConnectionStrings__CommentConnectionString=server=host.docker.internal;port=8002;database=DonateChallenger.Services.CommentDb;uid=postgres;password=postgres;
+      - RabbitMQ__Uri=rabbitmq://host.docker.internal:5672
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
     command: dotnet run
     depends_on:
       - postgres
@@ -157,6 +160,9 @@ services:
       - ConfigurationDbConnection=server=host.docker.internal;database=DonateChallenger.Services.IdentityDb.Configuration;User ID=sa;Password=MSSQLServerStrongPassword123!;
       - PersistedGrantDbConnection=server=host.docker.internal;database=DonateChallenger.Services.IdentityDb.PersistedGrant;User ID=sa;Password=MSSQLServerStrongPassword123!;
       - PathBase=http://donate-challenger.com:4000
+      - RabbitMQ__Uri=rabbitmq://host.docker.internal:5672
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
     depends_on:
       - ms-sql-server
     ports:
