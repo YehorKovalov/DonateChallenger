@@ -1,6 +1,5 @@
 import { inject, injectable } from "inversify";
 import { makeAutoObservable } from "mobx";
-import moment from "moment";
 import { ChallengeCatalogService } from "../../services/ChallengeCatalogService";
 import iocServices from "../../utilities/ioc/iocServices";
 import iocStores from "../../utilities/ioc/iocStores";
@@ -47,8 +46,6 @@ export default class ChallengeStore {
                console.log("skipChallenge ---> challenge's not skipped");
           }
      }
-
-     public getUserFriendlyDateTime = (time: string) => { return moment(new Date(time), "YYYYMMDD").fromNow(); }
 
      private waitForBluring = async (action: () => Promise<void>) => {
           setTimeout(async () => {

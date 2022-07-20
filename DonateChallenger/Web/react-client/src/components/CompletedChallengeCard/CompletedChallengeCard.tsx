@@ -1,27 +1,53 @@
-import { Card, Col, Row } from 'react-bootstrap';
-import ChallengeStore from '../../stores/states/ChallengeStore';
+import { observer } from 'mobx-react';
+import { useEffect } from 'react';
+import { Card, Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+import CommentPaginationStore from '../../stores/components/CommentPaginationStore';
+import DateTimeStore from '../../stores/components/DateTimeStore';
+import CommentsBlockStore from '../../stores/containers/CommentsBlockStore';
+import CommentStore from '../../stores/states/CommentStore';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
-import { ChallengeCardProps } from '../CurrentChallengeCard/CurrentChallengeCard';
 
-const CompletedChallengeCard = (props: ChallengeCardProps) => {
-     const store = useInjection<ChallengeStore>(iocStores.challengeStore);
+export interface CompletedChallengeCardProps {
+     challengeId: number,
+     title?: string,
+     description: string,
+     donatePrice: number,
+     donateFrom: number,
+     createdTime: string
+}
+
+const CompletedChallengeCard = observer((props: CompletedChallengeCardProps) => {
+
+     const commentBlockStore = useInjection<CommentsBlockStore>(iocStores.commentsBlockStore);
+     const dateTimeStore = useInjection<DateTimeStore>(iocStores.dateTimeStore);
+
+     const handleClick = async () => {
+          commentBlockStore.showBlock = true;
+          await commentBlockStore.getComments(props.challengeId);
+     }
 
      return (
-          <Card bg='dark' key={props.challengeId} className='color-silver border'>
-               <Card.Body>
-                    <Row className='mb-2'>
-                         <Col lg={8} className='donate-donater text-center'>{props.donateFrom}</Col>
-                         <Col lg={4}>{store.getUserFriendlyDateTime(props.createdTime)}</Col>
-                    </Row>
-                    <div className='donate-price'>{props.donatePrice}$</div>
-                    <div><span className='color-silver'>{props.title}</span></div>
-                    <div className='border-top pt-4 pb-5 mt-2 pe-1 ps-2'>
-                         <span className='donate-description'>{props.description}</span>
-                    </div>
-               </Card.Body>
-          </Card>
+          <OverlayTrigger
+               placement="top"
+               overlay={<Tooltip id="button-tooltip-2" className='color-silver fs-4'>Show comments</Tooltip>}
+          >
+               <Card bg='dark' className='color-silver hover_white border' role={"button"}
+                         key={props.challengeId} onClick={() => handleClick()}>
+                    <Card.Body>
+                         <Row className='mb-2'>
+                              <Col lg={8} className='donate-donater text-center'>{props.donateFrom}</Col>
+                              <Col lg={4}>{dateTimeStore.getUserFriendlyDateTime(props.createdTime)}</Col>
+                         </Row>
+                         <div className='donate-price'>{props.donatePrice}$</div>
+                         <div><span className='color-silver'>{props.title}</span></div>
+                         <div className='border-top pt-4 pb-5 mt-2 pe-1 ps-2'>
+                              <span className='donate-description'>{props.description}</span>
+                         </div>
+                    </Card.Body>
+               </Card>
+        </OverlayTrigger>
      );
-};
+});
 
 export default CompletedChallengeCard;

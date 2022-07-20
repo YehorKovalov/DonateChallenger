@@ -4,12 +4,15 @@ import { InputWithValidation } from "../../models/InputWithValidation";
 import { StreamerProfile } from "../../models/StreamerProfile";
 import AuthStore from "../../oidc/AuthStore";
 import { StreamerService } from "../../services/StreamerService";
+import { UserService } from "../../services/UserService";
 import iocServices from "../../utilities/ioc/iocServices";
 import iocStores from "../../utilities/ioc/iocStores";
 
 @injectable()
 export default class StreamerProfileStore {
+
      @inject(iocServices.streamerService) private readonly streamerService!: StreamerService;
+     @inject(iocServices.userService) private readonly userService!: UserService;
      @inject(iocStores.authStore) private readonly authStore!: AuthStore;
      private emptyString = '';
      constructor() {
@@ -37,6 +40,7 @@ export default class StreamerProfileStore {
      minDonatePriceInput: InputWithValidation<string> = null!;
 
      public getStreamerProfile = async () => {
+          
           await this.getStreamerId();
           var response = await this.streamerService.getStreamerProfileById(this.profile.streamerId);
           this.profile = response.data;

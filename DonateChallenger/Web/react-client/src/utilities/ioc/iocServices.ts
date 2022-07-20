@@ -5,5 +5,7 @@ export default {
      localStorageService: Symbol('localStorageService'),
      streamerService: Symbol('streamerService'),
      challengesTempStorageService: Symbol('challengesTempStorageService'),
-     paymentService: Symbol('paymentService')
+     paymentService: Symbol('paymentService'),
+     commentService: Symbol('commentService'),
+     userService: Symbol('userService'),
 }

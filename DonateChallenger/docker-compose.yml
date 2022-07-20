@@ -127,6 +127,27 @@ services:
     ports:
       - 4004:4004
   
+  comment.api:
+    container_name: lde.comment.api
+    build:
+      context: .
+      dockerfile: ./Services/Comment/Comment.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:4005
+      - PathBase=http://donate-challenger.com:4005
+      - Authorization__Authority=http://donate-challenger.com:4000
+      - ConnectionStrings__CommentConnectionString=server=host.docker.internal;port=8002;database=DonateChallenger.Services.CommentDb;uid=postgres;password=postgres;
+      - RabbitMQ__Uri=rabbitmq://host.docker.internal:5672
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+    command: dotnet run
+    depends_on:
+      - postgres
+      - pgadmin4
+    ports:
+      - 4005:4005
+  
   identity.api:
     container_name: lde.identity.api
     build:
@@ -139,6 +160,9 @@ services:
       - ConfigurationDbConnection=server=host.docker.internal;database=DonateChallenger.Services.IdentityDb.Configuration;User ID=sa;Password=MSSQLServerStrongPassword123!;
       - PersistedGrantDbConnection=server=host.docker.internal;database=DonateChallenger.Services.IdentityDb.PersistedGrant;User ID=sa;Password=MSSQLServerStrongPassword123!;
       - PathBase=http://donate-challenger.com:4000
+      - RabbitMQ__Uri=rabbitmq://host.docker.internal:5672
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
     depends_on:
       - ms-sql-server
     ports:
