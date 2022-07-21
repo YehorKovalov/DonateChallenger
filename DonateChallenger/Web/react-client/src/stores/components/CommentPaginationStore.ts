@@ -1,7 +1,5 @@
-import { inject, injectable } from "inversify";
+import { injectable } from "inversify";
 import { makeAutoObservable } from "mobx";
-import iocStores from "../../utilities/ioc/iocStores";
-import CommentsBlockStore from "../containers/CommentsBlockStore";
 
 @injectable()
 export default class CommentPaginationStore {

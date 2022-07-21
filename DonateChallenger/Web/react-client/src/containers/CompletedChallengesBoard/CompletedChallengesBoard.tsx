@@ -3,6 +3,7 @@ import CompletedChallengeCard from '../../components/CompletedChallengeCard';
 import ChallengesStore from '../../stores/states/ChallengesStore';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
+import CommentsBlock from '../CommentsBlock/CommentsBlock';
 
 const CompletedChallengesBoard = observer(() => {
 
@@ -15,6 +16,7 @@ const CompletedChallengesBoard = observer(() => {
                          description={c.description} donateFrom={c.donateFrom}
                          donatePrice={c.donatePrice} createdTime={c.createdTime}/>
                     )}
+               <CommentsBlock/>
           </div>
      );
 });

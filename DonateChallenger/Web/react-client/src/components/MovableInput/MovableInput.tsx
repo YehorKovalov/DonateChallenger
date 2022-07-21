@@ -8,6 +8,7 @@ export interface MovableInputProps {
      placeholder?: string;
      onFocus?: React.FocusEventHandler<HTMLInputElement>;
      onBlur?: React.ReactEventHandler<HTMLInputElement>;
+     type?: string;
 }
 
 const MovableInput = (props: MovableInputProps) => {
@@ -15,7 +16,8 @@ const MovableInput = (props: MovableInputProps) => {
      const className = `movable_input ${props.className}`
 
      return (
-          <input onBlur={props.onBlur}
+          <input type={props.type}
+               onBlur={props.onBlur}
                onFocus={props.onFocus}
                placeholder={props.placeholder}
                value={props.value}
