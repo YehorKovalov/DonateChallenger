@@ -1,5 +1,6 @@
 ﻿using Identity.API.Data;
 using Identity.API.Data.Entities;
+using Infrastructure.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -25,6 +26,7 @@ namespace Identity.API
             services
                 .AddDbContextFactory<AppDbContext>(options => options.UseSqlServer(appDbConnection))
                 .AddConfiguredIdentity<AppDbContext, ApplicationUser>()
+                .AddCustomAuthorization(_configuration)
                 .AddConfiguredCors(_configuration)
                 .AddAppDependencies()
                 .AddConfiguredIdentityServer<ApplicationUser>(_configuration)
