@@ -23,7 +23,7 @@ const CommentsBlock = observer(() => {
      const handleClose = () => commentsBlockStore.showBlock = false;
      
      useEffect(() => {
-          const fetch = async () => { await commentsBlockStore.getCommentsWithcurrentChallengeId(); }
+          const fetch = async () => { await commentsBlockStore.getCommentsWithCurrentChallengeId(); }
           fetch();
      }, [commentPaginationStore.currentPage]);
 

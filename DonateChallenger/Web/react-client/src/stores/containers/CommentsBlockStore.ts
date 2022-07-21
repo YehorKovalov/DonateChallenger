@@ -41,19 +41,16 @@ export default class CommentsBlockStore {
           this.commentStore.currentChallengeId = challengeId;
      }
 
-     public getCommentsWithcurrentChallengeId = async () => {
+     public getCommentsWithCurrentChallengeId = async () => {
 
-               await this.commentsStore.getChallengeComments(this.pagination.currentPage, this.commentsPerPage, this.commentStore.currentChallengeId);
-               
-               const totalPages = this.commentsStore.paginatedComments!.totalPages;
+          await this.commentsStore.getChallengeComments(this.pagination.currentPage, this.commentsPerPage, this.commentStore.currentChallengeId);
+          
+          const totalPages = this.commentsStore.paginatedComments!.totalPages;
 
-               this.pagination.pagesAmount = totalPages;
+          this.pagination.pagesAmount = totalPages;
      }
 
      public addComment = async () => {
-          if (!this.authStore.user) {
-               await this.authStore.tryGetUser();
-          }
 
           if (this.authStore.user && this.authStore.user.profile.role) {
 
@@ -66,7 +63,7 @@ export default class CommentsBlockStore {
 
                const response = await this.commentService.addCommentToChallenge(message, challengeId, userId);
                if (response.data) {
-                    await this.getCommentsWithcurrentChallengeId()
+                    await this.getCommentsWithCurrentChallengeId()
                     this.commentStore.message = "";
                }
           }
