@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react';
 import { Container, Nav, Navbar } from 'react-bootstrap';
+import { UserRole } from '../../models/UserRole';
 import AuthStore from '../../oidc/AuthStore';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
@@ -24,17 +25,22 @@ const Header = observer(() => {
                     <Navbar.Toggle className='ms-auto' aria-controls="responsive-navbar-nav" />
                     <Navbar.Collapse id="navbarScroll">
                          <Nav className="col-4 fs-3" navbarScroll>
+                              <NavLink href='/order'>Order</NavLink>
                               {authStore.user
                               ? <>
-                                   <NavBoardList />
-                                   <NavLink href='/profile'>Profile</NavLink>
+                                   <NavLink href='/'>Profile</NavLink>
+                                   {(authStore.userRole === UserRole.Streamer) && <NavBoardList /> }
+                                   {(authStore.userRole === UserRole.Manager) &&
+                                        <>
+                                        </>
+                                   }
+                                   {(authStore.userRole === UserRole.Admin) &&
+                                        <>
+                                        </>
+                                   }
                                    <NavLink href='/signout' ><Logout/></NavLink>
                               </>
-                              :
-                              <>
-                                   <NavLink href='/signin'><UserLoginIcon/></NavLink>
-                              </>
-                              }
+                              : <NavLink href='/signin'><UserLoginIcon/></NavLink> }
                           </Nav>
                     </Navbar.Collapse>
                </Container>

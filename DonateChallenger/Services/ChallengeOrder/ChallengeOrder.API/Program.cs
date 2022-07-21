@@ -35,5 +35,5 @@ app.Run();
 
 Dictionary<string, string> GetScopes() => new Dictionary<string, string>
 {
-    { "challengeOrder", "challengeOrder" }
+    { "challenge-order.bff", "challenge-order.bff" }
 };

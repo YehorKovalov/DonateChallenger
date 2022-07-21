@@ -9,8 +9,6 @@ using Payment.API.Services.Abstractions;
 namespace Payment.API.Controllers
 {
     [ApiController]
-    [Authorize(Policy = AuthPolicy.ManagerMinimumPolicy)]
-    [Scope("paypal-payment.execute")]
     [Route(Defaults.DefaultRoute)]
     public class PaypalPaymentExecuteController : ControllerBase
     {

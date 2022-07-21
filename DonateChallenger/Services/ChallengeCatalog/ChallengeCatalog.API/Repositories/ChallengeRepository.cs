@@ -104,25 +104,12 @@ public class ChallengeCatalogCatalogRepository : IChallengeCatalogRepository
     {
         var query = _dbContext.Challenges.AsQueryable();
 
-        if (!(await query.AnyAsync()))
-        {
-            return new PaginatedChallenges
-            {
-                TotalCount = 0,
-                Challenges = Enumerable.Empty<ChallengeEntity>()
-            };
-        }
-
         query = query.Where(q => q.StreamerId == streamerId);
 
         if (minPriceFilter.HasValue)
         {
             query = query.Where(p => p.DonatePrice >= minPriceFilter.Value);
         }
-
-        query = query.Include(q => q.ChallengeStatusEntity)
-            .Where(q => q.ChallengeStatusEntity.IsCompleted == getCompletedChallengesFilter)
-            .Where(q => q.ChallengeStatusEntity.IsSkipped == getSkippedChallengesFilter);
 
         if (sortByCreatedTime.HasValue && sortByCreatedTime.Value)
         {
@@ -134,7 +121,20 @@ public class ChallengeCatalogCatalogRepository : IChallengeCatalogRepository
             query = query.OrderByDescending(q => q.DonatePrice);
         }
 
+        query = query.Include(q => q.ChallengeStatusEntity)
+            .Where(q => q.ChallengeStatusEntity.IsCompleted == getCompletedChallengesFilter)
+            .Where(q => q.ChallengeStatusEntity.IsSkipped == getSkippedChallengesFilter);
+
         var totalCount = await query.LongCountAsync();
+
+        if (totalCount == 0)
+        {
+            return new PaginatedChallenges
+            {
+                TotalCount = 0,
+                Challenges = Enumerable.Empty<ChallengeEntity>()
+            };
+        }
 
         var challenges = await query
             .Skip(currentPage * challengesPerPage)

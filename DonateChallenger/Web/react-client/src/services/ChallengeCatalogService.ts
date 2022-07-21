@@ -5,7 +5,7 @@ import { CompletedChallengeDto } from "../dtos/DTOs/CompletedChallengeDto";
 import { GetPaginatedStreamerChallengesRequest } from "../dtos/requests/GetPaginatedStreamerChallengesRequest";
 import { ChallengesBoardFilter } from "../models/ChallengesBoardFilter";
 import iocServices from "../utilities/ioc/iocServices";
-import { ApiHeader, ContentType, HttpService, MethodType } from "./HttpService";
+import { HttpService, MethodType } from "./HttpService";
 import AuthStore from "../oidc/AuthStore";
 import iocStores from "../utilities/ioc/iocStores";
 import { GetPaginatedStreamerChallengesResponse } from "../dtos/response/GetPaginatedStreamerChallengesResponse";
@@ -84,7 +84,8 @@ export default class DefaultChallengeCatalogService implements ChallengeCatalogS
           const method = MethodType.POST;
 
           const filters = this.handleFilters(minPriceFilter);
-          const sorting = this.handleSorting(sortByCreatedTime);
+          const sorting = this.handleSorting(sortByCreatedTime, sortByMinDonatePrice);
+
           const request: GetPaginatedStreamerChallengesRequest = {
                currentPage: currentPage,
                streamerId: this.authStore.user!.profile.sub,
