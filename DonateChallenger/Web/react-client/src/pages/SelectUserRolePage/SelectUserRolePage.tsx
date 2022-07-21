@@ -1,18 +1,20 @@
 import { observer } from 'mobx-react';
 import { useEffect } from 'react';
 import AuthStore from '../../oidc/AuthStore';
-import UserRoleStore from '../../stores/global/UserRoleStore';
+import SelectUserRoleStore from '../../stores/global/SelectUserRoleStore';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
 
 const SelectUserRolePage = observer(() => {
-     const roleStore = useInjection<UserRoleStore>(iocStores.userRoleStore);
+     const roleStore = useInjection<SelectUserRoleStore>(iocStores.selectUserRoleStore);
      const authStore = useInjection<AuthStore>(iocStores.authStore);
 
      useEffect(() => {
-          const getAuthentication = async (): Promise<void> => { await authStore.tryGetUser(); };
-          getAuthentication();
-        }, [authStore]);
+          if (!authStore.user) {
+               const fetch = async () => { await authStore.tryGetUser(); }
+               fetch();
+          }
+     }, []);
 
      return (
           <div className='position-absolute top-50 start-50 translate-middle color-silver '>
