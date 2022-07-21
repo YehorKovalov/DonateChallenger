@@ -29,5 +29,6 @@ app.Run();
 
 Dictionary<string, string> GetScopes() => new Dictionary<string, string>
 {
-    { "paypalPayment", "paypalPayment" }
+    { "paypal-payment.bff", "paypal-payment.bff" },
+    { "paypal-payment.execute", "paypal-payment.execute" }
 };
