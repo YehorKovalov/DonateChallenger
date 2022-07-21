@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Form } from 'react-bootstrap';
+import AuthStore from '../../oidc/AuthStore';
 import ChallengeForAddingStore from '../../stores/states/ChallengeForAddingStore';
 import StreamersStore from '../../stores/states/StreamersStore';
 import { ChallengeFormValidation } from '../../utilities/ChallengeFormValidation';
@@ -11,8 +12,16 @@ import './styles.css';
 const ChallengeForm = observer(() => {
 
      const streamersStore = useInjection<StreamersStore>(iocStores.streamersStore);
+     const authStore = useInjection<AuthStore>(iocStores.authStore);
      const challengeForAddingStore = useInjection<ChallengeForAddingStore>(iocStores.challengeForAddingStore);
      const [formIsFocused, setFormIsFocused] = useState(false);
+
+     useEffect(() => {
+          if (!authStore.user){
+               const fetch = async () => { await authStore.tryGetUser(); }
+               fetch();
+          }
+     }, []);
 
      return (
           <Form validated={formIsFocused} onBlur={() => setFormIsFocused(false)} onFocus={() => setFormIsFocused(true)}>
@@ -34,12 +43,6 @@ const ChallengeForm = observer(() => {
                          placeholder="Donation Price..." className="order_challenge__price"
                          spellCheck={false} required
                          min={streamersStore.selectedStreamer.minDonatePrice}/>
-               </Form.Group>
-               <Form.Group>
-                    <Form.Control onChange={e => challengeForAddingStore.donateFrom.state = e.target.value}
-                         placeholder="Your nickname..." className="order_challenge__nickname"
-                         spellCheck={false} required
-                         maxLength={ChallengeFormValidation.DonaterNickname.maxLength} />
                </Form.Group>
           </Form>
      );
