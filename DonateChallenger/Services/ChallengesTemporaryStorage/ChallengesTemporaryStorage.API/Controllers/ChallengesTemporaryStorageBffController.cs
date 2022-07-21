@@ -18,6 +18,7 @@ public class ChallengesTemporaryStorageBffController : ControllerBase
     public ChallengesTemporaryStorageBffController(IChallengesTemporaryStorageService temporaryStorage) => _temporaryStorage = temporaryStorage;
 
     [HttpGet]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(GetChallengesTemporaryStorageResponse<string>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Get()
     {
@@ -27,6 +28,7 @@ public class ChallengesTemporaryStorageBffController : ControllerBase
     }
 
     [HttpPost]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Update(UpdateChallengesTemporaryStorageRequest<string> request)
     {
