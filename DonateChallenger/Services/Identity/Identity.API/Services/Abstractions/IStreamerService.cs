@@ -8,6 +8,5 @@ public interface IStreamerService
     Task<SearchStreamersByNicknameResponse<SearchedStreamerByNicknameDto>> FindStreamerByNicknameAsync(string nickname);
     Task<GetMinDonatePriceResponse<double?>> GetMinDonatePriceAsync(string streamerId);
     Task<GetStreamerProfileResponse<StreamerProfileDto>> GetStreamerProfileAsync(string streamerId);
-    Task<ChangeStreamerProfileDataResponse<double>> ChangeMinDonatePriceAsync(string streamerId, double changeOn);
-    Task<ChangeStreamerProfileDataResponse<string>> ChangeStreamerNicknameAsync(string streamerId, string newNickname);
+    Task<ChangeProfileDataResponse<double>> ChangeMinDonatePriceAsync(string streamerId, double changeOn);
 }

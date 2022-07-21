@@ -2,11 +2,14 @@ using Identity.API.Models.DTOs;
 using Identity.API.Models.Responses;
 using Identity.API.Services.Abstractions;
 using Infrastructure;
+using Infrastructure.Identity;
 
 namespace Identity.API.Controllers;
 
 [SecurityHeaders]
 [ApiController]
+[Authorize(Policy = AuthPolicy.AuthorizedWithScope)]
+[Scope("user-profile.bff")]
 [Route(Defaults.DefaultRoute)]
 public class UserProfileBffController : ControllerBase
 {

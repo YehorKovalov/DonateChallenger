@@ -9,7 +9,6 @@ global using IdentityServer4.Extensions;
 global using IdentityServer4.Models;
 global using IdentityServer4.Services;
 global using IdentityServer4.Stores;
-global using Identity.API.Models;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.AspNetCore.Authentication;
 global using Microsoft.AspNetCore.Authorization;

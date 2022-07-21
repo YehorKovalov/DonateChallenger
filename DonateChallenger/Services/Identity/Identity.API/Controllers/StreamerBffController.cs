@@ -2,11 +2,14 @@ using Identity.API.Models.DTOs;
 using Identity.API.Models.Responses;
 using Identity.API.Services.Abstractions;
 using Infrastructure;
+using Infrastructure.Identity;
 
 namespace Identity.API.Controllers;
 
 [SecurityHeaders]
+[Authorize(Policy = AuthPolicy.StreamerPolicy)]
 [ApiController]
+[Scope("streamer-profile.bff")]
 [Route(Defaults.DefaultRoute)]
 public class StreamerBffController : ControllerBase
 {
@@ -32,18 +35,10 @@ public class StreamerBffController : ControllerBase
     }
     
     [HttpPost]
-    [ProducesResponseType(typeof(ChangeStreamerProfileDataResponse<double>), (int) HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ChangeProfileDataResponse<double>), (int) HttpStatusCode.OK)]
     public async Task<IActionResult> ChangeMinDonatePrice(string streamerId, double changeOn)
     {
         var result = await _streamerService.ChangeMinDonatePriceAsync(streamerId, changeOn);
-        return Ok(result);
-    }
-
-    [HttpPost]
-    [ProducesResponseType(typeof(ChangeStreamerProfileDataResponse<string>), (int) HttpStatusCode.OK)]
-    public async Task<IActionResult> ChangeNickname(string streamerId, string newNickname)
-    {
-        var result = await _streamerService.ChangeStreamerNicknameAsync(streamerId, newNickname);
         return Ok(result);
     }
 
