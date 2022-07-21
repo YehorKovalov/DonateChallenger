@@ -1,6 +1,5 @@
 using IdentityServer4.EntityFramework.DbContexts;
 using Infrastructure;
-using Microsoft.EntityFrameworkCore;
 
 namespace Identity.API.Data;
 

@@ -1,4 +1,4 @@
-export interface ChangeStreamerProfileDataResponse<TData> {
+export interface ChangeProfileDataResponse<TData> {
      changedData: TData;
      validationErrors: string[];
      succeeded: boolean;

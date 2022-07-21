@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Identity.API.Data.Entities;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Identity.API.Models.Account;
 
@@ -20,6 +20,8 @@ public class RegisterViewModel
     [Display(Name = "Confirm password")]
     [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
     public string ConfirmPassword { get; init; }
+    
+    public IEnumerable<SelectListItem> Roles { get; set; }
 
-    public ApplicationUser User { get; init; }
+    public string Role { get; init; }
 }

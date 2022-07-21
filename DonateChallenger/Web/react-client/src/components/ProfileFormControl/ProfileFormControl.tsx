@@ -3,16 +3,17 @@ import { Button, ListGroup, Toast } from 'react-bootstrap';
 import MovableInput from '../MovableInput';
 import './styles.css';
 
-interface StreamerProfileFormControlProps {
+interface ProfileFormControlProps {
      showControl: boolean;
      onClose: () => void;
      inputValue: string | number;
      onChangeInput: React.ChangeEventHandler<HTMLInputElement>;
      onSubmit: React.MouseEventHandler<HTMLSpanElement>;
      errorList?: string[];
+     type?: string
 }
 
-const StreamerProfileForm = observer((props: StreamerProfileFormControlProps) => {
+const ProfileFormControl = observer((props: ProfileFormControlProps) => {
 
      return (
           <>
@@ -23,7 +24,7 @@ const StreamerProfileForm = observer((props: StreamerProfileFormControlProps) =>
                               {props.errorList.map(e => <ListGroup className='color-red fs-5'>{e}</ListGroup>)}
                          </ListGroup>
                          }
-                         <MovableInput value={props.inputValue} onChange={props.onChangeInput} className="ps-2 me-5"/>
+                         <MovableInput type={props.type} value={props.inputValue} onChange={props.onChangeInput} className="ps-2 me-5"/>
                          <Button variant="outline-light" onClick={props.onSubmit}>Apply</Button>
                     </Toast.Body>
                </Toast>
@@ -31,4 +32,4 @@ const StreamerProfileForm = observer((props: StreamerProfileFormControlProps) =>
      );
 });
 
-export default StreamerProfileForm;
+export default ProfileFormControl;

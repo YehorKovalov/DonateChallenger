@@ -8,12 +8,12 @@ public class AdditionalInformationViewModel
 
     public string UserId { get; set; } = null!;
 
-    [Required]
-    public string MerchantId { get; set; } = null!;
+    public string? MerchantId { get; set; }
 
     [Required]
     public string Nickname { get; set; } = null!;
 
-    [Range(0.1, Double.MaxValue)]
-    public double MinDonatePriceInDollars { get; set; }
+    public string Role { get; set; } = null!;
+
+    public double? MinDonatePriceInDollars { get; set; }
 }

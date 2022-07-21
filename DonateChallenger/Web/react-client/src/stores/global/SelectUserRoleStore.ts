@@ -2,13 +2,11 @@ import { inject, injectable } from "inversify";
 import { makeAutoObservable } from "mobx";
 import AuthStore from "../../oidc/AuthStore";
 import iocStores from "../../utilities/ioc/iocStores";
-import DonaterStore from "../DonaterStore";
 
 @injectable()
-export default class UserRoleStore {
+export default class SelectUserRoleStore {
 
      @inject(iocStores.authStore) private readonly authStore!: AuthStore;
-     @inject(iocStores.donaterStore) private readonly donaterStore!: DonaterStore;
 
      constructor() {
           makeAutoObservable(this);
@@ -19,6 +17,6 @@ export default class UserRoleStore {
      }
 
      public continueAsDonater = () => {
-          this.donaterStore.redirectToDonatingPage();
+          location.replace("/order")
      }
 }
