@@ -8,10 +8,9 @@ import iocServices from "./iocServices";
 import iocStores from "./iocStores";
 import DefaultAuthenticationService, { AuthenticationService } from "../../oidc/AuthenticationService";
 import DefaultLocalStorageService, { LocalStorageService } from "../../services/LocalStorageService";
-import UserRoleStore from "../../stores/global/UserRoleStore";
+import SelectUserRoleStore from "../../stores/global/SelectUserRoleStore";
 import DefaultStreamerService, { StreamerService } from "../../services/StreamerService";
-import StreamerProfileStore from "../../stores/components/StreamerProfileStore";
-import DonaterStore from "../../stores/DonaterStore";
+import StreamerProfileStore from "../../stores/containers/StreamerProfileStore";
 import StreamersStore from "../../stores/states/StreamersStore";
 import ChallengeOrderStore from "../../stores/containers/ChallengeOrderStore";
 import DefaultChallengesTempStorageService, { ChallengesTempStorageService } from "../../services/ChallengesTempStorageService";
@@ -28,6 +27,8 @@ import DefaultUserService, { UserService } from "../../services/UserService";
 import DateTimeStore from "../../stores/components/DateTimeStore";
 import CommentsBlockStore from "../../stores/containers/CommentsBlockStore";
 import CommentStore from "../../stores/states/CommentStore";
+import UserProfileStore from "../../stores/containers/UserProfileStore";
+import InputValidationStore from "../../stores/components/InputValidationStore";
 
 export const container = new Container();
 container.bind<HttpService>(iocServices.httpService).to(DefaultHttpService).inSingletonScope();
@@ -43,9 +44,8 @@ container.bind<UserService>(iocServices.userService).to(DefaultUserService).inTr
 container.bind<ChallengesStore>(iocStores.challengesStore).to(ChallengesStore).inSingletonScope();
 container.bind<ChallengeStore>(iocStores.challengeStore).to(ChallengeStore).inSingletonScope();
 container.bind<AuthStore>(iocStores.authStore).to(AuthStore).inSingletonScope();
-container.bind<UserRoleStore>(iocStores.userRoleStore).to(UserRoleStore).inTransientScope();
+container.bind<SelectUserRoleStore>(iocStores.selectUserRoleStore).to(SelectUserRoleStore).inTransientScope();
 container.bind<StreamerProfileStore>(iocStores.streamerProfileStore).to(StreamerProfileStore).inSingletonScope();
-container.bind<DonaterStore>(iocStores.donaterStore).to(DonaterStore).inTransientScope();
 container.bind<StreamersStore>(iocStores.streamersStore).to(StreamersStore).inSingletonScope();
 container.bind<ChallengeOrderStore>(iocStores.challengeOrderStore).to(ChallengeOrderStore).inSingletonScope();
 container.bind<ChallengesTempStorageStore>(iocStores.challengesTempStorageStore).to(ChallengesTempStorageStore).inSingletonScope();
@@ -58,3 +58,5 @@ container.bind<CommentsStore>(iocStores.commentsStore).to(CommentsStore).inSingl
 container.bind<DateTimeStore>(iocStores.dateTimeStore).to(DateTimeStore).inTransientScope();
 container.bind<CommentsBlockStore>(iocStores.commentsBlockStore).to(CommentsBlockStore).inSingletonScope();
 container.bind<CommentStore>(iocStores.commentStore).to(CommentStore).inSingletonScope();
+container.bind<UserProfileStore>(iocStores.userProfileStore).to(UserProfileStore).inSingletonScope();
+container.bind<InputValidationStore>(iocStores.inputValidationStore).to(InputValidationStore).inTransientScope();
