@@ -7,6 +7,8 @@ namespace Identity.API.Data
 {
     public class AppDbInitializer : IDbInitializer<AppDbContext>
     {
+        private const int ManagersAmount = 2;
+        private const int AdminsAmount = 2;
         public async Task Initialize(AppDbContext dbContext)
         {
             var dbIsCreated = await dbContext.Database.EnsureCreatedAsync();
@@ -34,7 +36,7 @@ namespace Identity.API.Data
                     var email = $"challenger.test{i}@mail.com";
                     var userName = $"challenger.test{i}@mail.com";
                     var merchantId = testMerchantIds[i % 3];
-                    var nickname = $"Donater {i}";
+                    var nickname = $"Streamer {i}";
                     var minDonatePriceInDollars = random.Next(1, 100);
                     
                     var user = new ApplicationUser
@@ -54,6 +56,54 @@ namespace Identity.API.Data
                     
                     user.PasswordHash = password.HashPassword(user,"secret");
                     await userStore.AddToRoleAsync(user, "streamer");
+                    await userStore.CreateAsync(user);
+                }
+
+                for (var i = 0; i < AdminsAmount; i++)
+                {
+                    var email = $"challenger-admin{i}@mail.com";
+                    var userName = $"challenger-admin{i}@mail.com";
+                    var nickname = $"{Guid.NewGuid()}";
+                    
+                    var user = new ApplicationUser
+                    {
+                        Id = $"{Guid.NewGuid()}",
+                        Email = email,
+                        NormalizedEmail = email.Normalize(),
+                        UserName = userName,
+                        NormalizedUserName = userName.Normalize(),
+                        Nickname = nickname,
+                        SecurityStamp = Guid.NewGuid().ToString(),
+                        EmailConfirmed = true,
+                        LockoutEnabled = false
+                    };
+                    
+                    user.PasswordHash = password.HashPassword(user,"admin");
+                    await userStore.AddToRoleAsync(user, "admin");
+                    await userStore.CreateAsync(user);
+                }
+
+                for (var i = 0; i < ManagersAmount; i++)
+                {
+                    var email = $"challenger-manager{i}@mail.com";
+                    var userName = $"challenger-manager{i}@mail.com";
+                    var nickname = $"Manager{i}";
+                    
+                    var user = new ApplicationUser
+                    {
+                        Id = $"{Guid.NewGuid()}",
+                        Email = email,
+                        NormalizedEmail = email.Normalize(),
+                        UserName = userName,
+                        NormalizedUserName = userName.Normalize(),
+                        Nickname = nickname,
+                        SecurityStamp = $"{Guid.NewGuid()}",
+                        EmailConfirmed = true,
+                        LockoutEnabled = false
+                    };
+                    
+                    user.PasswordHash = password.HashPassword(user,"manager");
+                    await userStore.AddToRoleAsync(user, "manager");
                     await userStore.CreateAsync(user);
                 }
 
