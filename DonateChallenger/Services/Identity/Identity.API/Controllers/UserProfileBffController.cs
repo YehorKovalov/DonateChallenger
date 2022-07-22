@@ -29,7 +29,7 @@ public class UserProfileBffController : ControllerBase
     [ProducesResponseType(typeof(GetUserProfileResponse<UserProfileDto>), (int) HttpStatusCode.OK)]
     public async Task<IActionResult> UserProfile(string userId)
     {
-        var result = await _userService.GetUserProfile(userId);
+        var result = await _userService.GetUserProfileById(userId);
         return Ok(result);
     }
 }

@@ -42,7 +42,7 @@ public class UserManagerBffController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet]
+    [HttpPost]
     [ProducesResponseType(typeof(ManagerGetPortionedUsersResponse<StreamerProfileDto>), (int) HttpStatusCode.OK)]
     public async Task<IActionResult> Streamers(ManagerGetPortionedUsersRequest request)
     {
@@ -50,7 +50,7 @@ public class UserManagerBffController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet]
+    [HttpPost]
     [ProducesResponseType(typeof(ManagerGetPortionedUsersResponse<UserProfileDto>), (int) HttpStatusCode.OK)]
     public async Task<IActionResult> All(ManagerGetPortionedUsersRequest request)
     {

@@ -41,15 +41,15 @@ public class UserService : BaseDataService<AppDbContext>, IUserService
         });
     }
 
-    public async Task<GetUserProfileResponse<UserProfileDto>> GetUserProfile(string userId)
+    public async Task<GetUserProfileResponse<UserProfileDto>> GetUserProfileById(string userId)
     {
         return await ExecuteSafeAsync(async () =>
         {
-            Logger.LogInformation($"{nameof(GetUserProfile)} ---> {nameof(userId)}: {userId}");
+            Logger.LogInformation($"{nameof(GetUserProfileById)} ---> {nameof(userId)}: {userId}");
             var user = await _userManager.Users.FirstOrDefaultAsync(s => s.Id == userId);
             if (user == null)
             {
-                Logger.LogWarning($"{nameof(GetUserProfile)} ---> User with id: {user} doesn't exist");
+                Logger.LogWarning($"{nameof(GetUserProfileById)} ---> User with id: {user} doesn't exist");
             }
 
             return new GetUserProfileResponse<UserProfileDto>

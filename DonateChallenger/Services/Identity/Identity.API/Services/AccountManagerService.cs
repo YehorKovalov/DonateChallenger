@@ -13,14 +13,32 @@ public class AccountManagerService : BaseDataService<AppDbContext>, IAccountMana
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly AppDbContext _dbContext;
+    private readonly IUserService _userService;
+    private readonly IStreamerService _streamerService;
     public AccountManagerService(
         IDbContextWrapper<AppDbContext> dbContext,
         ILogger<BaseDataService<AppDbContext>> logger,
-        UserManager<ApplicationUser> userManager)
+        UserManager<ApplicationUser> userManager,
+        IUserService userService,
+        IStreamerService streamerService)
         : base(dbContext, logger)
     {
         _userManager = userManager;
+        _userService = userService;
+        _streamerService = streamerService;
         _dbContext = dbContext.DbContext;
+    }
+
+    public async Task<UserProfileDto> GetUserProfileById(string userId)
+    {
+        var response = await _userService.GetUserProfileById(userId);
+        return response.Data;
+    }
+
+    public async Task<StreamerProfileDto> GetStreamerProfileById(string userId)
+    {
+        var response = await _streamerService.GetStreamerProfileAsync(userId);
+        return response.Data;
     }
 
     public async Task<DeleteUserByIdResponse<bool>> DeleteUserByIdAsync(string userId)
@@ -31,11 +49,16 @@ public class AccountManagerService : BaseDataService<AppDbContext>, IAccountMana
             {
                 return new DeleteUserByIdResponse<bool> { Data = false };
             }
+            
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                Logger.LogError($"{nameof(DeleteUserByIdAsync)} ---> User doesn't exist");
+                return new DeleteUserByIdResponse<bool> { Data = false };
+            }
 
-            var user = new ApplicationUser { Id = userId };
-            _dbContext.Entry(user).State = EntityState.Deleted;
-            await _dbContext.SaveChangesAsync();
-            return new DeleteUserByIdResponse<bool> { Data = true };
+            var result = await _userManager.DeleteAsync(user);
+            return new DeleteUserByIdResponse<bool> { Data = result.Succeeded };
         });
     }
 
@@ -44,7 +67,7 @@ public class AccountManagerService : BaseDataService<AppDbContext>, IAccountMana
         return await ExecuteSafeAsync(async () =>
         {
             var methodName = nameof(UpdateUserProfileAsync);
-            var user = await _dbContext.Users.FirstOrDefaultAsync(f => f.Id == request.UserId);
+            var user = await _userManager.FindByIdAsync(request.UserId);
             if (user == null)
             {
                 var errorMessage = "User doesn't exist";
@@ -94,8 +117,8 @@ public class AccountManagerService : BaseDataService<AppDbContext>, IAccountMana
         return await ExecuteSafeAsync(async () =>
         {
             var methodName = nameof(UpdateStreamerProfileAsync);
-            var user = await _dbContext.Users.FirstOrDefaultAsync(f => f.Id == request.UserId);
-            if (user == null)
+            var streamer = await _userManager.FindByIdAsync(request.UserId);
+            if (streamer == null)
             {
                 var errorMessage = "Streamer doesn't exist";
                 Logger.LogError($"{methodName} ---> {errorMessage}");
@@ -106,7 +129,7 @@ public class AccountManagerService : BaseDataService<AppDbContext>, IAccountMana
                 };
             }
 
-            var errorWhileUpdatingEmail = await TryUpdateUserEmail(user, request.Email);
+            var errorWhileUpdatingEmail = await TryUpdateUserEmail(streamer, request.Email);
 
             if (!string.IsNullOrWhiteSpace(errorWhileUpdatingEmail))
             {
@@ -117,10 +140,10 @@ public class AccountManagerService : BaseDataService<AppDbContext>, IAccountMana
                 };
             }
             
-            user.Nickname = request.Nickname;
-            user.MinDonatePriceInDollars = request.MinDonatePrice;
-            user.MerchantId = request.MerchantId;
-            var result = await _userManager.UpdateAsync(user);
+            streamer.Nickname = request.Nickname;
+            streamer.MinDonatePriceInDollars = request.MinDonatePrice;
+            streamer.MerchantId = request.MerchantId;
+            var result = await _userManager.UpdateAsync(streamer);
 
             if (!result.Succeeded)
             {
@@ -166,7 +189,8 @@ public class AccountManagerService : BaseDataService<AppDbContext>, IAccountMana
                 .Select(s => new UserProfileDto
                 {
                     UserId = s.Id,
-                    UserNickname = s.Nickname
+                    UserNickname = s.Nickname,
+                    Email = s.Email
                 })
                 .ToListAsync();
 
@@ -208,6 +232,7 @@ public class AccountManagerService : BaseDataService<AppDbContext>, IAccountMana
                 .Take(request.CurrentPortion * request.UsersPerPortion)
                 .Select(s => new StreamerProfileDto
                 {
+                    Email = s.Email,
                     StreamerId = s.Id,
                     MerchantId = s.MerchantId,
                     StreamerNickname = s.Nickname,
