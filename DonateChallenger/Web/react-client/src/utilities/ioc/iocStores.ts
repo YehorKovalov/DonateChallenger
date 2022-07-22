@@ -18,4 +18,5 @@ export default {
      commentsBlockStore: Symbol("commentsBlockStore"),
      commentStore: Symbol("commentStore"),
      inputValidationStore: Symbol("inputValidationStore"),
+     userManagerStore: Symbol("userManagerStore"),
 }

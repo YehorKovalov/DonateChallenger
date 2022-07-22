@@ -16,6 +16,8 @@ export interface UserManagerService {
      updateStreamerProfile(userId: string, nickname: string, email: string, merchantId: string, minDonatePrice: number): Promise<ManagerUpdateProfileResponse>;
      updateUserProfile(userId: string, nickname: string, email: string):  Promise<ManagerUpdateProfileResponse>;
      delete(userId: string):  Promise<DeleteUserByIdResponse<boolean>>;
+     getStreamers(currentPortion: number, usersPerPortion: number): Promise<ManagerGetPortionedUsersResponse<StreamerProfileDto>>;
+     getAllUsers(currentPortion: number, usersPerPortion: number): Promise<ManagerGetPortionedUsersResponse<UserProfileDto>>;
 }
 
 @injectable()
@@ -70,7 +72,7 @@ export default class DefaultUserManagerService implements UserManagerService {
 
      public async getAllUsers(currentPortion: number, usersPerPortion: number): Promise<ManagerGetPortionedUsersResponse<UserProfileDto>> {
           const url = `${this.userManagerApiRoute}/all`;
-          const method = MethodType.GET;
+          const method = MethodType.POST;
           const headers = await this.authStore.tryGetAuthorizedHeaders();
           const request: ManagerGetPortionedUsersRequest = {
                currentPortion: currentPortion,
@@ -78,13 +80,12 @@ export default class DefaultUserManagerService implements UserManagerService {
           }
 
           var result = await this.httpService.send<ManagerGetPortionedUsersResponse<UserProfileDto>>(url, method, headers, request);
-
           return { ... result.data };
      }
 
      public async getStreamers(currentPortion: number, usersPerPortion: number): Promise<ManagerGetPortionedUsersResponse<StreamerProfileDto>> {
           const url = `${this.userManagerApiRoute}/streamers`;
-          const method = MethodType.GET;
+          const method = MethodType.POST;
           const headers = await this.authStore.tryGetAuthorizedHeaders();
           const request: ManagerGetPortionedUsersRequest = {
                currentPortion: currentPortion,

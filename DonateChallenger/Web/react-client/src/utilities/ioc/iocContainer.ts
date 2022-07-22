@@ -29,6 +29,8 @@ import CommentsBlockStore from "../../stores/containers/CommentsBlockStore";
 import CommentStore from "../../stores/states/CommentStore";
 import UserProfileStore from "../../stores/containers/UserProfileStore";
 import InputValidationStore from "../../stores/components/InputValidationStore";
+import DefaultUserManagerService, { UserManagerService } from "../../services/UserManagerService";
+import UserManagerStore from "../../stores/containers/UserManagerStore";
 
 export const container = new Container();
 container.bind<HttpService>(iocServices.httpService).to(DefaultHttpService).inSingletonScope();
@@ -40,6 +42,7 @@ container.bind<ChallengesTempStorageService>(iocServices.challengesTempStorageSe
 container.bind<PaymentService>(iocServices.paymentService).to(DefaultPaymentService).inTransientScope();
 container.bind<CommentService>(iocServices.commentService).to(DefaultCommentService).inTransientScope();
 container.bind<UserService>(iocServices.userService).to(DefaultUserService).inTransientScope();
+container.bind<UserManagerService>(iocServices.userManagerService).to(DefaultUserManagerService).inTransientScope();
 
 container.bind<ChallengesStore>(iocStores.challengesStore).to(ChallengesStore).inSingletonScope();
 container.bind<ChallengeStore>(iocStores.challengeStore).to(ChallengeStore).inSingletonScope();
@@ -60,3 +63,4 @@ container.bind<CommentsBlockStore>(iocStores.commentsBlockStore).to(CommentsBloc
 container.bind<CommentStore>(iocStores.commentStore).to(CommentStore).inSingletonScope();
 container.bind<UserProfileStore>(iocStores.userProfileStore).to(UserProfileStore).inSingletonScope();
 container.bind<InputValidationStore>(iocStores.inputValidationStore).to(InputValidationStore).inTransientScope();
+container.bind<UserManagerStore>(iocStores.userManagerStore).to(UserManagerStore).inSingletonScope();

@@ -8,4 +8,5 @@ export default {
      paymentService: Symbol('paymentService'),
      commentService: Symbol('commentService'),
      userService: Symbol('userService'),
+     userManagerService: Symbol('userManagerService'),
 }
