@@ -25,19 +25,36 @@ const Header = observer(() => {
                     <Navbar.Toggle className='ms-auto' aria-controls="responsive-navbar-nav" />
                     <Navbar.Collapse id="navbarScroll">
                          <Nav className="col-4 fs-3" navbarScroll>
-                              <NavLink href='/order'>Order</NavLink>
+
+                              {authStore.userRole === UserRole.Anonymous &&
+                              <>
+                                   <NavLink href='/order'>Order</NavLink>
+                              </>}
+
+                              {authStore.userRole === UserRole.Donater &&
+                              <>
+                                   <NavLink href='/'>Profile</NavLink>
+                                   <NavLink href='/order'>Order</NavLink>
+                              </>}
+
+                              {authStore.userRole === UserRole.Streamer &&
+                              <>
+                                   <NavLink href='/'>Profile</NavLink>
+                                   <NavLink href='/order'>Order</NavLink>
+                                   <NavBoardList />
+                              </>}
+
+                              {authStore.userRole === UserRole.Manager &&
+                              <>
+                              </>}
+
+                              {authStore.userRole === UserRole.Admin &&
+                              <>
+                                   <NavLink href='/admin'>Profiles</NavLink>
+                              </>}
+
                               {authStore.user
                               ? <>
-                                   <NavLink href='/'>Profile</NavLink>
-                                   {(authStore.userRole === UserRole.Streamer) && <NavBoardList /> }
-                                   {(authStore.userRole === UserRole.Manager) &&
-                                        <>
-                                        </>
-                                   }
-                                   {(authStore.userRole === UserRole.Admin) &&
-                                        <>
-                                        </>
-                                   }
                                    <NavLink href='/signout' ><Logout/></NavLink>
                               </>
                               : <NavLink href='/signin'><UserLoginIcon/></NavLink> }

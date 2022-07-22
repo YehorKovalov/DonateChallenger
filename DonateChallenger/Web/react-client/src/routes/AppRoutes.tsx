@@ -12,21 +12,35 @@ import { SignInRedirect, SignOutRedirect } from '../oidc/components';
 import SigninRedirectCallback from '../oidc/components/SigninRedirectCallback';
 import SignoutRedirectCallback from '../oidc/components/SignoutRedirectCallback';
 import SigninSilent from '../oidc/components/SigninSilent';
-import StreamerProfile from '../pages/ProfilePage';
 import OrderChallengePage from '../pages/ChallengeOrderPage';
+import { UserRole } from '../models/UserRole';
+import UserManagerPage from '../pages/UserManagerPage';
+import ProfilePage from '../pages/ProfilePage';
 
 const AppRoutes = observer(() => {
 
      const authStore = useInjection<AuthStore>(iocStores.authStore);
+     const getIndexJSX = (): JSX.Element => {
+          switch (authStore.userRole) {
+               case UserRole.Anonymous:
+                    return <SelectUserRolePage/>;
+               case UserRole.Donater:
+                    return <ProfilePage />;
+               case UserRole.Streamer:
+                    return <ProfilePage />;
+               case UserRole.Manager:
+                    return <SelectUserRolePage/>;//will be added
+               case UserRole.Admin:
+                    return <UserManagerPage />;
+          }
+     }
 
      return (
           <Suspense fallback={ <LoadingSpinner /> }>
                <Router>
                     <Routes>
                          <Route path='/' element={ <Layout /> }>
-                              <Route index element={authStore.user ?
-                                   <StreamerProfile />
-                                   : <SelectUserRolePage/> }/>
+                              <Route index element={getIndexJSX()}/>
                               <Route path="/signin" element={ <SignInRedirect /> } />
                               <Route path="/signin-oidc" element={ <SigninRedirectCallback /> } />
                               <Route path="/silentrenew" element={ <SigninSilent/> } />
@@ -34,6 +48,7 @@ const AppRoutes = observer(() => {
                               <Route path="/signout-oidc" element={ <SignoutRedirectCallback /> } />
                               <Route path="/challenges" element={ <ChallengesPage /> } />
                               <Route path="/order" element={ <OrderChallengePage /> } />
+                              <Route path="/admin" element={ <UserManagerPage /> } />
                          </Route>
                     </Routes>
                </Router>
