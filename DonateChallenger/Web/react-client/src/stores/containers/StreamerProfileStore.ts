@@ -22,7 +22,9 @@ export default class StreamerProfileStore {
           this.profile = {
                streamerId: '',
                streamerNickname: '',
-               minDonatePrice: 0
+               minDonatePrice: 0,
+               merchantId: '',
+               email: ''
           };
 
           this.nicknameInput = {
@@ -39,6 +41,7 @@ export default class StreamerProfileStore {
      }
 
      profile: StreamerProfile = null!;
+     emailInput: InputWithValidation<string> = null!;
      nicknameInput: InputWithValidation<string> = null!;
      minDonatePriceInput: InputWithValidation<number> = null!;
 
