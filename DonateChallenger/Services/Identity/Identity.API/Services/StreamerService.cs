@@ -27,7 +27,9 @@ public class StreamerService : BaseDataService<AppDbContext>, IStreamerService
         {
             var nicknameToSearch = nickname.Trim().ToLower();
             Logger.LogInformation($"{nameof(FindStreamerByNicknameAsync)} ---> {nameof(nickname)} to search: {nickname}");
+
             var users = await _userManager.GetUsersInRoleAsync("streamer");
+
             var streamers = users
                 .Where(w => w.Nickname.ToLower().Contains(nicknameToSearch))
                 .Select(s => new SearchedStreamerByNicknameDto

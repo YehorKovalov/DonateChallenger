@@ -1,5 +1,6 @@
 using Identity.API.Data;
 using Identity.API.Data.Entities;
+using Identity.API.Models.DTOs;
 using Identity.API.Models.Requests;
 using Identity.API.Models.Responses;
 using Identity.API.Services.Abstractions;
@@ -136,6 +137,95 @@ public class AccountManagerService : BaseDataService<AppDbContext>, IAccountMana
             {
                 Succeeded = true,
                 Errors = Enumerable.Empty<string>()
+            };
+        });
+    }
+
+    public async Task<ManagerGetPortionedUsersResponse<UserProfileDto>> GetPortionedUsersAsync(ManagerGetPortionedUsersRequest request)
+    {
+        return await ExecuteSafeAsync(async () =>
+        {
+            var takeCount = request.CurrentPortion * request.UsersPerPortion;
+            var morePortionsExist = false;
+
+            var userAmount = await _userManager.Users.LongCountAsync();
+
+            if (userAmount == 0)
+            {
+                return new ManagerGetPortionedUsersResponse<UserProfileDto>
+                {
+                    CurrentPortion = 0,
+                    MorePortionsExist = false,
+                    UsersPerPortion = request.UsersPerPortion,
+                    Users = Enumerable.Empty<UserProfileDto>()
+                };
+            }
+
+            var users = await _userManager.Users
+                .Take(takeCount)
+                .Select(s => new UserProfileDto
+                {
+                    UserId = s.Id,
+                    UserNickname = s.Nickname
+                })
+                .ToListAsync();
+
+            if (userAmount > request.CurrentPortion * request.UsersPerPortion)
+            {
+                morePortionsExist = true;
+            }
+
+            Logger.LogInformation($"{nameof(GetPortionedUsersAsync)} ---> Users amount: {users.Count()}");
+            return new ManagerGetPortionedUsersResponse<UserProfileDto>
+            {
+                CurrentPortion = request.CurrentPortion,
+                UsersPerPortion = request.UsersPerPortion,
+                Users = users,
+                MorePortionsExist = morePortionsExist
+            };
+        });
+    }
+
+    public async  Task<ManagerGetPortionedUsersResponse<StreamerProfileDto>> GetPortionedStreamersAsync(ManagerGetPortionedUsersRequest request)
+    {
+        return await ExecuteSafeAsync(async () =>
+        {
+            var streamers = await _userManager.GetUsersInRoleAsync("streamer");
+            var morePortionsExist = false;
+
+            if (streamers.Count == 0)
+            {
+                return new ManagerGetPortionedUsersResponse<StreamerProfileDto>
+                {
+                    CurrentPortion = 0,
+                    MorePortionsExist = false,
+                    UsersPerPortion = request.UsersPerPortion,
+                    Users = Enumerable.Empty<StreamerProfileDto>()
+                };
+            }
+            
+            var portionedStreamers = streamers
+                .Take(request.CurrentPortion * request.UsersPerPortion)
+                .Select(s => new StreamerProfileDto
+                {
+                    StreamerId = s.Id,
+                    MerchantId = s.MerchantId,
+                    StreamerNickname = s.Nickname,
+                    MinDonatePrice = s.MinDonatePriceInDollars
+                }).ToList();
+
+            if (streamers.Count > request.CurrentPortion * request.UsersPerPortion)
+            {
+                morePortionsExist = true;
+            }
+            
+            Logger.LogInformation($"{nameof(GetPortionedStreamersAsync)} ---> Users amount: {portionedStreamers.Count()}");
+            return new ManagerGetPortionedUsersResponse<StreamerProfileDto>
+            {
+                CurrentPortion = request.CurrentPortion + 1,
+                UsersPerPortion = request.UsersPerPortion,
+                Users = portionedStreamers,
+                MorePortionsExist = morePortionsExist
             };
         });
     }

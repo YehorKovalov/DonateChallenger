@@ -1,3 +1,4 @@
+using Identity.API.Models.DTOs;
 using Identity.API.Models.Requests;
 using Identity.API.Models.Responses;
 using Identity.API.Services.Abstractions;
@@ -38,6 +39,22 @@ public class UserManagerBffController : ControllerBase
     public async Task<IActionResult> Delete(string userId)
     {
         var result = await _accountManager.DeleteUserByIdAsync(userId);
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [ProducesResponseType(typeof(ManagerGetPortionedUsersResponse<StreamerProfileDto>), (int) HttpStatusCode.OK)]
+    public async Task<IActionResult> Streamers(ManagerGetPortionedUsersRequest request)
+    {
+        var result = await _accountManager.GetPortionedStreamersAsync(request);
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [ProducesResponseType(typeof(ManagerGetPortionedUsersResponse<UserProfileDto>), (int) HttpStatusCode.OK)]
+    public async Task<IActionResult> All(ManagerGetPortionedUsersRequest request)
+    {
+        var result = await _accountManager.GetPortionedUsersAsync(request);
         return Ok(result);
     }
 }
