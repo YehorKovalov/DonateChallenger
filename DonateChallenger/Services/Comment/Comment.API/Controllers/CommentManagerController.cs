@@ -38,7 +38,7 @@ public class CommentManagerController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(typeof(GetPaginatedCommentsResponse<CommentDto>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> UserPaginatedComments(GetPaginatedCommentsRequest request)
+    public async Task<IActionResult> PaginatedComments(GetPaginatedCommentsRequest request)
     {
         var result = await _commentService.GetPaginatedCommentsAsync(request.CurrentPage, request.CommentsPerPage, request.ChallengeId, request.UserId);
         return Ok(result);
@@ -49,6 +49,14 @@ public class CommentManagerController : ControllerBase
     public async Task<IActionResult> Get(long commentId)
     {
         var result = await _commentService.GetCommentByCommentIdAsync(commentId);
+        return Ok(result);
+    }
+
+    [HttpPost]
+    [ProducesResponseType(typeof(AddCommentResponse<long?>), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> Add(AddCommentRequest request)
+    {
+        var result = await _commentService.AddCommentAsync(request.UserId, request.ChallengeId, request.Message);
         return Ok(result);
     }
 }
