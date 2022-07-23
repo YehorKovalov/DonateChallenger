@@ -53,6 +53,13 @@ const StreamersList = observer(() => {
                          )}
                     </tbody>
                </Table>
+               {userManager.streamers.morePortionsExist &&
+                    <button onClick={async () => {
+                         ++userManager.streamers.currentPortion;
+                         await userManager.getStreamers()
+                    }}>
+                         Next
+                    </button>}
           </Container>
      );
 });
