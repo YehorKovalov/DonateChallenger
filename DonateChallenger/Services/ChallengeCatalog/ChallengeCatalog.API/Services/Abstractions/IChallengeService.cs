@@ -19,4 +19,7 @@ public interface IChallengeCatalogService
     Task<bool?> SkipChallengeAsync(long? challengeId);
 
     Task<bool?> CompleteChallengeAsync(long? challengeId);
+
+    Task<UpdateChallengeResponse<long>> UpdateChallengeAsync(long challengeId, string? title, string description, double donatePrice, string streamerId, string donateFrom);
+    Task<GetChallengeByIdResponse<ChallengeDto?>> GetChallengeByIdAsync(long challengeId, bool loadRelatedEntities = false);
 }

@@ -1,6 +1,6 @@
-namespace ChallengeCatalog.API.Models.DTOs;
+namespace ChallengeCatalog.API.Models.Requests;
 
-public class ChallengeDto
+public class UpdateChallengeRequest
 {
     public long ChallengeId { get; set; }
 
@@ -10,9 +10,7 @@ public class ChallengeDto
 
     public double DonatePrice { get; set; }
 
-    public string DonateFrom { get; set; } = null!;
-
     public string StreamerId { get; set; } = null!;
 
-    public DateTime CreatedTime { get; set; }
+    public string DonateFrom { get; set; } = null!;
 }
