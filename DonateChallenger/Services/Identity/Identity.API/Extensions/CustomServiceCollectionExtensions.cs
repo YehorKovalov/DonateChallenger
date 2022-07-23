@@ -1,9 +1,12 @@
 using System.Reflection;
+using Identity.API.Consumers;
 using Identity.API.Data;
 using Identity.API.Services;
 using Identity.API.Services.Abstractions;
+using Infrastructure.MessageBus.Extensions;
 using Infrastructure.Services;
 using Infrastructure.Services.Abstractions;
+using MassTransit;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -96,9 +99,30 @@ public static class CustomServiceCollectionExtensions
     public static IServiceCollection AddAppDependencies(this IServiceCollection services)
     {
         services.AddTransient<IStreamerService, StreamerService>();
+        services.AddTransient<IUserService, UserService>();
+        services.AddTransient<IAccountManagerService, AccountManagerService>();
         services.AddScoped<IProfileService, IdentityProfileService>();
         services.AddScoped<IDbContextWrapper<AppDbContext>, DbContextWrapper<AppDbContext>>();
 
+        return services;
+    }
+
+    public static IServiceCollection AddConfiguredMessageBus(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddMassTransit(x =>
+        {
+            x.AddConsumer<MessageFindUsernamesByIdsConsumer>();
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.ConfigureRabbitMqConnectionProperties(configuration);
+                cfg.ReceiveEndpoint(configuration["RabbitMQ:FindUsernamesByIdsQueue"], c =>
+                {
+                    c.ConfigureConsumer<MessageFindUsernamesByIdsConsumer>(context);
+                });
+            });
+        });
+
+        services.AddMassTransitHostedService(true);
         return services;
     }
 }

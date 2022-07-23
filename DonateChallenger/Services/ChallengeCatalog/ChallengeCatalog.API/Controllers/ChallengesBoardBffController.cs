@@ -54,6 +54,7 @@ public class ChallengesBoardBffController : ControllerBase
     }
 
     [HttpPost]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(GetPaginatedChallengesResponse<CompletedChallengeDto>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Completed(GetPaginatedStreamerChallengesRequest<ChallengeFilter, SortChallengeBy> request)
     {

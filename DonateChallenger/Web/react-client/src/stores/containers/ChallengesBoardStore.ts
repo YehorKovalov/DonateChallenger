@@ -21,13 +21,13 @@ export default class ChallengesBoardStore {
 
      public getBoardTitle = () => `${this.currentChallengeStatus} Challenges`;
 
-     public getChallengesByCurrentStatus = async () => {
+     public getChallengesByCurrentStatus = async (streamerId?: string) => {
 
           const pagination = this.pagination;
           const filters = this.filters;
 
-          await this.challengesStore.getChallenges(this.currentChallengeStatus, pagination.currentPage, filters.sortByCreatedTime, filters.sortByMinDonatePrice, filters.minPriceFilter);
-          
+          await this.challengesStore.getChallenges(this.currentChallengeStatus, pagination.currentPage, filters.sortByCreatedTime, filters.sortByMinDonatePrice, filters.minPriceFilter, streamerId);
+
           pagination.pagesAmount = this.challengesStore.paginatedChallenges!.totalPages;
           this.pagination.buttons = formPages(this.challengesStore.paginatedChallenges!.totalPages)
      }

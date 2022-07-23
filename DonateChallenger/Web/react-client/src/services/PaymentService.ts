@@ -1,8 +1,6 @@
 import { inject, injectable } from "inversify";
 import { GetPayPalPaymentUrlResponse } from "../dtos/response/GetPayPalPaymentUrlResponse";
-import AuthStore from "../oidc/AuthStore";
 import iocServices from "../utilities/ioc/iocServices";
-import iocStores from "../utilities/ioc/iocStores";
 import { HttpService, MethodType } from "./HttpService";
 
 export interface PaymentService {
@@ -12,7 +10,6 @@ export interface PaymentService {
 @injectable()
 export default class DefaultPaymentService implements PaymentService {
 
-     @inject(iocStores.authStore) private readonly authStore!: AuthStore;
      @inject(iocServices.httpService) private readonly httpService!: HttpService;
 
      private readonly paymentRoute = process.env.REACT_APP_PAYMENT_CONTROLLER_ROUTE;

@@ -8,7 +8,7 @@ namespace Payment.API.Services
 {
     public class PaypalPaymentService : IPaymentService
     {
-        private const string PaypalPaymentEndpoint = "http://donate-challenger.com:4003/api/v1/paypalpaymentExecute/payment";
+        private const string PaypalPaymentEndpoint = "http://donate-challenger.com:4003/api/v1/paypalpaymentexecute/payment";
         private const string GlobalUrl = "http://donate-challenger.com";
         private readonly PaypalConfiguration _paypalConfiguration;
         private readonly ILogger<PaypalPaymentService> _logger;

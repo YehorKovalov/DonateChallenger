@@ -1,9 +1,11 @@
 import { injectable } from "inversify";
 import { SignoutResponse, User, UserManager } from "oidc-client";
+import { UserRole } from "../models/UserRole";
 import { oidcConfiguration } from "./OidcConfiguration";
 
 export interface AuthenticationService {
      getUser(): Promise<User | null>;
+     getUserRole(): Promise<UserRole>;
      login(): Promise<void>;
      logout(): Promise<void>;
      signinRedirectCallback: () => Promise<User | undefined>;
@@ -29,6 +31,27 @@ export default class DefaultAuthenticationService implements AuthenticationServi
 
      public async getUser(): Promise<User | null> {
           return await this.userManager.getUser();
+     };
+
+     public async getUserRole(): Promise<UserRole> {
+          const user = await this.getUser();
+          let role = UserRole.Anonymous;
+          switch (user?.profile.role) {
+               case "donater":
+                    role = UserRole.Donater;
+                    break;
+               case "streamer":
+                    role = UserRole.Streamer;
+                    break;
+               case "manager":
+                    role = UserRole.Manager;
+                    break;
+               case "admin":
+                    role = UserRole.Admin;
+                    break;
+          }
+
+          return role;
      };
 
      public async login(): Promise<void> {

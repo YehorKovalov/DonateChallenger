@@ -19,40 +19,40 @@ export default class ChallengesStore {
 
      paginatedChallenges: PaginatedChallenges<CurrentChallenge> | null = null;
 
-     public getChallenges = async (status: ChallengeStatusEnum, currentPage: number, sortByCreatedTime?: boolean, sortByMinDonatePrice?: boolean, minPriceFilter?: number) => {
+     public getChallenges = async (status: ChallengeStatusEnum, currentPage: number, sortByCreatedTime?: boolean, sortByMinDonatePrice?: boolean, minPriceFilter?: number, streamerId?: string) => {
           switch (status) {
                case ChallengeStatusEnum.Current:
-                    await this.getPaginatedCurrentChallenges(currentPage, sortByCreatedTime, sortByMinDonatePrice, minPriceFilter);
+                    await this.getPaginatedCurrentChallenges(currentPage, sortByCreatedTime, sortByMinDonatePrice, minPriceFilter, streamerId);
                     break;
                case ChallengeStatusEnum.Completed:
-                    await this.getPaginatedCompletedChallenges(currentPage, sortByCreatedTime, sortByMinDonatePrice, minPriceFilter);
+                    await this.getPaginatedCompletedChallenges(currentPage, sortByCreatedTime, sortByMinDonatePrice, minPriceFilter, streamerId);
                     break;
                case ChallengeStatusEnum.Skipped:
-                    await this.getPaginatedSkippedChallenges(currentPage, sortByCreatedTime, sortByMinDonatePrice, minPriceFilter);
+                    await this.getPaginatedSkippedChallenges(currentPage, sortByCreatedTime, sortByMinDonatePrice, minPriceFilter, streamerId);
                     break;
           }
      }
 
-     private getPaginatedCurrentChallenges = async (currentPage: number, sortByCreatedTime?: boolean, sortByMinDonatePrice?: boolean, minPriceFilter?: number) => {
+     private getPaginatedCurrentChallenges = async (currentPage: number, sortByCreatedTime?: boolean, sortByMinDonatePrice?: boolean, minPriceFilter?: number, streamerId?: string) => {
           
           const paginatedCurrentChallenges = await this.challengeService
-               .getPaginatedCurrentChallenges(currentPage, this.challengesPerPage, sortByCreatedTime, sortByMinDonatePrice, minPriceFilter);
+               .getPaginatedCurrentChallenges(currentPage, this.challengesPerPage, sortByCreatedTime, sortByMinDonatePrice, minPriceFilter, streamerId);
           
           this.paginatedChallenges = paginatedCurrentChallenges;
      }
 
-     private getPaginatedSkippedChallenges = async (currentPage: number, sortByCreatedTime?: boolean, sortByMinDonatePrice?: boolean, minPriceFilter?: number) => {
+     private getPaginatedSkippedChallenges = async (currentPage: number, sortByCreatedTime?: boolean, sortByMinDonatePrice?: boolean, minPriceFilter?: number, streamerId?: string) => {
           
           const paginatedCurrentChallenges = await this.challengeService
-               .getPaginatedSkippedChallenges(currentPage, this.challengesPerPage, sortByCreatedTime, sortByMinDonatePrice, minPriceFilter);
+               .getPaginatedSkippedChallenges(currentPage, this.challengesPerPage, sortByCreatedTime, sortByMinDonatePrice, minPriceFilter, streamerId);
           
           this.paginatedChallenges = paginatedCurrentChallenges;
      }
 
-     private getPaginatedCompletedChallenges = async (currentPage: number, sortByCreatedTime?: boolean, sortByMinDonatePrice?: boolean, minPriceFilter?: number) => {
+     private getPaginatedCompletedChallenges = async (currentPage: number, sortByCreatedTime?: boolean, sortByMinDonatePrice?: boolean, minPriceFilter?: number, streamerId?: string) => {
           
           const paginatedCurrentChallenges = await this.challengeService
-               .getPaginatedCompletedChallenges(currentPage, this.challengesPerPage, sortByCreatedTime, sortByMinDonatePrice, minPriceFilter);
+               .getPaginatedCompletedChallenges(currentPage, this.challengesPerPage, sortByCreatedTime, sortByMinDonatePrice, minPriceFilter, streamerId);
           
           this.paginatedChallenges = paginatedCurrentChallenges;
      }

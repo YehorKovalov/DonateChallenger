@@ -1,6 +1,8 @@
 ﻿using System.Security.Claims;
 using Identity.API.Data.Entities;
+using Identity.API.Helpers;
 using Identity.API.Models.Account;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Identity.API.Controllers
 {
@@ -9,6 +11,7 @@ namespace Identity.API.Controllers
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IClientStore _clientStore;
@@ -21,7 +24,8 @@ namespace Identity.API.Controllers
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IAuthenticationSchemeProvider schemeProvider,
-            IEventService events)
+            IEventService events,
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -29,6 +33,7 @@ namespace Identity.API.Controllers
             _clientStore = clientStore;
             _schemeProvider = schemeProvider;
             _events = events;
+            _roleManager = roleManager;
         }
 
         [HttpGet]
@@ -135,17 +140,25 @@ namespace Identity.API.Controllers
         }
 
         [HttpGet]
-        public IActionResult AccessDenied()
-        {
-            return View();
-        }
+        public IActionResult AccessDenied() => View();
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Register(string returnUrl)
+        public async Task<IActionResult> Register(string returnUrl)
         {
             ViewData["ReturnUrl"] = returnUrl;
-            return View();
+            var roles = await _roleManager.Roles.ToListAsync();
+            var vm = new RegisterViewModel
+            {
+                Roles = roles
+                    .Where(w => w.NormalizedName != "admin" && w.NormalizedName != "manager")
+                    .Select(s => new SelectListItem 
+                    {
+                        Value = s.NormalizedName,
+                        Text = s.Name
+                    })
+            };
+            return View(vm);
         }
 
         [HttpPost]
@@ -166,11 +179,19 @@ namespace Identity.API.Controllers
                     AddErrors(result);
                     return View(model);
                 }
-                
+
+                var addingToRoleResult = await _userManager.AddToRoleAsync(user, model.Role);
+                if (addingToRoleResult.Errors.Any())
+                {
+                    AddErrors(addingToRoleResult);
+                    return View(model);
+                }
+
                 var parameters = new
                 {
                     returnUrl = returnUrl,
-                    userId = user.Id
+                    userId = user.Id,
+                    role = model.Role
                 };
                 return RedirectToAction("RegisterAdditionalInformation", "account", parameters);
             }
@@ -186,12 +207,13 @@ namespace Identity.API.Controllers
         }
 
         [HttpGet]
-        public IActionResult RegisterAdditionalInformation(string returnUrl, string userId)
+        public IActionResult RegisterAdditionalInformation(string returnUrl, string userId, string role)
         {
             var vm = new AdditionalInformationViewModel
             {
                 ReturnUrl = returnUrl,
-                UserId = userId
+                UserId = userId,
+                Role = role
             };
             return View(vm);
         }
@@ -203,8 +225,17 @@ namespace Identity.API.Controllers
         {
             if (ModelState.IsValid)
             {
+                const string streamerRole = "streamer";
+                var errors = IfStreamerHandleStateAndGetErrors(model, streamerRole).ToList();
+                if (errors.Any())
+                {
+                    AddErrors(errors);
+                    return View(model);
+                }
+
                 var nicknameAlreadyExists = await _userManager.Users
                     .AnyAsync(f => f.Nickname == model.Nickname);
+
                 if (nicknameAlreadyExists)
                 {
                     ModelState.AddModelError(string.Empty, "Nickname already exists");
@@ -213,8 +244,11 @@ namespace Identity.API.Controllers
 
                 var user = await _userManager.FindByIdAsync(model.UserId);
                 user.Nickname = model.Nickname;
-                user.MinDonatePriceInDollars = model.MinDonatePriceInDollars;
-                user.MerchantId = model.MerchantId;
+                if (model.Role == streamerRole)
+                {
+                    user.MinDonatePriceInDollars = model.MinDonatePriceInDollars!.Value;
+                    user.MerchantId = model.MerchantId;
+                }
 
                 var result = await _userManager.UpdateAsync(user);
                 if (result.Errors.Any())
@@ -304,6 +338,12 @@ namespace Identity.API.Controllers
                 ModelState.AddModelError(string.Empty, error.Description);
         }
 
+        private void AddErrors(IEnumerable<string> errors)
+        {
+            foreach (var error in errors)
+                ModelState.AddModelError(string.Empty, error);
+        }
+
         private async Task<LogoutViewModel> BuildLogoutViewModelAsync(string logoutId)
         {
             var vm = new LogoutViewModel { LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt };
@@ -322,6 +362,29 @@ namespace Identity.API.Controllers
             }
 
             return vm;
+        }
+
+        private IEnumerable<string> IfStreamerHandleStateAndGetErrors(AdditionalInformationViewModel model, string streamerRole)
+        {
+            if (model.Role != streamerRole)
+            {
+                return Enumerable.Empty<string>();
+            }
+
+            var errors = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(model.MerchantId))
+            {
+                errors.Add("The MerchantId field is required.");
+            }
+
+            if (model.MinDonatePriceInDollars is < ValidationConstants.LogicalMaximumMinimumDonatePrice
+                or > ValidationConstants.LogicalMinimumDonatePrice)
+            {
+                errors.Add($"The field Min Donate Price must be between {ValidationConstants.LogicalMaximumMinimumDonatePrice} and {ValidationConstants.LogicalMinimumDonatePrice}.");
+            }
+
+            return errors;
         }
 
         private async Task<LoggedOutViewModel> BuildLoggedOutViewModelAsync(string logoutId)

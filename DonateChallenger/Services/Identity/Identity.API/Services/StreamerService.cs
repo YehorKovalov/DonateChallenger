@@ -12,7 +12,6 @@ namespace Identity.API.Services;
 public class StreamerService : BaseDataService<AppDbContext>, IStreamerService
 {
     private readonly UserManager<ApplicationUser> _userManager;
-
     public StreamerService(
         IDbContextWrapper<AppDbContext> dbContext,
         ILogger<BaseDataService<AppDbContext>> logger,
@@ -27,8 +26,12 @@ public class StreamerService : BaseDataService<AppDbContext>, IStreamerService
         return await ExecuteSafeAsync(async () =>
         {
             var nicknameToSearch = nickname.Trim().ToLower();
-            var streamers = await _userManager.Users
-                .Where(w => w.Nickname.Contains(nicknameToSearch))
+            Logger.LogInformation($"{nameof(FindStreamerByNicknameAsync)} ---> {nameof(nickname)} to search: {nickname}");
+
+            var users = await _userManager.GetUsersInRoleAsync("streamer");
+
+            var streamers = users
+                .Where(w => w.Nickname.ToLower().Contains(nicknameToSearch))
                 .Select(s => new SearchedStreamerByNicknameDto
                 {
                     StreamerId = s.Id,
@@ -36,7 +39,7 @@ public class StreamerService : BaseDataService<AppDbContext>, IStreamerService
                     MerchantId = s.MerchantId,
                     MinDonatePrice = s.MinDonatePriceInDollars
                 })
-                .ToListAsync();
+                .ToList();
 
             _userManager.Logger.LogInformation($"{nameof(FindStreamerByNicknameAsync)} ---> nicknames amount: {streamers.Count}");
 
@@ -59,9 +62,11 @@ public class StreamerService : BaseDataService<AppDbContext>, IStreamerService
             {
                 Data = new StreamerProfileDto
                 {
+                    Email = streamer?.Email,
                     StreamerId = streamer?.Id,
                     StreamerNickname = streamer?.Nickname,
-                    MinDonatePrice = streamer?.MinDonatePriceInDollars,
+                    MinDonatePrice = streamer.MinDonatePriceInDollars,
+                    MerchantId = streamer?.Email
                 }
             };
         });
@@ -82,7 +87,7 @@ public class StreamerService : BaseDataService<AppDbContext>, IStreamerService
         });
     }
 
-    public async Task<ChangeStreamerProfileDataResponse<double>> ChangeMinDonatePriceAsync(string streamerId, double changeOn)
+    public async Task<ChangeProfileDataResponse<double>> ChangeMinDonatePriceAsync(string streamerId, double changeOn)
     {
         return await ExecuteSafeAsync(async () =>
         {
@@ -93,7 +98,7 @@ public class StreamerService : BaseDataService<AppDbContext>, IStreamerService
             {
                 var errorMessage = $"Price cannot be less than {ValidationConstants.LogicalMinimumDonatePrice}";
                 Logger.LogInformation($"{methodName} ---> {errorMessage}");
-                return new ChangeStreamerProfileDataResponse<double>
+                return new ChangeProfileDataResponse<double>
                 {
                     ValidationErrors = new List<string> { errorMessage },
                     ChangedData = 0
@@ -104,7 +109,7 @@ public class StreamerService : BaseDataService<AppDbContext>, IStreamerService
             {
                 var errorMessage = $"Price cannot be more than {ValidationConstants.LogicalMaximumMinimumDonatePrice}";
                 Logger.LogInformation($"{methodName} ---> {errorMessage}");
-                return new ChangeStreamerProfileDataResponse<double>
+                return new ChangeProfileDataResponse<double>
                 {
                     ValidationErrors = new List<string> { errorMessage },
                     ChangedData = 0
@@ -115,7 +120,7 @@ public class StreamerService : BaseDataService<AppDbContext>, IStreamerService
             if (streamer == null)
             {
                 Logger.LogWarning($"{methodName} ---> Streamer with id: {streamer} doesn't exist");
-                return new ChangeStreamerProfileDataResponse<double>
+                return new ChangeProfileDataResponse<double>
                 {
                     ValidationErrors = null,
                     ChangedData = 0
@@ -129,78 +134,11 @@ public class StreamerService : BaseDataService<AppDbContext>, IStreamerService
                 Logger.LogError($"{methodName} ---> Code: {error.Code}. Description: {error.Description}");
             }
 
-            return new ChangeStreamerProfileDataResponse<double>
+            return new ChangeProfileDataResponse<double>
             {
                 ValidationErrors = Enumerable.Empty<string>(),
                 Succeeded = true,
                 ChangedData = changeOn
-            };
-        });
-    }
-
-    public async Task<ChangeStreamerProfileDataResponse<string>> ChangeStreamerNicknameAsync(string streamerId, string newNickname)
-    {
-        return await ExecuteSafeAsync(async () =>
-        {
-            var methodName = nameof(ChangeMinDonatePriceAsync);
-
-            Logger.LogInformation($"{methodName} ---> {nameof(streamerId)}: {streamerId};  {nameof(newNickname)}: {newNickname}");
-            if (string.IsNullOrWhiteSpace(newNickname))
-            {
-                var errorMessage = "Nickname can't not be empty";
-                Logger.LogInformation($"{methodName} ---> {errorMessage}");
-                return new ChangeStreamerProfileDataResponse<string>
-                {
-                    ValidationErrors = new List<string> { errorMessage },
-                    ChangedData = string.Empty
-                };
-            }
-
-            if (newNickname.Length > ValidationConstants.NicknameMaxLength)
-            {
-                var errorMessage = $"Nickname symbols can not be more than {ValidationConstants.NicknameMaxLength}";
-                Logger.LogInformation($"{methodName} ---> {errorMessage}");
-                return new ChangeStreamerProfileDataResponse<string>
-                {
-                    ValidationErrors = new List<string> { errorMessage },
-                    ChangedData = newNickname
-                };
-            }
-
-            if (await _userManager.Users.AnyAsync(s => s.Nickname == newNickname))
-            {
-                var errorMessage = $"Nickname {newNickname} already exists";
-                Logger.LogWarning($"{methodName} ---> {errorMessage}");
-                return new ChangeStreamerProfileDataResponse<string>
-                {
-                    ValidationErrors = new List<string> { errorMessage },
-                    ChangedData = newNickname
-                };
-            }
-
-            var streamer = await _userManager.Users.FirstOrDefaultAsync(s => s.Id == streamerId);
-            if (streamer == null)
-            {
-                Logger.LogWarning($"{methodName} ---> Streamer with id: {streamer} doesn't exist");
-                return new ChangeStreamerProfileDataResponse<string>
-                {
-                    ValidationErrors = null,
-                    ChangedData = string.Empty
-                };
-            }
-
-            streamer.Nickname = newNickname;
-            var result = await _userManager.UpdateAsync(streamer);
-            foreach (var error in result.Errors)
-            {
-                Logger.LogError($"{methodName} ---> Code: {error.Code}. Description: {error.Description}");
-            }
-
-            return new ChangeStreamerProfileDataResponse<string>
-            {
-                ValidationErrors = Enumerable.Empty<string>(),
-                Succeeded = true,
-                ChangedData = newNickname
             };
         });
     }

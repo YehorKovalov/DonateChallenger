@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react';
 import { Container, Nav, Navbar } from 'react-bootstrap';
+import { UserRole } from '../../models/UserRole';
 import AuthStore from '../../oidc/AuthStore';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
@@ -24,17 +25,42 @@ const Header = observer(() => {
                     <Navbar.Toggle className='ms-auto' aria-controls="responsive-navbar-nav" />
                     <Navbar.Collapse id="navbarScroll">
                          <Nav className="col-4 fs-3" navbarScroll>
+
+                              {authStore.userRole === UserRole.Anonymous &&
+                              <>
+                                   <NavLink href='/order'>Order</NavLink>
+                              </>}
+
+                              {authStore.userRole === UserRole.Donater &&
+                              <>
+                                   <NavLink href='/'>Profile</NavLink>
+                                   <NavLink href='/order'>Order</NavLink>
+                                   <NavLink href='/completed/forum'>Forum</NavLink>
+                              </>}
+
+                              {authStore.userRole === UserRole.Streamer &&
+                              <>
+                                   <NavLink href='/'>Profile</NavLink>
+                                   <NavLink href='/order'>Order</NavLink>
+                                   <NavBoardList />
+                                   <NavLink href='/completed/forum'>Forum</NavLink>
+                              </>}
+
+                              {authStore.userRole === UserRole.Manager &&
+                              <>
+                                   <NavLink href='/completed/forum'>Forum</NavLink>
+                              </>}
+
+                              {authStore.userRole === UserRole.Admin &&
+                              <>
+                                   <NavLink href='/admin'>Profiles</NavLink>
+                              </>}
+
                               {authStore.user
                               ? <>
-                                   <NavBoardList />
-                                   <NavLink href='/profile'>Profile</NavLink>
                                    <NavLink href='/signout' ><Logout/></NavLink>
                               </>
-                              :
-                              <>
-                                   <NavLink href='/signin'><UserLoginIcon/></NavLink>
-                              </>
-                              }
+                              : <NavLink href='/signin'><UserLoginIcon/></NavLink> }
                           </Nav>
                     </Navbar.Collapse>
                </Container>

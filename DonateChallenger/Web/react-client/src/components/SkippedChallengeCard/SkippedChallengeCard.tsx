@@ -1,21 +1,27 @@
 import { Card, Col, Row } from 'react-bootstrap';
-import ChallengeStore from '../../stores/states/ChallengeStore';
+import DateTimeStore from '../../stores/components/DateTimeStore';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
-import { ChallengeCardProps } from '../CurrentChallengeCard/CurrentChallengeCard';
 
+export interface SkippedChallengeCardProps {
+     challengeId: number,
+     title?: string,
+     description: string,
+     donatePrice: number,
+     donateFrom: number,
+     createdTime: string
+}
 
+const SkippedChallengeCard = (props: SkippedChallengeCardProps) => {
 
-const SkippedChallengeCard = (props: ChallengeCardProps) => {
-
-     const store = useInjection<ChallengeStore>(iocStores.challengeStore);
+     const dateTimeStore = useInjection<DateTimeStore>(iocStores.dateTimeStore);
 
      return (
           <Card bg='dark' key={props.challengeId} className='color-silver border'>
                <Card.Body>
                     <Row className='mb-2'>
                          <Col lg={8} className='donate-donater text-center'>{props.donateFrom}</Col>
-                         <Col lg={4}>{store.getUserFriendlyDateTime(props.createdTime)}</Col>
+                         <Col lg={4}>{dateTimeStore.getUserFriendlyDateTime(props.createdTime)}</Col>
                     </Row>
                     <div className='donate-price'>{props.donatePrice}$</div>
                     <div><span className='color-silver'>{props.title}</span></div>
