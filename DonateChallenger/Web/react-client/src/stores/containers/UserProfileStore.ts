@@ -29,6 +29,11 @@ export default class UserProfileStore {
                state: ''
           }
 
+          this.emailInput = {
+               errors: [],
+               state: ''
+          }
+
           makeAutoObservable(this);
      }
 

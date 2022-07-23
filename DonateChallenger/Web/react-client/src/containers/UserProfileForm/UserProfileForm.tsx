@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
-import { Col, Row } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import ProfileFormControl from '../../components/ProfileFormControl';
 import ToolTip from '../../components/ToolTip';
 import UserProfileStore from '../../stores/containers/UserProfileStore';
@@ -20,9 +20,9 @@ const UserProfileForm = observer(() => {
      const toggleShow = () => setShow(!show);
 
      return (
-          <div className="w-75 position-absolute top-50 start-50 translate-middle">
-               <Row>
-                    <Col>
+          <Container className='pt-5'>
+               <div className='d-flex flex-wrap justify-content-evenly'>
+                    <div className='mb-5'>
                          <ToolTip onClick={toggleShow}
                               mainText={`Nickname: ${profileStore.profile.userNickname}`}
                               tipText={'Click to change'}/>
@@ -34,9 +34,22 @@ const UserProfileForm = observer(() => {
                               onChangeInput={(e) => profileStore.nicknameInput.state = e.target.value}
                               onSubmit={profileStore.changeNickname}
                          />
-                    </Col>
-               </Row>
-          </div>
+                   </div>
+                   <div className='mb-5'>
+                         <ToolTip onClick={toggleShow}
+                              mainText={`Email: ${profileStore.profile.email}`}
+                              tipText={'Click to change'}/>
+                         <ProfileFormControl
+                              showControl={show}
+                              onClose={toggleShow}
+                              errorList={profileStore.emailInput.errors}
+                              inputValue={profileStore.emailInput.state}
+                              onChangeInput={(e) => profileStore.emailInput.state = e.target.value}
+                              onSubmit={profileStore.changeEmail}
+                         />
+                    </div>
+               </div>
+          </Container>
      );
 });
 
