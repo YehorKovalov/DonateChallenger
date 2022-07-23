@@ -37,6 +37,11 @@ export default class StreamerProfileStore {
                state: 0
           }
 
+          this.emailInput = {
+               errors: [],
+               state: ''
+          }
+
           makeAutoObservable(this);
      }
 
@@ -61,10 +66,11 @@ export default class StreamerProfileStore {
           if (succeeded) {
                this.profile.minDonatePrice = changedData;
                this.minDonatePriceInput.state = 0;
+               this.minDonatePriceInput.errors = [];
                return true;
           }
 
-          this.nicknameInput.errors = errors;
+          this.minDonatePriceInput.errors = errors;
 
           return false;
      }
@@ -77,10 +83,28 @@ export default class StreamerProfileStore {
           if (succeeded) {
                this.profile.streamerNickname = changedData;
                this.nicknameInput.state = this.emptyString;
+               this.nicknameInput.errors = [];
                return true;
           }
 
           this.nicknameInput.errors = errors;
+
+          return false;
+     }
+ 
+     public changeEmail = async () : Promise<boolean> => {
+
+          const [succeeded, errors, changedData] = await this.inputValidation.changeProfileField(this.emailInput, this.profile.email,
+               async () => await this.userService.changeEmail(this.authStore.user!.profile.sub, this.emailInput.state));
+
+          if (succeeded) {
+               this.profile.email = changedData;
+               this.emailInput.state = this.emptyString;
+               this.emailInput.errors = [];
+               return true;
+          }
+
+          this.emailInput.errors = errors;
 
           return false;
      }
