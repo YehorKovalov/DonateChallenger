@@ -9,7 +9,6 @@ import AuthStore from "../oidc/AuthStore";
 import iocServices from "../utilities/ioc/iocServices";
 import iocStores from "../utilities/ioc/iocStores";
 import { HttpService, MethodType } from "./HttpService";
-import { UserService } from "./UserService";
 
 export interface StreamerService {
      searchStreamersByNickname(nicknameAsFilter: string) : Promise<SearchStreamersByNicknameResponse<SearchedStreamerByNicknameDto>>;

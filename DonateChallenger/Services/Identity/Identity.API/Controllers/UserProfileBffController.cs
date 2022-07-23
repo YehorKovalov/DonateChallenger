@@ -24,6 +24,14 @@ public class UserProfileBffController : ControllerBase
         var result = await _userService.ChangeUserNickname(userId, newNickname);
         return Ok(result);
     }
+
+    [HttpPost]
+    [ProducesResponseType(typeof(ChangeProfileDataResponse<string>), (int) HttpStatusCode.OK)]
+    public async Task<IActionResult> ChangeEmail(string userId, string newEmail)
+    {
+        var result = await _userService.ChangeUserEmail(userId, newEmail);
+        return Ok(result);
+    }
     
     [HttpGet]
     [ProducesResponseType(typeof(GetUserProfileResponse<UserProfileDto>), (int) HttpStatusCode.OK)]
