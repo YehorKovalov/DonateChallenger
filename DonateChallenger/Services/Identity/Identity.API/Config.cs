@@ -22,7 +22,7 @@ namespace Identity.API
             {
                 Name = "challenge-catalog",
                 DisplayName = "Challenge Catalog",
-                Scopes = new List<string> { "challenge-catalog.bff" },
+                Scopes = new List<string> { "challenge-catalog.bff", "challenge-catalog.manager" },
                 ApiSecrets = new List<Secret> { new Secret("secret".Sha256()) },
                 UserClaims = new List<string> { JwtClaimTypes.Role }
             },
@@ -71,6 +71,7 @@ namespace Identity.API
         public static IEnumerable<ApiScope> Scopes => new List<ApiScope>
         {
             new ApiScope("challenge-catalog.bff", "Challenge Catalog BFF") { UserClaims = { JwtClaimTypes.Role } },
+            new ApiScope("challenge-catalog.manager", "Challenge Catalog Manager") { UserClaims = { JwtClaimTypes.Role } },
             new ApiScope("challenge-order.manager", "Challenge Order Manager") { UserClaims = { JwtClaimTypes.Role } },
             new ApiScope("paypal-payment.bff", "Paypal Payment BFF") { UserClaims = { JwtClaimTypes.Role} },
             new ApiScope("challenges-temporary-storage.bff", "Challenges Temporary Storage BFF") { UserClaims = { JwtClaimTypes.Role } },
@@ -133,10 +134,12 @@ namespace Identity.API
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "challenge-catalog.bff", "paypal-payment.bff",
-                        "challenge-order.manager", "challenges-temporary-storage.bff",
-                        "comment.bff", "comment.manager", "streamer-profile.bff",
-                        "user-profile.bff", "user-manager.bff",
+                        "challenge-catalog.bff", "challenge-catalog.manager",
+                        "paypal-payment.bff",
+                        "challenge-order.manager",
+                        "challenges-temporary-storage.bff",
+                        "comment.bff", "comment.manager",
+                        "streamer-profile.bff", "user-profile.bff", "user-manager.bff",
                         JwtClaimTypes.Role
                     }
                 },
@@ -154,7 +157,8 @@ namespace Identity.API
 
                     AllowedScopes =
                     {
-                        "challenge-catalog.bff"
+                        "challenge-catalog.bff",
+                        "challenge-catalog.manager"
                     }
                 },
                 new Client
@@ -171,7 +175,8 @@ namespace Identity.API
 
                     AllowedScopes =
                     {
-                        "challenge-order.bff"
+                        "challenge-order.bff",
+                        "challenge-order.manager",
                     }
                 },
                 new Client

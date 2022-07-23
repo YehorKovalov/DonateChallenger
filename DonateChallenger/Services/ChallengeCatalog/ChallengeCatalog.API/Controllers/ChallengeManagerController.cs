@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ChallengeCatalog.API.Controllers;
 
 [ApiController]
-[Authorize(Policy = AuthPolicy.StreamerPolicy)]
+[Authorize(Policy = AuthPolicy.ManagerMinimumPolicy)]
 [Scope("challenge-catalog.manager")]
 [Route(Defaults.DefaultRoute)]
 public class ChallengeManagerController : ControllerBase
