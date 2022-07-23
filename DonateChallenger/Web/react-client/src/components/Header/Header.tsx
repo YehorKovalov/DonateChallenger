@@ -35,6 +35,7 @@ const Header = observer(() => {
                               <>
                                    <NavLink href='/'>Profile</NavLink>
                                    <NavLink href='/order'>Order</NavLink>
+                                   <NavLink href='/completed/forum'>Forum</NavLink>
                               </>}
 
                               {authStore.userRole === UserRole.Streamer &&
@@ -42,10 +43,12 @@ const Header = observer(() => {
                                    <NavLink href='/'>Profile</NavLink>
                                    <NavLink href='/order'>Order</NavLink>
                                    <NavBoardList />
+                                   <NavLink href='/completed/forum'>Forum</NavLink>
                               </>}
 
                               {authStore.userRole === UserRole.Manager &&
                               <>
+                                   <NavLink href='/completed/forum'>Forum</NavLink>
                               </>}
 
                               {authStore.userRole === UserRole.Admin &&
