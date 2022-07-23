@@ -1,6 +1,6 @@
-namespace ChallengeOrder.API.Data.Entities;
+namespace ChallengeOrder.API.Models.DTOs;
 
-public class ChallengeOrderEntity
+public class ChallengeOrderDto
 {
     public Guid ChallengeOrderId { get; set; }
 
