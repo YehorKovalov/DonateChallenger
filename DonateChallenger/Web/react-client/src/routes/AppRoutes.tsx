@@ -16,7 +16,7 @@ import OrderChallengePage from '../pages/ChallengeOrderPage';
 import { UserRole } from '../models/UserRole';
 import UserManagerPage from '../pages/UserManagerPage';
 import ProfilePage from '../pages/ProfilePage';
-import CompletedChallengesForumPage from '../pages/CompletedChallengesForumPage';
+import ForumPage from '../pages/ForumPage';
 
 const AppRoutes = observer(() => {
 
@@ -50,7 +50,7 @@ const AppRoutes = observer(() => {
                               <Route path="/challenges" element={ <ChallengesPage /> } />
                               <Route path="/order" element={ <OrderChallengePage /> } />
                               <Route path="/admin" element={ <UserManagerPage /> } />
-                              <Route path="/completed/forum" element={ <CompletedChallengesForumPage /> }/>
+                              <Route path="/completed/forum" element={ <ForumPage /> }/>
                          </Route>
                     </Routes>
                </Router>

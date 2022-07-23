@@ -40,7 +40,9 @@ const ForumPage = observer(() => {
           <Container>
                <Row className='pt-5'>
                     <Col lg={4}>
-                         <StreamerSearch/>
+                         <div className='pt-5 sticky-top'>
+                              <StreamerSearch/>
+                         </div>
                     </Col>
                     <Col lg={8}>
                          <ChallengesBoardFilters />
