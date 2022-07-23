@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import { GetChallengesTemporaryStorageResponse } from "../dtos/response/GetChallengesTemporaryStorageResponse";
-import { UpdateChallengesTemporaryStorageRequest } from "../dtos/response/UpdateChallengesTemporaryStorageRequest";
+import { UpdateChallengesTemporaryStorageRequest } from "../dtos/requests/UpdateChallengesTemporaryStorageRequest";
 import AuthStore from "../oidc/AuthStore";
 import iocServices from "../utilities/ioc/iocServices";
 import iocStores from "../utilities/ioc/iocStores";

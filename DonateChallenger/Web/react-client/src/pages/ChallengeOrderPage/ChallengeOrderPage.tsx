@@ -17,9 +17,6 @@ const ChallengeOrderPage = observer(() => {
                const fetch = async () => { await authStore.tryGetUser(); }
                fetch();
           }
-     }, []);
-
-     useEffect(() => {
           const handleGettingChallengesFromTempStorage = async () => { await challengesTempStorageStore.getStorage() }
           handleGettingChallengesFromTempStorage();
      }, []);

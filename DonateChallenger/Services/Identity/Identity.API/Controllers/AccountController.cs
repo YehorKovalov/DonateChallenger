@@ -1,10 +1,7 @@
 ﻿using System.Security.Claims;
-using Identity.API.Data;
 using Identity.API.Data.Entities;
 using Identity.API.Helpers;
 using Identity.API.Models.Account;
-using Infrastructure.Services.Abstractions;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Identity.API.Controllers
