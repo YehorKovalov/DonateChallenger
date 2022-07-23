@@ -7,10 +7,7 @@ public class IdentityProfileService : IProfileService
 {
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public IdentityProfileService(UserManager<ApplicationUser> userManager)
-    {
-        _userManager = userManager;
-    }
+    public IdentityProfileService(UserManager<ApplicationUser> userManager) => _userManager = userManager;
 
     public async Task GetProfileDataAsync(ProfileDataRequestContext context) {
         var user = await _userManager.GetUserAsync(context.Subject);
