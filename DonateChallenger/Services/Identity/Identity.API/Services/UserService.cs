@@ -56,6 +56,7 @@ public class UserService : BaseDataService<AppDbContext>, IUserService
             {
                 Data = new UserProfileDto
                 {
+                    Email = user?.Email,
                     UserId = user?.Id,
                     UserNickname = user?.Nickname
                 }
@@ -68,9 +69,8 @@ public class UserService : BaseDataService<AppDbContext>, IUserService
         return await ExecuteSafeAsync(async () =>
         {
             var methodName = nameof(ChangeUserNickname);
+            Logger.LogInformation($"{methodName} ---> {nameof(userId)}: {userId};  {nameof(newNickname)}: {newNickname}");
 
-            Logger.LogInformation(
-                $"{methodName} ---> {nameof(userId)}: {userId};  {nameof(newNickname)}: {newNickname}");
             if (string.IsNullOrWhiteSpace(newNickname))
             {
                 var errorMessage = "Nickname can't not be empty";
@@ -104,7 +104,7 @@ public class UserService : BaseDataService<AppDbContext>, IUserService
                 };
             }
 
-            var streamer = await _userManager.Users.FirstOrDefaultAsync(s => s.Id == userId);
+            var streamer = await _userManager.FindByIdAsync(userId);
             if (streamer == null)
             {
                 Logger.LogWarning($"{methodName} ---> Streamer with id: {streamer} doesn't exist");
@@ -130,4 +130,70 @@ public class UserService : BaseDataService<AppDbContext>, IUserService
             };
         });
     }
+
+    public async Task<ChangeProfileDataResponse<string>> ChangeUserEmail(string userId, string newEmail)
+        {
+            return await ExecuteSafeAsync(async () =>
+            {
+                var methodName = nameof(ChangeUserNickname);
+                Logger.LogInformation($"{methodName} ---> {nameof(userId)}: {userId};  {nameof(newEmail)}: {newEmail}");
+
+                if (string.IsNullOrWhiteSpace(newEmail))
+                {
+                    var errorMessage = "Email can't not be empty";
+                    Logger.LogInformation($"{methodName} ---> {errorMessage}");
+                    return new ChangeProfileDataResponse<string>
+                    {
+                        ValidationErrors = new List<string> {errorMessage},
+                        ChangedData = string.Empty
+                    };
+                }
+
+                if (newEmail.Length > ValidationConstants.NicknameMaxLength)
+                {
+                    var errorMessage = $"Nickname symbols can not be more than {ValidationConstants.NicknameMaxLength}";
+                    Logger.LogInformation($"{methodName} ---> {errorMessage}");
+                    return new ChangeProfileDataResponse<string>
+                    {
+                        ValidationErrors = new List<string> {errorMessage},
+                        ChangedData = newEmail
+                    };
+                }
+
+                if (await _userManager.Users.AnyAsync(s => s.Email == newEmail))
+                {
+                    var errorMessage = $"Email {newEmail} already exists";
+                    Logger.LogWarning($"{methodName} ---> {errorMessage}");
+                    return new ChangeProfileDataResponse<string>
+                    {
+                        ValidationErrors = new List<string> {errorMessage},
+                        ChangedData = newEmail
+                    };
+                }
+                
+                var streamer = await _userManager.FindByIdAsync(userId);
+                if (streamer == null)
+                {
+                    Logger.LogWarning($"{methodName} ---> Streamer with id: {streamer} doesn't exist");
+                    return new ChangeProfileDataResponse<string>
+                    {
+                        ValidationErrors = null,
+                        ChangedData = string.Empty
+                    };
+                }
+
+                var result = await _userManager.SetEmailAsync(streamer, newEmail);
+                foreach (var error in result.Errors)
+                {
+                    Logger.LogError($"{methodName} ---> Code: {error.Code}. Description: {error.Description}");
+                }
+
+                return new ChangeProfileDataResponse<string>
+                {
+                    ValidationErrors = Enumerable.Empty<string>(),
+                    Succeeded = true,
+                    ChangedData = newEmail
+                };
+            });
+        }
 }

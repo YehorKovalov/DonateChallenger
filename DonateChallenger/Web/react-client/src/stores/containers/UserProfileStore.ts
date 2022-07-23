@@ -33,6 +33,7 @@ export default class UserProfileStore {
      }
 
      profile: UserProfile = null!;
+     emailInput: InputWithValidation<string> = null!;
      nicknameInput: InputWithValidation<string> = null!;
 
      public getUserProfile = async () => {
@@ -54,6 +55,24 @@ export default class UserProfileStore {
           }
 
           this.nicknameInput.errors = errors;
+
+          return false;
+     }
+
+      
+     public changeEmail = async () : Promise<boolean> => {
+
+          const [succeeded, errors, changedData] = await this.inputValidation.changeProfileField(this.emailInput, this.profile.email,
+               async () => await this.userService.changeEmail(this.authStore.user!.profile.sub, this.emailInput.state));
+
+          if (succeeded) {
+               this.profile.email = changedData;
+               this.emailInput.state = this.emptyString;
+               this.emailInput.errors = [];
+               return true;
+          }
+
+          this.emailInput.errors = errors;
 
           return false;
      }

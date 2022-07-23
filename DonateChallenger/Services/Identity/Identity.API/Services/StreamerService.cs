@@ -62,9 +62,11 @@ public class StreamerService : BaseDataService<AppDbContext>, IStreamerService
             {
                 Data = new StreamerProfileDto
                 {
+                    Email = streamer?.Email,
                     StreamerId = streamer?.Id,
                     StreamerNickname = streamer?.Nickname,
                     MinDonatePrice = streamer.MinDonatePriceInDollars,
+                    MerchantId = streamer?.Email
                 }
             };
         });
