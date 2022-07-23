@@ -19,6 +19,7 @@ export default class UserProfileStore {
 
      constructor() {
           this.profile = {
+               email: "",
                userId: "",
                userNickname: ""
           };

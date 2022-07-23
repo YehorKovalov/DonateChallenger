@@ -100,6 +100,7 @@ public static class CustomServiceCollectionExtensions
     {
         services.AddTransient<IStreamerService, StreamerService>();
         services.AddTransient<IUserService, UserService>();
+        services.AddTransient<IAccountManagerService, AccountManagerService>();
         services.AddScoped<IProfileService, IdentityProfileService>();
         services.AddScoped<IDbContextWrapper<AppDbContext>, DbContextWrapper<AppDbContext>>();
 

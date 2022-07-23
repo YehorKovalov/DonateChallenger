@@ -9,8 +9,10 @@ import { AuthenticationService } from "./AuthenticationService";
 
 @injectable()
 export default class AuthStore {
+
      @inject(iocServices.authenticationService) private readonly authenticationService!: AuthenticationService;
      @inject(iocServices.localStorageService) private readonly localStorageService!: LocalStorageService;
+
      constructor() {
           makeAutoObservable(this);
      }
@@ -51,7 +53,6 @@ export default class AuthStore {
      };
 
      public tryGetAuthorizedHeaders = async (): Promise<ApiHeader> => {
-          await this.tryGetUser();
           const headers: ApiHeader = {
                contentType: ContentType.Json,
                authorization: this.user?.access_token

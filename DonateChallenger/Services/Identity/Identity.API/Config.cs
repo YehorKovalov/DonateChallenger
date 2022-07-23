@@ -62,7 +62,7 @@ namespace Identity.API
             {
                 Name = "identity",
                 DisplayName = "Comment",
-                Scopes = new List<string> { "streamer-profile.bff", "user-profile.bff" },
+                Scopes = new List<string> { "streamer-profile.bff", "user-profile.bff", "user-manager.bff" },
                 ApiSecrets = new List<Secret> { new Secret("secret".Sha256()) },
                 UserClaims = new List<string> { JwtClaimTypes.Role }
             },
@@ -78,6 +78,7 @@ namespace Identity.API
             new ApiScope("comment.manager", "Comment Manager") { UserClaims = { JwtClaimTypes.Role } },
             new ApiScope("streamer-profile.bff", "Streamer Profile BFF") { UserClaims = { JwtClaimTypes.Role } },
             new ApiScope("user-profile.bff", "User Profile BFF") { UserClaims = { JwtClaimTypes.Role } },
+            new ApiScope("user-manager.bff", "User Manager BFF") { UserClaims = { JwtClaimTypes.Role } },
         };
 
         public static IEnumerable<Client> GetClients()
@@ -135,7 +136,7 @@ namespace Identity.API
                         "challenge-catalog.bff", "paypal-payment.bff",
                         "challenge-order.bff", "challenges-temporary-storage.bff",
                         "comment.bff", "comment.manager", "streamer-profile.bff",
-                        "user-profile.bff",
+                        "user-profile.bff", "user-manager.bff",
                         JwtClaimTypes.Role
                     }
                 },

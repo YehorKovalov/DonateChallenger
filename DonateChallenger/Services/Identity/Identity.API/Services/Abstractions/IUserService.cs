@@ -6,6 +6,6 @@ namespace Identity.API.Services.Abstractions;
 public interface IUserService
 {
     Task<GetUsernamesByUsersIdsResponse<IDictionary<string, string>>> GetUsernamesByUsersIdsAsync(IEnumerable<string> usersIds);
-    Task<GetUserProfileResponse<UserProfileDto>> GetUserProfile(string userId);
+    Task<GetUserProfileResponse<UserProfileDto>> GetUserProfileById(string userId);
     Task<ChangeProfileDataResponse<string>> ChangeUserNickname(string userId, string newNickname);
 }
