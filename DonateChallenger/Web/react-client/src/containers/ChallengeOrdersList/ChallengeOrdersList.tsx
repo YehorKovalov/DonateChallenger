@@ -14,8 +14,9 @@ const ChallengeOrdersList = observer(() => {
                <Table striped bordered hover variant="black fs-5">
                     <thead className='color-silver'>
                          <tr>
-                              <th>Email</th>
-                              <th>Username</th>
+                              <th>Challenges order</th>
+                              <th>Payment ID</th>
+                              <th>Donation sum</th>
                               <th>Action</th>
                          </tr>
                     </thead>

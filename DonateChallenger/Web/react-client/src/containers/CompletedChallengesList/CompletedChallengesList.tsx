@@ -2,12 +2,20 @@ import { observer } from 'mobx-react';
 import { Container, Dropdown, Table } from 'react-bootstrap';
 import TableInput from '../../components/TableInput';
 import CatalogChallengeManagerStore from '../../stores/containers/CatalogChallengeManagerStore';
+import CommentManagerStore from '../../stores/containers/CommentManagerStore';
+import AppManagerPageStore from '../../stores/pages/AppManagerPageStore';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
 
-const ChallengesList = observer(() => {
+interface CompletedChallengesListProps {
+     streamerId: string;
+}
+
+const CompletedChallengesList = observer((props: CompletedChallengesListProps) => {
 
      const catalogChallengesManager = useInjection<CatalogChallengeManagerStore>(iocStores.catalogChallengeManagerStore);
+     const appManagerPageStore = useInjection<AppManagerPageStore>(iocStores.appManagerPageStore);
+     const commentManager = useInjection<CommentManagerStore>(iocStores.commentManagerStore);
 
      return (
           <Container>
@@ -42,7 +50,12 @@ const ChallengesList = observer(() => {
                                              Action
                                         </Dropdown.Toggle>
                                         <Dropdown.Menu variant='dark'>
-                                             <Dropdown.Item onClick={async () => await catalogChallengesManager.update(s.challengeId)}>Update</Dropdown.Item>
+                                             <Dropdown.Item onClick={async () => await catalogChallengesManager.update(s.challengeId, props.streamerId)}>Update</Dropdown.Item>
+                                             <Dropdown.Item onClick={async () => {
+                                                  appManagerPageStore.activeKey = "comments";
+                                                  await commentManager.getPaginated(s.challengeId);
+                                             }}>
+                                                  To comments</Dropdown.Item>
                                         </Dropdown.Menu>
                                    </Dropdown>
                               </td>
@@ -54,4 +67,4 @@ const ChallengesList = observer(() => {
      );
 });
 
-export default ChallengesList;
+export default CompletedChallengesList;

@@ -125,33 +125,39 @@ public class ChallengeCatalogCatalogService : BaseDataService<ChallengeCatalogDb
         });
     }
 
-    public async Task<UpdateChallengeResponse<long>> UpdateChallengeAsync(long challengeId, string? title, string description, double donatePrice, string streamerId, string donateFrom)
+    public async Task<UpdateChallengeResponse<long>> UpdateChallengeAsync(long challengeId, string? title, string description, double donatePrice, string donateFrom)
     {
-        var result = await _challengeCatalogRepository.UpdateChallengeAsync(challengeId, title, description, donatePrice, streamerId, donateFrom);
-        return new UpdateChallengeResponse<long> { Data = result };
+        return await ExecuteSafeAsync(async () =>
+        {
+            var result = await _challengeCatalogRepository.UpdateChallengeAsync(challengeId, title, description, donatePrice, donateFrom);
+            return new UpdateChallengeResponse<long> { Data = result };
+        });
     }
 
     public async Task<GetChallengeByIdResponse<ChallengeDto?>> GetChallengeByIdAsync(long challengeId, bool loadRelatedEntities = false)
     {
-        var result = await _challengeCatalogRepository.GetChallengeByIdAsync(challengeId, loadRelatedEntities);
-        if (result == null)
+        return await ExecuteSafeAsync(async () =>
         {
-            return new GetChallengeByIdResponse<ChallengeDto?> { Data = null };
-        }
-
-        return new GetChallengeByIdResponse<ChallengeDto?>
-        {
-            Data = new ChallengeDto
+            var result = await _challengeCatalogRepository.GetChallengeByIdAsync(challengeId, loadRelatedEntities);
+            if (result == null)
             {
-                Description = result.Description,
-                DonateFrom = result.DonateFrom,
-                DonatePrice = result.DonatePrice,
-                Title = result.Title,
-                StreamerId = result.StreamerId,
-                ChallengeId = result.ChallengeId,
-                CreatedTime = result.CreatedTime
+                return new GetChallengeByIdResponse<ChallengeDto?> { Data = null };
             }
-        };
+
+            return new GetChallengeByIdResponse<ChallengeDto?>
+            {
+                Data = new ChallengeDto
+                {
+                    Description = result.Description,
+                    DonateFrom = result.DonateFrom,
+                    DonatePrice = result.DonatePrice,
+                    Title = result.Title,
+                    StreamerId = result.StreamerId,
+                    ChallengeId = result.ChallengeId,
+                    CreatedTime = result.CreatedTime
+                }
+            };
+        });
     }
 
     private async Task<GetPaginatedChallengesResponse<ChallengeDto>?> GetPaginatedChallengesAsyncInternal(

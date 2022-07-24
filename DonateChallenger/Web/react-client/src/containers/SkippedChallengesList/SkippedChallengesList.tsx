@@ -1,40 +1,44 @@
 import { observer } from 'mobx-react';
 import { Container, Dropdown, Table } from 'react-bootstrap';
 import TableInput from '../../components/TableInput';
-import CommentManagerStore from '../../stores/containers/CommentManagerStore';
+import CatalogChallengeManagerStore from '../../stores/containers/CatalogChallengeManagerStore';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
 
-const CommentsList = observer(() => {
+interface SkippedChallengesListProps {
+     streamerId: string
+}
 
-     const commentManager = useInjection<CommentManagerStore>(iocStores.commentManagerStore);
+const SkippedChallengesList = observer((props: SkippedChallengesListProps) => {
+
+     const catalogChallengesManager = useInjection<CatalogChallengeManagerStore>(iocStores.catalogChallengeManagerStore);
 
      return (
           <Container>
                <Table striped bordered hover variant="black fs-5">
                     <thead className='color-silver'>
                          <tr>
-                              <th>Message</th>
-                              <th>User</th>
-                              <th>Challenge</th>
-                              <th>Created</th>
+                              <th>Description</th>
+                              <th>Donation From</th>
+                              <th>Donate price</th>
+                              <th>Title</th>
                               <th>Action</th>
                          </tr>
                     </thead>
                     <tbody>
-                         {commentManager.paginatedComments.data.map(s => 
-                         <tr key={s.commentId}>
+                         {catalogChallengesManager.paginatedChallenges.data.map(s =>
+                         <tr key={s.challengeId}>
                               <td>
-                                   <TableInput value={s.message} onChange={(e) => s.message = e.target.value} />
+                                   <TableInput value={s.description} onChange={(e) => s.description = e.target.value} />
                               </td>
                               <td>
-                                   <TableInput value={s.userId} onChange={(e) => s.userId = e.target.value} />
+                                   <TableInput value={s.donateFrom} onChange={(e) => s.donateFrom = e.target.value} />
                               </td>
                               <td>
-                                   <TableInput value={s.challengeId} onChange={(e) => s.challengeId = Number.parseInt(e.target.value)} />
+                                   <TableInput value={s.donatePrice} onChange={(e) => s.donatePrice = Number.parseInt(e.target.value)} />
                               </td>
                               <td>
-                                   <div className='color-silver'>{s.date}</div>
+                                   <TableInput value={!s.title ? "" : s.title} onChange={(e) => s.title = e.target.value} />
                               </td>
                               <td>
                                    <Dropdown>
@@ -42,8 +46,7 @@ const CommentsList = observer(() => {
                                              Action
                                         </Dropdown.Toggle>
                                         <Dropdown.Menu variant='dark'>
-                                             <Dropdown.Item onClick={async () => await commentManager.update(s.commentId)}>Update</Dropdown.Item>
-                                             <Dropdown.Item onClick={async () => await commentManager.delete(s.commentId)}>Delete</Dropdown.Item>
+                                             <Dropdown.Item onClick={async () => await catalogChallengesManager.update(s.challengeId, props.streamerId)}>Update</Dropdown.Item>
                                         </Dropdown.Menu>
                                    </Dropdown>
                               </td>
@@ -55,4 +58,4 @@ const CommentsList = observer(() => {
      );
 });
 
-export default CommentsList;
+export default SkippedChallengesList;

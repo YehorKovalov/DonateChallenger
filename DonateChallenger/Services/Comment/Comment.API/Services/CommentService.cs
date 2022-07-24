@@ -70,7 +70,7 @@ public class CommentService : BaseDataService<AppDbContext>, ICommentService
                 Message = s.Message,
                 UserId = s.UserId,
                 Date = s.Date,
-                Username = userNames[s.UserId]
+                Username = userNames[s.UserId] ?? "Deleted"
             }).ToList();
 
             Logger.LogInformation($"{nameof(GetPaginatedCommentsAsync)} ---> {nameof(data)} amount: {data.Count()}; {nameof(totalPages)}: {totalPages}");

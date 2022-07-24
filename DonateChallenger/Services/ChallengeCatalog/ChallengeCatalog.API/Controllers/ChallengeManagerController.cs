@@ -57,7 +57,7 @@ public class ChallengeManagerController : ControllerBase
     [ProducesResponseType(typeof(UpdateChallengeResponse<long>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Update(UpdateChallengeRequest request)
     {
-        var result = await _catalog.UpdateChallengeAsync(request.ChallengeId, request.Title, request.Description, request.DonatePrice, request.StreamerId, request.DonateFrom);
+        var result = await _catalog.UpdateChallengeAsync(request.ChallengeId, request.Title, request.Description, request.DonatePrice, request.DonateFrom);
         return Ok(result);
     }
 
