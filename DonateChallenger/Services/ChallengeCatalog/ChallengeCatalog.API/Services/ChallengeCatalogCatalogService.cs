@@ -221,7 +221,7 @@ public class ChallengeCatalogCatalogService : BaseDataService<ChallengeCatalogDb
 
         if (sorting.TryGetValue(SortChallengeBy.MinDonatePrice, out var byMinDonatePrice))
         {
-            sortByCreatedTime = byMinDonatePrice;
+            sortByMinDonatePrice = byMinDonatePrice;
         }
     }
 

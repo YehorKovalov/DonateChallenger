@@ -124,15 +124,7 @@ public class ChallengeCatalogCatalogRepository : IChallengeCatalogRepository
             query = query.Where(p => p.DonatePrice >= minPriceFilter.Value);
         }
 
-        if (sortByCreatedTime.HasValue && sortByCreatedTime.Value)
-        {
-            query = query.OrderByDescending(q => q.CreatedTime);
-        }
-
-        if (sortByMinDonatePrice.HasValue && sortByMinDonatePrice.Value)
-        {
-            query = query.OrderByDescending(q => q.DonatePrice);
-        }
+        query = HandleSorting(query, sortByCreatedTime, sortByMinDonatePrice);
 
         query = query.Include(q => q.ChallengeStatusEntity)
             .Where(q => q.ChallengeStatusEntity.IsCompleted == getCompletedChallengesFilter)
@@ -159,5 +151,29 @@ public class ChallengeCatalogCatalogRepository : IChallengeCatalogRepository
             Challenges = challenges,
             TotalCount = totalCount
         };
+    }
+
+    private IQueryable<ChallengeEntity> HandleSorting(IQueryable<ChallengeEntity> query, bool? sortByCreatedTime = true, bool? sortByMinDonatePrice = true)
+    {
+        var byCreatedTime = sortByCreatedTime.HasValue && sortByCreatedTime.Value;
+        var byMinDonatePrice = sortByMinDonatePrice.HasValue && sortByMinDonatePrice.Value;
+        if (byCreatedTime && byMinDonatePrice)
+        {
+            return query
+                .OrderByDescending(o => o.DonatePrice)
+                .ThenByDescending(t => t.CreatedTime);
+        }
+
+        if (sortByCreatedTime.HasValue && sortByCreatedTime.Value)
+        {
+            query = query.OrderByDescending(q => q.CreatedTime);
+        }
+
+        if (sortByMinDonatePrice.HasValue && sortByMinDonatePrice.Value)
+        {
+            query = query.OrderByDescending(q => q.DonatePrice);
+        }
+
+        return query;
     }
 }
