@@ -30,12 +30,12 @@ export default class CommentsBlockStore {
 
           if (challengeId != this.commentStore.currentChallengeId) {
 
-               this.pagination.currentPage = 0;
-               await this.commentsStore.getChallengeComments(this.pagination.currentPage, this.commentsPerPage, challengeId);
-               
-               const totalPages = this.commentsStore.paginatedComments!.totalPages;
+               let currentPage = this.pagination.currentPage;
+               currentPage = 0;
+               await this.commentsStore.getChallengeComments(currentPage, this.commentsPerPage, challengeId);
 
-               this.pagination.pagesAmount = totalPages;
+               this.pagination.pagesAmount = this.commentsStore.paginatedComments!.totalPages;
+               this.pagination.currentPage = this.commentsStore.paginatedComments!.currentPage;
           }
 
           this.commentStore.currentChallengeId = challengeId;
@@ -45,9 +45,7 @@ export default class CommentsBlockStore {
 
           await this.commentsStore.getChallengeComments(this.pagination.currentPage, this.commentsPerPage, this.commentStore.currentChallengeId);
           
-          const totalPages = this.commentsStore.paginatedComments!.totalPages;
-
-          this.pagination.pagesAmount = totalPages;
+          this.pagination.pagesAmount = this.commentsStore.paginatedComments!.totalPages;;
      }
 
      public addComment = async () => {

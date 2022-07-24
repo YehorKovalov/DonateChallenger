@@ -2,7 +2,7 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import ButtonWithMovableBorder from '../../components/ButtonWithMovableBorder';
 import ChallengeForm from '../../components/ChallengeForm';
-import OrderSearch from '../../components/StreamerSearch';
+import StreamerSearch from '../../components/StreamerSearch';
 import ChallengeOrderStore from '../../stores/containers/ChallengeOrderStore';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
@@ -21,7 +21,7 @@ const OrderForm = observer(() => {
           <div className="order_form" onMouseMove={handleFormMouseMovingEffect}>
                <div className='order_form__wrapper'>
                     <div className='pb-5'>
-                         <OrderSearch/>
+                         <StreamerSearch/>
                     </div>
                     <div className="order_challenge">
                          <div className="color-white fs-1 text-center border-bottom mb-4">Challenge</div>

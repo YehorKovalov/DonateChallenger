@@ -1,10 +1,7 @@
 import { observer } from 'mobx-react';
-import { useEffect } from 'react';
 import { Card, Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-import CommentPaginationStore from '../../stores/components/CommentPaginationStore';
 import DateTimeStore from '../../stores/components/DateTimeStore';
 import CommentsBlockStore from '../../stores/containers/CommentsBlockStore';
-import CommentStore from '../../stores/states/CommentStore';
 import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
 
@@ -13,7 +10,7 @@ export interface CompletedChallengeCardProps {
      title?: string,
      description: string,
      donatePrice: number,
-     donateFrom: number,
+     donateFrom: string,
      createdTime: string
 }
 
@@ -33,7 +30,7 @@ const CompletedChallengeCard = observer((props: CompletedChallengeCardProps) => 
                overlay={<Tooltip id="button-tooltip-2" className='color-silver fs-4'>Show comments</Tooltip>}
           >
                <Card bg='dark' className='color-silver hover_white border' role={"button"}
-                         key={props.challengeId} onClick={() => handleClick()}>
+                         key={props.challengeId} onClick={async () => await handleClick()}>
                     <Card.Body>
                          <Row className='mb-2'>
                               <Col lg={8} className='donate-donater text-center'>{props.donateFrom}</Col>
