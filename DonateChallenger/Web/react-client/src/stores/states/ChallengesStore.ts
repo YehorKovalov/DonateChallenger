@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { makeAutoObservable } from "mobx";
+import { CatalogChallenge } from "../../models/CatalogChallenge";
 import { ChallengeStatusEnum } from "../../models/ChallengeStatusEnum";
-import { CurrentChallenge } from "../../models/CurrentChallenge";
 import { PaginatedChallenges } from "../../models/PaginatedChallenges";
 import { ChallengeCatalogService } from "../../services/ChallengeCatalogService";
 import challengesConstants from "../../utilities/ChallengesConstants";
@@ -17,7 +17,7 @@ export default class ChallengesStore {
           makeAutoObservable(this);
      }
 
-     paginatedChallenges: PaginatedChallenges<CurrentChallenge> | null = null;
+     paginatedChallenges: PaginatedChallenges<CatalogChallenge> | null = null;
 
      public getChallenges = async (status: ChallengeStatusEnum, currentPage: number, sortByCreatedTime?: boolean, sortByMinDonatePrice?: boolean, minPriceFilter?: number, streamerId?: string) => {
           switch (status) {
