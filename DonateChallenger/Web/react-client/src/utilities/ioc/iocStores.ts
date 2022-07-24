@@ -22,4 +22,5 @@ export default {
      catalogChallengeManagerStore: Symbol("catalogChallengeManagerStore"),
      challengeOrderManagerStore: Symbol("challengeOrderManagerStore"),
      commentManagerStore: Symbol("commentManagerStore"),
+     appManagerPageStore: Symbol("appManagerPageStore"),
 }

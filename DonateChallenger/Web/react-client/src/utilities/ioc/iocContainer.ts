@@ -37,6 +37,7 @@ import DefaultChallengeOrderManagerService, { ChallengeOrderManagerService } fro
 import CatalogChallengeManagerStore from "../../stores/containers/CatalogChallengeManagerStore";
 import ChallengeOrderManagerStore from "../../stores/containers/ChallengeOrderManagerStore";
 import CommentManagerStore from "../../stores/containers/CommentManagerStore";
+import AppManagerPageStore from "../../stores/pages/AppManagerPageStore";
 
 export const container = new Container();
 container.bind<HttpService>(iocServices.httpService).to(DefaultHttpService).inSingletonScope();
@@ -76,3 +77,4 @@ container.bind<UserManagerStore>(iocStores.userManagerStore).to(UserManagerStore
 container.bind<CommentManagerStore>(iocStores.commentManagerStore).to(CommentManagerStore).inSingletonScope();
 container.bind<ChallengeOrderManagerStore>(iocStores.challengeOrderManagerStore).to(ChallengeOrderManagerStore).inSingletonScope();
 container.bind<CatalogChallengeManagerStore>(iocStores.catalogChallengeManagerStore).to(CatalogChallengeManagerStore).inSingletonScope();
+container.bind<AppManagerPageStore>(iocStores.appManagerPageStore).to(AppManagerPageStore).inSingletonScope();
