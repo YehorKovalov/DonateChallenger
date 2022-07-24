@@ -41,18 +41,21 @@ public class ChallengeOrderRepository : IChallengeOrderRepository
     public async Task<Guid> Update(string challengeOrderId, string paymentId, int challengesAmount, double resultDonationPrice)
     {
         _logger.LogInformation($"{nameof(Update)} ---> {nameof(challengeOrderId)}: {challengeOrderId}; {nameof(paymentId)}: {paymentId}; {nameof(challengesAmount)}: {challengesAmount}; {nameof(resultDonationPrice)}: {resultDonationPrice}; ");
-        var order = new ChallengeOrderEntity
+
+        var order = await GetById(challengeOrderId);
+        if (order == null)
         {
-            ChallengeOrderId = Guid.Parse(challengeOrderId),
-            PaymentId = paymentId,
-            ChallengesAmount = challengesAmount,
-            ResultDonationPrice = resultDonationPrice,
-        };
+            _logger.LogError($"{nameof(Update)} ---> Order's not found. Returned empty guid");
+            return Guid.Empty;
+        }
+
+        order.PaymentId = paymentId;
+        order.ChallengesAmount = challengesAmount;
+        order.ResultDonationPrice = resultDonationPrice;
 
         var result = _appDbContext.Update(order);
 
         await _appDbContext.SaveChangesAsync();
-
         return result.Entity.ChallengeOrderId;
     }
 

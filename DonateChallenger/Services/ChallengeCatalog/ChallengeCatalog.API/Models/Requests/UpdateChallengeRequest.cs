@@ -10,7 +10,5 @@ public class UpdateChallengeRequest
 
     public double DonatePrice { get; set; }
 
-    public string StreamerId { get; set; } = null!;
-
     public string DonateFrom { get; set; } = null!;
 }

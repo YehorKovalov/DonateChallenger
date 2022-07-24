@@ -84,14 +84,18 @@ public class CommentRepository : ICommentRepository
     public async Task<long?> Update(long commentId, string userId, long challengeId, string message)
     {
         _logger.LogInformation($"{nameof(Update)} ---> {nameof(commentId)}: {commentId}; {nameof(userId)}: {userId}; {nameof(challengeId)}: {challengeId}; {nameof(message)}: {message}; ");
-        var result = _context.Update(new CommentEntity
-        {
-            CommentId = commentId,
-            UserId = userId,
-            ChallengeId = challengeId,
-            Message = message
-        });
 
+        var comment = await GetByCommentId(commentId);
+        if (comment == null)
+        {
+            _logger.LogError($"{nameof(Update)} ---> Comment's not found. Returned null");
+            return null;
+        }
+
+        comment.UserId = userId;
+        comment.ChallengeId = challengeId;
+        comment.Message = message;
+        var result = _context.Update(comment);
         await _context.SaveChangesAsync();
         return result?.Entity?.CommentId;
     }
