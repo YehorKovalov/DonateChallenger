@@ -17,13 +17,13 @@ import { HttpService, MethodType } from "./HttpService";
 
 export interface CatalogChallengeManagerService {
      getPaginatedCurrentChallenges(currentPage: number, challengesPerPage: number, sortByCreatedTime?: boolean, sortByMinDonatePrice?: boolean, minPriceFilter?: number, streamerId?: string)
-          : Promise<GetPaginatedStreamerChallengesResponse<CurrentChallengeDto>>;
+     : Promise<GetPaginatedStreamerChallengesResponse<CurrentChallengeDto>>;
      getPaginatedCompletedChallenges(currentPage: number, challengesPerPage: number, sortByCreatedTime?: boolean, sortByMinDonatePrice?: boolean, minPriceFilter?: number, streamerId?: string)
           : Promise<GetPaginatedStreamerChallengesResponse<CompletedChallengeDto>>;
      getPaginatedSkippedChallenges(currentPage: number, challengesPerPage: number, sortByCreatedTime?: boolean, sortByMinDonatePrice?: boolean, minPriceFilter?: number, streamerId?: string)
           : Promise<GetPaginatedStreamerChallengesResponse<SkippedChallengeDto>>;
      getChallengeById(challengeId: number): Promise<GetChallengeByIdResponse<ChallengeDto>>;
-     updateChallenge(challengeId: number, description: string, donatePrice: number, donateFrom: string, streamerId: string, title?: string)
+     updateChallenge(challengeId: number, description: string, donatePrice: number, donateFrom: string, title?: string)
           : Promise<UpdateChallengeResponse<number>>;
      addChallenge(description: string, donatePrice: number, donateFrom: string, streamerId: string, title?: string): Promise<AddChallengeForStreamerResponse>;
 }
@@ -46,7 +46,7 @@ export default class DefaultCatalogChallengeManagerService implements CatalogCha
           return { ...response.data };
      }
 
-     public async updateChallenge(challengeId: number, description: string, donatePrice: number, donateFrom: string, streamerId: string, title?: string | undefined): Promise<UpdateChallengeResponse<number>> {
+     public async updateChallenge(challengeId: number, description: string, donatePrice: number, donateFrom: string, title?: string | undefined): Promise<UpdateChallengeResponse<number>> {
           const headers = await this.authStore.tryGetAuthorizedHeaders();
           const url = `${this.challengeCatalogManagerApiRoute}/update`;
           const request: UpdateChallengeRequest = {
@@ -54,7 +54,6 @@ export default class DefaultCatalogChallengeManagerService implements CatalogCha
                description: description,
                donateFrom: donateFrom,
                donatePrice: donatePrice,
-               streamerId: streamerId,
                title: title
           }
 

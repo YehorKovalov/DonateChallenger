@@ -19,4 +19,7 @@ export default {
      commentStore: Symbol("commentStore"),
      inputValidationStore: Symbol("inputValidationStore"),
      userManagerStore: Symbol("userManagerStore"),
+     catalogChallengeManagerStore: Symbol("catalogChallengeManagerStore"),
+     challengeOrderManagerStore: Symbol("challengeOrderManagerStore"),
+     commentManagerStore: Symbol("commentManagerStore"),
 }

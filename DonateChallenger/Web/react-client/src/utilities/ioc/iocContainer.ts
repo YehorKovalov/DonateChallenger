@@ -34,6 +34,9 @@ import UserManagerStore from "../../stores/containers/UserManagerStore";
 import DefaultCatalogChallengeManagerService, { CatalogChallengeManagerService } from "../../services/CatalogChallengeManagerService";
 import DefaultCommentManagerService, { CommentManagerService } from "../../services/CommentManagerService";
 import DefaultChallengeOrderManagerService, { ChallengeOrderManagerService } from "../../services/ChallengeOrderManagerService";
+import CatalogChallengeManagerStore from "../../stores/containers/CatalogChallengeManagerStore";
+import ChallengeOrderManagerStore from "../../stores/containers/ChallengeOrderManagerStore";
+import CommentManagerStore from "../../stores/containers/CommentManagerStore";
 
 export const container = new Container();
 container.bind<HttpService>(iocServices.httpService).to(DefaultHttpService).inSingletonScope();
@@ -70,3 +73,6 @@ container.bind<CommentStore>(iocStores.commentStore).to(CommentStore).inSingleto
 container.bind<UserProfileStore>(iocStores.userProfileStore).to(UserProfileStore).inSingletonScope();
 container.bind<InputValidationStore>(iocStores.inputValidationStore).to(InputValidationStore).inTransientScope();
 container.bind<UserManagerStore>(iocStores.userManagerStore).to(UserManagerStore).inSingletonScope();
+container.bind<CommentManagerStore>(iocStores.commentManagerStore).to(CommentManagerStore).inSingletonScope();
+container.bind<ChallengeOrderManagerStore>(iocStores.challengeOrderManagerStore).to(ChallengeOrderManagerStore).inSingletonScope();
+container.bind<CatalogChallengeManagerStore>(iocStores.catalogChallengeManagerStore).to(CatalogChallengeManagerStore).inSingletonScope();

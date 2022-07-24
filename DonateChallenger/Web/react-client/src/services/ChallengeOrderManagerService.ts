@@ -16,7 +16,7 @@ export interface ChallengeOrderManagerService {
      addChallengeOrder(paymentId: string, challengesAmount: number, resultDonationPrice: number): Promise<AddChallengeOrderResponse<string>>;
      updateChallengeOrder(challengeOrderId: string, paymentId: string, challengesAmount: number, resultDonationPrice: number): Promise<UpdateChallengeOrderResponse<string>>;
      getPaginatedOrders(currentPage: number, commentsPerPage: number): Promise<GetPaginatedChallengeOrdersResponse<ChallengeOrderDto>>;
-     getOrderById(orderId: number): Promise<GetChallengeOrderByIdResponse<ChallengeOrderDto>>;
+     getOrderById(orderId: string): Promise<GetChallengeOrderByIdResponse<ChallengeOrderDto>>;
 }
 
 @injectable()
@@ -70,7 +70,7 @@ export default class DefaultChallengeOrderManagerService implements ChallengeOrd
           return { ...response.data };
      }
 
-     public async getOrderById(orderId: number): Promise<GetChallengeOrderByIdResponse<ChallengeOrderDto>> {
+     public async getOrderById(orderId: string): Promise<GetChallengeOrderByIdResponse<ChallengeOrderDto>> {
           const headers = await this.authStore.tryGetAuthorizedHeaders();
           const url = `${this.challengeOrderManagerApiRoute}/get?orderId=${orderId}`;
 

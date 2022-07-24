@@ -4,5 +4,4 @@ export interface UpdateChallengeRequest {
      description: string;
      donatePrice: number;
      donateFrom: string;
-     streamerId: string;
 }

@@ -1,4 +1,4 @@
-export interface CompletedChallengeDto {
+export interface CatalogChallenge {
      challengeId: number,
      title?: string,
      description: string,
