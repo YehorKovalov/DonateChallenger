@@ -34,7 +34,7 @@ const CommentsList = observer(() => {
                                    <TableInput value={s.challengeId} onChange={(e) => s.challengeId = Number.parseInt(e.target.value)} />
                               </td>
                               <td>
-                                   <div>{s.date}</div>
+                                   <div className='color-silver'>{s.date}</div>
                               </td>
                               <td>
                                    <Dropdown>
