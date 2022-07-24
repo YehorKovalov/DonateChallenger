@@ -147,17 +147,7 @@ namespace Identity.API.Controllers
         public async Task<IActionResult> Register(string returnUrl)
         {
             ViewData["ReturnUrl"] = returnUrl;
-            var roles = await _roleManager.Roles.ToListAsync();
-            var vm = new RegisterViewModel
-            {
-                Roles = roles
-                    .Where(w => w.NormalizedName != "admin" && w.NormalizedName != "manager")
-                    .Select(s => new SelectListItem 
-                    {
-                        Value = s.NormalizedName,
-                        Text = s.Name
-                    })
-            };
+            var vm = new RegisterViewModel { Roles = await GetRoles() };
             return View(vm);
         }
 
@@ -177,6 +167,8 @@ namespace Identity.API.Controllers
                 if (result.Errors.Any())
                 {
                     AddErrors(result);
+                    ViewData["ReturnUrl"] = returnUrl;
+                    model.Roles = await GetRoles();
                     return View(model);
                 }
 
@@ -184,6 +176,8 @@ namespace Identity.API.Controllers
                 if (addingToRoleResult.Errors.Any())
                 {
                     AddErrors(addingToRoleResult);
+                    ViewData["ReturnUrl"] = returnUrl;
+                    model.Roles = await GetRoles();
                     return View(model);
                 }
 
@@ -200,6 +194,9 @@ namespace Identity.API.Controllers
             {
                 if (HttpContext.User.Identity.IsAuthenticated)
                     return Redirect(returnUrl);
+
+                model.Roles = await GetRoles();
+                ViewData["ReturnUrl"] = returnUrl;
                 return View(model);
             }
 
@@ -417,6 +414,19 @@ namespace Identity.API.Controllers
             }
 
             return vm;
+        }
+
+        private async Task<IEnumerable<SelectListItem>> GetRoles()
+        {
+            var roles = await _roleManager.Roles.ToListAsync();
+
+            return roles
+                .Where(w => w.NormalizedName != "admin" && w.NormalizedName != "manager")
+                .Select(s => new SelectListItem
+                {
+                    Value = s.NormalizedName,
+                    Text = s.Name
+                }).ToList();
         }
     }
 }
