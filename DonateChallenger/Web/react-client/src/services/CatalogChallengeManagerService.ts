@@ -4,6 +4,7 @@ import { CompletedChallengeDto } from "../dtos/DTOs/CompletedChallengeDto";
 import { CurrentChallengeDto } from "../dtos/DTOs/CurrentChallengeDto";
 import { SkippedChallengeDto } from "../dtos/DTOs/SkippedChallengeDto";
 import { AddChallengeForStreamerRequest } from "../dtos/requests/AddChallengeForStreamerRequest";
+import { GetPaginatedStreamerChallengesRequest } from "../dtos/requests/GetPaginatedStreamerChallengesRequest";
 import { UpdateChallengeRequest } from "../dtos/requests/UpdateChallengeRequest";
 import { AddChallengeForStreamerResponse } from "../dtos/response/AddChallengeForStreamerResponse";
 import { GetChallengeByIdResponse } from "../dtos/response/GetChallengeByIdResponse";
@@ -16,15 +17,11 @@ import { ChallengeCatalogService } from "./ChallengeCatalogService";
 import { HttpService, MethodType } from "./HttpService";
 
 export interface CatalogChallengeManagerService {
-     getPaginatedCurrentChallenges(currentPage: number, challengesPerPage: number, sortByCreatedTime?: boolean, sortByMinDonatePrice?: boolean, minPriceFilter?: number, streamerId?: string)
-     : Promise<GetPaginatedStreamerChallengesResponse<CurrentChallengeDto>>;
-     getPaginatedCompletedChallenges(currentPage: number, challengesPerPage: number, sortByCreatedTime?: boolean, sortByMinDonatePrice?: boolean, minPriceFilter?: number, streamerId?: string)
-          : Promise<GetPaginatedStreamerChallengesResponse<CompletedChallengeDto>>;
-     getPaginatedSkippedChallenges(currentPage: number, challengesPerPage: number, sortByCreatedTime?: boolean, sortByMinDonatePrice?: boolean, minPriceFilter?: number, streamerId?: string)
-          : Promise<GetPaginatedStreamerChallengesResponse<SkippedChallengeDto>>;
+     getPaginatedCurrentChallenges(currentPage: number, challengesPerPage: number, streamerId?: string): Promise<GetPaginatedStreamerChallengesResponse<CurrentChallengeDto>>;
+     getPaginatedCompletedChallenges(currentPage: number, challengesPerPage: number, streamerId?: string): Promise<GetPaginatedStreamerChallengesResponse<CompletedChallengeDto>>;
+     getPaginatedSkippedChallenges(currentPage: number, challengesPerPage: number, streamerId?: string): Promise<GetPaginatedStreamerChallengesResponse<SkippedChallengeDto>>;
      getChallengeById(challengeId: number): Promise<GetChallengeByIdResponse<ChallengeDto>>;
-     updateChallenge(challengeId: number, description: string, donatePrice: number, donateFrom: string, title?: string)
-          : Promise<UpdateChallengeResponse<number>>;
+     updateChallenge(challengeId: number, description: string, donatePrice: number, donateFrom: string, title?: string): Promise<UpdateChallengeResponse<number>>;
      addChallenge(description: string, donatePrice: number, donateFrom: string, streamerId: string, title?: string): Promise<AddChallengeForStreamerResponse>;
 }
 
@@ -76,18 +73,47 @@ export default class DefaultCatalogChallengeManagerService implements CatalogCha
           return { ...response.data };
      }
 
-     public async getPaginatedCurrentChallenges(currentPage: number, challengesPerPage: number, sortByCreatedTime?: boolean | undefined, sortByMinDonatePrice?: boolean | undefined, minPriceFilter?: number | undefined, streamerId?: string | undefined): Promise<GetPaginatedStreamerChallengesResponse<CurrentChallengeDto>> {
-          const result = await this.challengeCatalogService.getPaginatedCurrentChallenges(currentPage, challengesPerPage, sortByCreatedTime, sortByMinDonatePrice, minPriceFilter, streamerId);
-          return {...result };
+     public async getPaginatedCurrentChallenges(currentPage: number, challengesPerPage: number, streamerId: string): Promise<GetPaginatedStreamerChallengesResponse<CurrentChallengeDto>> {
+
+          const url = `${this.challengeCatalogManagerApiRoute}/current`;
+          const result = await this.getPaginatedChallengesInternal<GetPaginatedStreamerChallengesResponse<CurrentChallengeDto>>(url, currentPage, challengesPerPage, streamerId);
+
+          return { ...result }
      }
 
-     public async getPaginatedCompletedChallenges(currentPage: number, challengesPerPage: number, sortByCreatedTime?: boolean | undefined, sortByMinDonatePrice?: boolean | undefined, minPriceFilter?: number | undefined, streamerId?: string | undefined): Promise<GetPaginatedStreamerChallengesResponse<CompletedChallengeDto>> {
-          const result = await this.challengeCatalogService.getPaginatedCompletedChallenges(currentPage, challengesPerPage, sortByCreatedTime, sortByMinDonatePrice, minPriceFilter, streamerId);
-          return {...result };
+     public async getPaginatedCompletedChallenges(currentPage: number, challengesPerPage: number, streamerId: string): Promise<GetPaginatedStreamerChallengesResponse<CompletedChallengeDto>> {
+          const url = `${this.challengeCatalogManagerApiRoute}/completed`;
+          const result = await this.getPaginatedChallengesInternal<GetPaginatedStreamerChallengesResponse<CurrentChallengeDto>>(url, currentPage, challengesPerPage, streamerId);
+
+          return { ...result }
      }
 
-     public async getPaginatedSkippedChallenges(currentPage: number, challengesPerPage: number, sortByCreatedTime?: boolean | undefined, sortByMinDonatePrice?: boolean | undefined, minPriceFilter?: number | undefined, streamerId?: string | undefined): Promise<GetPaginatedStreamerChallengesResponse<SkippedChallengeDto>> {
-          const result = await this.challengeCatalogService.getPaginatedSkippedChallenges(currentPage, challengesPerPage, sortByCreatedTime, sortByMinDonatePrice, minPriceFilter, streamerId);
-          return {...result };
+     public async getPaginatedSkippedChallenges(currentPage: number, challengesPerPage: number, streamerId: string): Promise<GetPaginatedStreamerChallengesResponse<SkippedChallengeDto>> {
+
+          const url = `${this.challengeCatalogManagerApiRoute}/skipped`;
+          const result = await this.getPaginatedChallengesInternal<GetPaginatedStreamerChallengesResponse<CurrentChallengeDto>>(url, currentPage, challengesPerPage, streamerId);
+
+          return { ...result }
+     }
+
+     private async getPaginatedChallengesInternal<T>(url: string, currentPage: number, challengesPerPage: number, streamerId: string)
+          : Promise<T> {
+
+          if (!this.authStore.user) {
+               await this.authStore.tryGetUser();
+          }
+
+          const headers = await this.authStore.tryGetAuthorizedHeaders();
+          const method = MethodType.POST;
+
+          const request: GetPaginatedStreamerChallengesRequest = {
+               currentPage: currentPage,
+               streamerId: streamerId,
+               challengesPerPage: challengesPerPage,
+          };
+
+          const response = await this.httpService.send<T>(url, method, headers, request);
+
+          return { ...response.data };
      }
 }

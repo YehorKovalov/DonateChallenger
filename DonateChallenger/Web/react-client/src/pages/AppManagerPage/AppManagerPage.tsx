@@ -1,37 +1,22 @@
 import { observer } from 'mobx-react';
 import { useEffect } from 'react';
 import { Container, Tab, Tabs } from 'react-bootstrap';
+import SelectChallengeStatusTab from '../../components/SelectChallengeStatusTab';
+import StreamerSearch from '../../components/StreamerSearch';
 import ChallengeOrdersList from '../../containers/ChallengeOrdersList';
-import ChallengesList from '../../containers/ChallengesList';
 import CommentsList from '../../containers/CommentsList';
 import AuthStore from '../../oidc/AuthStore';
-import CatalogChallengeManagerStore from '../../stores/containers/CatalogChallengeManagerStore';
-import ChallengeOrderManagerStore from '../../stores/containers/ChallengeOrderManagerStore';
-import CommentManagerStore from '../../stores/containers/CommentManagerStore';
 import { useInjection } from '../../utilities/ioc/ioc.react';
+import StreamersStore from '../../stores/states/StreamersStore';
 import iocStores from '../../utilities/ioc/iocStores';
+import AppManagerPageStore from '../../stores/pages/AppManagerPageStore';
 
 const AppManagerPage = observer(() => {
 
-     const catalogChallengesManager = useInjection<CatalogChallengeManagerStore>(iocStores.catalogChallengeManagerStore);
-     const commentManager = useInjection<CommentManagerStore>(iocStores.commentManagerStore);
-     const challengeOrderManager = useInjection<ChallengeOrderManagerStore>(iocStores.challengeOrderManagerStore);
-
      const authStore = useInjection<AuthStore>(iocStores.authStore);
+     const streamersStore = useInjection<StreamersStore>(iocStores.streamersStore);
+     const appManagerPageStore = useInjection<AppManagerPageStore>(iocStores.appManagerPageStore);
      
-     const handleOnSelect = async (tabName: string | null) => {
-          switch (tabName) {
-               case "challenges":
-                    await catalogChallengesManager.getPaginatedCurrentChallenges();
-                    break;
-               case "challenge-orders":
-                    await challengeOrderManager.getPaginated();
-                    break;
-               case "comments":
-                    await commentManager.getPaginated(0);
-                    break;
-          }
-     }
 
      useEffect(() => {
           if (!authStore.user) {
@@ -40,21 +25,21 @@ const AppManagerPage = observer(() => {
           }
      }, [])
 
-
      return (
           <Container>
                <Tabs
-                    defaultActiveKey="all"
                     className="mb-5 pt-5"
-                    onSelect={handleOnSelect}
+                    onSelect={appManagerPageStore.handleOnSelect}
+                    activeKey={appManagerPageStore.activeKey}
                >
                     <Tab eventKey="challenges" title="Challenges">
-                         <ChallengesList />
+                         <StreamerSearch/>
+                         <SelectChallengeStatusTab streamerId={streamersStore.selectedStreamer.streamerId}/>
                     </Tab>
                     <Tab eventKey="challenge-orders" title="Orders">
                          <ChallengeOrdersList />
                     </Tab>
-                    <Tab eventKey="comments" title="Comments">
+                    <Tab eventKey="comments" title="Comments" disabled={appManagerPageStore.activeKey !== "comments"}>
                          <CommentsList />
                     </Tab>
                </Tabs>
@@ -63,3 +48,5 @@ const AppManagerPage = observer(() => {
 });
 
 export default AppManagerPage;
+
+
