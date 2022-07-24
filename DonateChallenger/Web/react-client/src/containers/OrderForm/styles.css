@@ -1,0 +1,50 @@
+.order_form {
+     height: auto;
+	--x: 50%;
+	--y: 50%;
+	
+	position: relative;
+	appearance: none;
+	color: white;
+	border-radius: 15px;
+	border: 0.5rem solid transparent;
+	background: linear-gradient(rgb(1, 23, 6), #000) padding-box, radial-gradient(farthest-corner at var(--x) var(--y),rgb(0, 111, 0), rgb(0, 0, 0)) border-box;
+	transition: all 500ms ease;
+}
+
+.order_form:hover {
+	transform: scale(1.12);
+	transition: all 500ms ease;
+}
+
+.order_form__wrapper {
+	display: flex;
+	align-items: center;
+	justify-content: space-evenly;
+}
+
+@media (max-width: 700px) {
+	.order_form__wrapper {
+		flex-direction: column;
+	}
+}
+
+.order_challenge input {
+	font-size: medium;
+	text-align: start;
+	padding-left: 1rem;
+	margin-bottom: 4rem;
+	min-width: 10rem;
+	background: #000;
+	color: whitesmoke;
+}
+
+.order_challenge textarea {
+	font-size: medium;
+	text-align: start;
+	padding-left: 1rem;
+	margin-bottom: 4rem;
+	min-width: 20rem;
+	background: #000;
+	color: whitesmoke;
+}

@@ -1,0 +1,23 @@
+.donate-price {
+     text-align: end;
+     font-size: 1.5rem;
+     color: #bd0404;
+}
+
+.donate-donater {
+     font-size: 1.4rem;
+     color: #76ba00;
+}
+
+.donate-description {
+     font-size: 1.5rem;
+}
+
+
+.blur {
+     position: relative;
+     -webkit-animation: 2s animateLeft linear -1s infinite;
+          animation: 2s animateLeft linear -1s infinite;
+     transition: all 500ms ease;
+     filter: blur(15px);
+   }

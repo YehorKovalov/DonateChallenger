@@ -1,24 +1,39 @@
+using ChallengeOrder.API.Data;
+using ChallengeOrder.API.Extensions;
+using Infrastructure.Extensions;
+using Infrastructure.Filters;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
+var connectionString = configuration.GetConnectionString("OrderConnectionString");
 
-builder.Services.AddControllers();
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services
+    .AddConfiguredMessageBus(configuration)
+    .AddAppCors()
+    .AddCustomAuthorization(configuration)
+    .AddAppDependencies()
+    .AddDbContextFactory<AppDbContext>(o => o.UseSqlServer(connectionString))
+    .AddCustomConfiguredSwagger("ChallengeOrder", configuration, GetScopes())
+    .AddControllers(o => o.Filters.Add(typeof(HttpGlobalExceptionFilter)))
+    .AddJsonOptions(o => o.JsonSerializerOptions.WriteIndented = true);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseCustomConfiguredSwaggerWithUI(configuration, "ChallengeOrder", "challengeorderswaggerui");
 
-app.UseHttpsRedirection();
+app.UseRouting();
+app.UseCors("CorsPolicy");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
+app.CreateDbIfNotExist(new AppDbContextInitializer());
 app.Run();
+
+Dictionary<string, string> GetScopes() => new Dictionary<string, string>
+{
+    { "challenge-order.manager", "challenge-order.manager" }
+};

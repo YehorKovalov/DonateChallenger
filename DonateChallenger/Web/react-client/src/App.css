@@ -1,0 +1,74 @@
+.main-font-family {
+  font-family: 'Libre Baskerville', serif;
+}
+
+body{
+  font-family: 'Playfair Display', serif;
+  margin: 0;
+  padding: 0;
+}
+
+footer {
+  height: 5rem;
+  background: linear-gradient(138deg, rgba(0,0,0,1) 46%, rgba(2,25,6,1) 63%);
+}
+
+.wrapper {
+  min-height: calc(100vh - 5rem);
+  min-width: 100%;
+  background: linear-gradient(200deg, rgba(0,0,0,1) 46%, rgba(2,25,6,1) 63%);
+}
+
+.color-white {
+  color: white;
+}
+.color-black {
+  color: black;
+}
+.color-red {
+  color: rgb(177, 5, 5);
+}
+
+.color-silver {
+  color: silver;
+}
+
+.hover_white:hover{
+  color: white;
+}
+
+textarea:focus, input:focus, button:focus{
+  outline: none;
+  border: none;
+}
+
+.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+.center-block {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%)
+}
+
+.card-body {
+     min-width: 100%;
+     background: linear-gradient(27deg, rgba(1,55,5,1) 0%, rgba(1,27,4,1) 28%, rgba(1,15,3,1) 69%, rgba(1,55,5,1) 97%);
+}
+
+.card {
+     width: 20rem;
+     margin: 1rem;
+}
+
+.offcanvas-body {
+  background-color: black;
+}
+
+.offcanvas-header {
+  background: linear-gradient(27deg, rgba(1,55,5,1) 0%, rgba(1,27,4,1) 28%, rgba(1,15,3,1) 69%, rgba(1,55,5,1) 97%);
+}

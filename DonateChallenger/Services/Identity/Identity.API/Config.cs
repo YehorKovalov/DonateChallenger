@@ -1,58 +1,228 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-
-
-using IdentityServer4.Models;
-using System.Collections.Generic;
+﻿using System.IO;
 
 namespace Identity.API
 {
     public static class Config
     {
-        public static IEnumerable<IdentityResource> IdentityResources =>
-                   new IdentityResource[]
-                   {
-                new IdentityResources.OpenId(),
-                new IdentityResources.Profile(),
-                   };
-
-        public static IEnumerable<ApiScope> ApiScopes =>
-            new ApiScope[]
+        private static IConfiguration _configuration;
+        public static IEnumerable<IdentityResource> IdentityResources => new List<IdentityResource>
+        {
+            new IdentityResources.OpenId(),
+            new IdentityResources.Profile(),
+            new IdentityResource
             {
-                new ApiScope("scope1"),
-                new ApiScope("scope2"),
-            };
+                Name = JwtClaimTypes.Role,
+                UserClaims = new List<string> { JwtClaimTypes.Role }
+            }
+        };
 
-        public static IEnumerable<Client> Clients =>
-            new Client[]
+        public static IEnumerable<ApiResource> ApiResources => new[]
+        {
+            new ApiResource
             {
-                // m2m client credentials flow client
+                Name = "challenge-catalog",
+                DisplayName = "Challenge Catalog",
+                Scopes = new List<string> { "challenge-catalog.bff", "challenge-catalog.manager" },
+                ApiSecrets = new List<Secret> { new Secret("secret".Sha256()) },
+                UserClaims = new List<string> { JwtClaimTypes.Role }
+            },
+            new ApiResource
+            {
+                Name = "challenge-order",
+                DisplayName = "Challenge Order",
+                Scopes = new List<string> { "challenge-order.manager" },
+                ApiSecrets = new List<Secret> { new Secret("secret".Sha256()) },
+                UserClaims = new List<string> { JwtClaimTypes.Role }
+            },
+            new ApiResource
+            {
+                Name = "payment",
+                DisplayName = "Payment",
+                Scopes = new List<string> { "paypal-payment.bff", "paypal-payment.execute" },
+                ApiSecrets = new List<Secret> { new Secret("secret".Sha256()) },
+                UserClaims = new List<string> { JwtClaimTypes.Role }
+            },
+            new ApiResource
+            {
+                Name = "challenges-temporary-storage",
+                DisplayName = "Challenges Temporary Storage",
+                Scopes = new List<string> { "challenge-temporary-storage.bff" },
+                ApiSecrets = new List<Secret> { new Secret("secret".Sha256()) },
+                UserClaims = new List<string> { JwtClaimTypes.Role }
+            },
+            new ApiResource
+            {
+                Name = "comment",
+                DisplayName = "Comment",
+                Scopes = new List<string> { "comment.bff", "comment.manager" },
+                ApiSecrets = new List<Secret> { new Secret("secret".Sha256()) },
+                UserClaims = new List<string> { JwtClaimTypes.Role }
+            },
+            new ApiResource
+            {
+                Name = "identity",
+                DisplayName = "Comment",
+                Scopes = new List<string> { "streamer-profile.bff", "user-profile.bff", "user-manager.bff" },
+                ApiSecrets = new List<Secret> { new Secret("secret".Sha256()) },
+                UserClaims = new List<string> { JwtClaimTypes.Role }
+            },
+        };
+
+        public static IEnumerable<ApiScope> Scopes => new List<ApiScope>
+        {
+            new ApiScope("challenge-catalog.bff", "Challenge Catalog BFF") { UserClaims = { JwtClaimTypes.Role } },
+            new ApiScope("challenge-catalog.manager", "Challenge Catalog Manager") { UserClaims = { JwtClaimTypes.Role } },
+            new ApiScope("challenge-order.manager", "Challenge Order Manager") { UserClaims = { JwtClaimTypes.Role } },
+            new ApiScope("paypal-payment.bff", "Paypal Payment BFF") { UserClaims = { JwtClaimTypes.Role} },
+            new ApiScope("challenges-temporary-storage.bff", "Challenges Temporary Storage BFF") { UserClaims = { JwtClaimTypes.Role } },
+            new ApiScope("comment.bff", "Comment BFF") { UserClaims = { JwtClaimTypes.Role } },
+            new ApiScope("comment.manager", "Comment Manager") { UserClaims = { JwtClaimTypes.Role } },
+            new ApiScope("streamer-profile.bff", "Streamer Profile BFF") { UserClaims = { JwtClaimTypes.Role } },
+            new ApiScope("user-profile.bff", "User Profile BFF") { UserClaims = { JwtClaimTypes.Role } },
+            new ApiScope("user-manager.bff", "User Manager BFF") { UserClaims = { JwtClaimTypes.Role } },
+        };
+
+        public static IEnumerable<Client> GetClients()
+        {
+            _configuration = GetConfiguration();
+            var reactClientUrl = _configuration?["ReactClientUrl"] ?? throw new ArgumentNullException();
+            var challengeCatalogUrl = _configuration?["ChallengeCatalogUrl"] ?? throw new ArgumentNullException();
+            var challengeOrderUrl = _configuration?["ChallengeOrderUrl"] ?? throw new ArgumentNullException();
+            var paymentUrl = _configuration?["PaymentUrl"] ?? throw new ArgumentNullException();
+            var commentUrl = _configuration?["CommentUrl"] ?? throw new ArgumentNullException();
+            var challengesTemporaryStorageUrl = _configuration?["ChallengesTemporaryStorageUrl"] ?? throw new ArgumentNullException();
+            var globalUrl = _configuration?["GlobalUrl"] ?? throw new ArgumentNullException();
+
+            return new List<Client>
+            {
                 new Client
                 {
-                    ClientId = "m2m.client",
-                    ClientName = "Client Credentials Client",
-
-                    AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    ClientSecrets = { new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256()) },
-
-                    AllowedScopes = { "scope1" }
-                },
-
-                // interactive client using code flow + pkce
-                new Client
-                {
-                    ClientId = "interactive",
-                    ClientSecrets = { new Secret("49C1A7E1-0C79-4A89-A3D6-A37998FB86B0".Sha256()) },
+                    ClientId = "spa",
+                    ClientName = "Donate-Challenger SPA OpenId Client",
 
                     AllowedGrantTypes = GrantTypes.Code,
 
-                    RedirectUris = { "https://localhost:44300/signin-oidc" },
-                    FrontChannelLogoutUri = "https://localhost:44300/signout-oidc",
-                    PostLogoutRedirectUris = { "https://localhost:44300/signout-callback-oidc" },
+                    RequireConsent = false,
+                    RequirePkce = true,
+                    RequireClientSecret = false,
+                    AllowAccessTokensViaBrowser = true,
+                    AlwaysIncludeUserClaimsInIdToken = true,
+                    AlwaysSendClientClaims = true,
 
-                    AllowOfflineAccess = true,
-                    AllowedScopes = { "openid", "profile", "scope2" }
+                    ClientUri = globalUrl,
+                    RedirectUris =
+                    {
+                         globalUrl,
+                         $"{globalUrl}/signin-oidc",
+                         $"{globalUrl}/silentrenew"
+                     },
+                     PostLogoutRedirectUris = { globalUrl },
+                     AllowedCorsOrigins = { globalUrl },
+
+                    ClientSecrets = { new Secret("secret".Sha256()) },
+
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "challenge-catalog.bff", "challenge-catalog.manager",
+                        "paypal-payment.bff",
+                        "challenge-order.manager",
+                        "challenges-temporary-storage.bff",
+                        "comment.bff", "comment.manager",
+                        "streamer-profile.bff", "user-profile.bff", "user-manager.bff",
+                        JwtClaimTypes.Role
+                    }
+                },
+                new Client
+                {
+                    ClientId = "challengecatalogswaggerui",
+                    ClientName = "Challenge Catalog",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
+
+                    ClientSecrets = { new Secret("secret".Sha256()) },
+
+                    RedirectUris = { $"{challengeCatalogUrl}/swagger/oauth2-redirect.html" },
+                    PostLogoutRedirectUris = { $"{challengeCatalogUrl}/swagger/" },
+
+                    AllowedScopes =
+                    {
+                        "challenge-catalog.bff",
+                        "challenge-catalog.manager"
+                    }
+                },
+                new Client
+                {
+                    ClientId = "challengeorderswaggerui",
+                    ClientName = "Challenge Order",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
+
+                    ClientSecrets = { new Secret("secret".Sha256()) },
+
+                    RedirectUris = { $"{challengeOrderUrl}/swagger/oauth2-redirect.html" },
+                    PostLogoutRedirectUris = { $"{challengeOrderUrl}/swagger/" },
+
+                    AllowedScopes =
+                    {
+                        "challenge-order.bff",
+                        "challenge-order.manager",
+                    }
+                },
+                new Client
+                {
+                    ClientId = "paymentswaggerui",
+                    ClientName = "Payment",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
+
+                    ClientSecrets = { new Secret("secret".Sha256()) },
+
+                    RedirectUris = { $"{paymentUrl}/swagger/oauth2-redirect.html" },
+                    PostLogoutRedirectUris = { $"{paymentUrl}/swagger/" },
+                    AllowedScopes =
+                    {
+                        "paypal-payment.bff",
+                        "paypal-payment.execute"
+                    }
+                },
+                new Client
+                {
+                    ClientId = "challengestemporarystorageswaggerui",
+                    ClientName = "Challenges Temporary Storage",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
+
+                    ClientSecrets = { new Secret("secret".Sha256()) },
+
+                    RedirectUris = { $"{challengesTemporaryStorageUrl}/swagger/oauth2-redirect.html" },
+                    PostLogoutRedirectUris = { $"{challengesTemporaryStorageUrl}/swagger/" },
+                    AllowedScopes =
+                    {
+                        "challenges-temporary-storage.bff"
+                    }
+                },
+                new Client
+                {
+                    ClientId = "commentswaggerui",
+                    ClientName = "Comment",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
+
+                    ClientSecrets = { new Secret("secret".Sha256()) },
+
+                    RedirectUris = { $"{commentUrl}/swagger/oauth2-redirect.html" },
+                    PostLogoutRedirectUris = { $"{commentUrl}/swagger/" },
+                    AllowedScopes =
+                    {
+                        "comment.bff",
+                        "comment.manager",
+                    }
                 },
             };
+        }
+
+        private static IConfiguration GetConfiguration() => Helpers.ConfigurationProvider.GetConfiguration(Directory.GetCurrentDirectory());
     }
 }

@@ -1,24 +1,40 @@
 ﻿.body-container {
   margin-top: 60px;
-  padding-bottom: 40px; }
+  padding-bottom: 40px;
+}
 
-.welcome-page li {
-  list-style: none;
-  padding: 4px; }
+body{
+  background: radial-gradient(circle, rgba(0,0,0,1) 33%, rgba(3,37,8,1) 100%);
+  min-width: 100%;
+  min-height: calc(100vh - 5rem);
+}
 
-.logged-out-page iframe {
-  display: none;
-  width: 0;
-  height: 0; }
+.bg-black {
+  background-color: black;
+}
+.color-silver{
+  color: silver;
+}
 
-.grants-page .card {
-  margin-top: 20px;
-  border-bottom: 1px solid lightgray; }
-  .grants-page .card .card-title {
-    font-size: 120%;
-    font-weight: bold; }
-    .grants-page .card .card-title img {
-      width: 100px;
-      height: 100px; }
-  .grants-page .card label {
-    font-weight: bold; }
+.color-white{
+  color: whitesmoke;
+}
+
+input:focus, textarea {
+  outline: none !important;
+}
+
+.input-gradient__black-darkgreen {
+  padding-left: 1rem;
+  min-height: 4rem;
+  min-width: 30rem;
+  background: linear-gradient(0deg, rgba(3,60,21,1) 0%, rgba(0,0,0,1) 45%);
+  color: ghostwhite;
+  border: none;
+  border-radius: 0.25rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.input-gradient__black-darkgreen:hover {
+  color: white;
+}
