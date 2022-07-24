@@ -9,4 +9,7 @@ export default {
      commentService: Symbol('commentService'),
      userService: Symbol('userService'),
      userManagerService: Symbol('userManagerService'),
+     commentManagerService: Symbol('commentManagerService'),
+     challengeCatalogManagerService: Symbol('challengeCatalogManagerService'),
+     challengeOrderManagerService: Symbol('challengeOrderManagerService'),
 }

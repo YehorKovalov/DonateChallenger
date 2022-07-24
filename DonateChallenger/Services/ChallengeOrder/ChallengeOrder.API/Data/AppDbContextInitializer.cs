@@ -36,7 +36,8 @@ public class AppDbContextInitializer : IDbInitializer<AppDbContext>
                 ChallengeOrderId = Guid.NewGuid(),
                 PaymentId = merchantIds[random.Next(merchantIds.Length - 1)],
                 ChallengesAmount = orderChallengesAmount,
-                ResultDonationPrice = random.Next(20, 100)
+                ResultDonationPrice = random.Next(20, 100),
+                Date = DateTime.UtcNow
             });
             challengesAmount -= orderChallengesAmount;
         }

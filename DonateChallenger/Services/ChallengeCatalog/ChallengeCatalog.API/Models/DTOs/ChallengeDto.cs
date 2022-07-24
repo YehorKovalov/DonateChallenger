@@ -12,5 +12,7 @@ public class ChallengeDto
 
     public string DonateFrom { get; set; } = null!;
 
+    public string StreamerId { get; set; } = null!;
+
     public DateTime CreatedTime { get; set; }
 }

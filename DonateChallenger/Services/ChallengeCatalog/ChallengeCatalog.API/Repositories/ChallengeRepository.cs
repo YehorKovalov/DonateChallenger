@@ -69,11 +69,24 @@ public class ChallengeCatalogCatalogRepository : IChallengeCatalogRepository
         return result?.Entity?.StatusId > 0;
     }
 
-    public async Task<bool?> UpdateChallengeAsync(ChallengeEntity challenge)
+    public async Task<long> UpdateChallengeAsync(long challengeId, string? title, string description, double donatePrice, string donateFrom)
     {
+        var challenge = await GetChallengeByIdAsync(challengeId);
+
+        if (challenge == null)
+        {
+            _logger.LogError($"{nameof(UpdateChallengeAsync)} ---> Challenge's not found. Returned 0");
+            return 0;
+        }
+
+        challenge.Title = title;
+        challenge.Description = description;
+        challenge.DonatePrice = donatePrice;
+        challenge.DonateFrom = donateFrom;
         var result = _dbContext.Update(challenge);
+
         await _dbContext.SaveChangesAsync();
-        return result?.Entity?.ChallengeId > 0;
+        return result.Entity.ChallengeId;
     }
 
     public async Task<ChallengeEntity?> GetChallengeByIdAsync(long challengeId, bool loadRelatedEntities = false)

@@ -32,5 +32,6 @@ app.Run();
 
 Dictionary<string, string> GetScopes() => new Dictionary<string, string>
 {
-    { "challenge-catalog.bff", "challenge-catalog.bff" }
+    { "challenge-catalog.bff", "challenge-catalog.bff" },
+    { "challenge-catalog.manager", "challenge-catalog.manager" }
 };

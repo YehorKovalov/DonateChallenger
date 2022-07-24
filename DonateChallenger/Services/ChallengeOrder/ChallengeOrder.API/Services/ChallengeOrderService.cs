@@ -1,7 +1,9 @@
 using ChallengeOrder.API.Data;
+using ChallengeOrder.API.Models.DTOs;
 using ChallengeOrder.API.Models.Responses;
 using ChallengeOrder.API.Repositories.Abstractions;
 using ChallengeOrder.API.Services.Abstractions;
+using Infrastructure.Helpers;
 using Infrastructure.Services;
 using Infrastructure.Services.Abstractions;
 
@@ -43,6 +45,56 @@ public class ChallengeOrderService : BaseDataService<AppDbContext>,  IChallengeO
                 Succeeded = true
             };
         });
+    }
+
+    public async Task<UpdateChallengeOrderResponse<Guid>> UpdateChallengeOrderAsync(string challengeOrderId, string paymentId, int challengesAmount, double resultDonationPrice)
+    {
+        var result = await _orderRepository.Update(challengeOrderId, paymentId, challengesAmount, resultDonationPrice);
+        return new UpdateChallengeOrderResponse<Guid>
+        {
+            Data = result
+        };
+    }
+
+    public async Task<GetChallengeOrderByIdResponse<ChallengeOrderDto?>> GetChallengeOrderByIdAsync(string orderId)
+    {
+        var result = await _orderRepository.GetById(orderId);
+        if (result == null)
+        {
+            return new GetChallengeOrderByIdResponse<ChallengeOrderDto?> { Data = null };
+        }
+
+        return new GetChallengeOrderByIdResponse<ChallengeOrderDto?>
+        {
+            Data = new ChallengeOrderDto
+            {
+                ChallengeOrderId = result.ChallengeOrderId,
+                ChallengesAmount = result.ChallengesAmount,
+                Date = result.Date,
+                PaymentId = result.PaymentId,
+                ResultDonationPrice = result.ResultDonationPrice
+            }
+        };
+    }
+
+    public async Task<GetPaginatedChallengeOrdersResponse<ChallengeOrderDto>> GetPaginatedChallengeOrdersAsync(int currentPage, int ordersPerPage)
+    {
+        var result = await _orderRepository.GetPaginatedOrders(currentPage, ordersPerPage);
+        return new GetPaginatedChallengeOrdersResponse<ChallengeOrderDto>
+        {
+            Data = result.Challenges.Select(s => new ChallengeOrderDto
+            {
+                ChallengeOrderId = s.ChallengeOrderId,
+                ChallengesAmount = s.ChallengesAmount,
+                Date = s.Date,
+                PaymentId = s.PaymentId,
+                ResultDonationPrice = s.ResultDonationPrice
+            }).ToList(),
+            TotalCount = result.TotalCount,
+            CurrentPage = currentPage,
+            ChallengeOrdersPerPage = ordersPerPage,
+            TotalPages = PageCounter.Count(result.TotalCount, ordersPerPage)
+        };
     }
 
     private bool AddChallengeOrderStateIsValid(string paymentId, int challengesAmount, double resultDonationPrice)

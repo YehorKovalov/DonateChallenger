@@ -3,6 +3,6 @@ export interface SkippedChallengeDto {
      title?: string,
      description: string,
      donatePrice: number,
-     donateFrom: number,
+     donateFrom: string,
      createdTime: string
 }
