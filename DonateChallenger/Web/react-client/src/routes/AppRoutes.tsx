@@ -17,11 +17,12 @@ import { UserRole } from '../models/UserRole';
 import UserManagerPage from '../pages/UserManagerPage';
 import ProfilePage from '../pages/ProfilePage';
 import ForumPage from '../pages/ForumPage';
+import AppManagerPage from '../pages/AppManagerPage';
 
 const AppRoutes = observer(() => {
 
      const authStore = useInjection<AuthStore>(iocStores.authStore);
-     const getIndexJSX = (): JSX.Element => {
+     const getIndexPage = (): JSX.Element => {
           switch (authStore.userRole) {
                case UserRole.Anonymous:
                     return <SelectUserRolePage/>;
@@ -30,7 +31,7 @@ const AppRoutes = observer(() => {
                case UserRole.Streamer:
                     return <ProfilePage />;
                case UserRole.Manager:
-                    return <SelectUserRolePage/>;//will be added
+                    return <AppManagerPage />;
                case UserRole.Admin:
                     return <UserManagerPage />;
           }
@@ -41,7 +42,7 @@ const AppRoutes = observer(() => {
                <Router>
                     <Routes>
                          <Route path='/' element={ <Layout /> }>
-                              <Route index element={getIndexJSX()}/>
+                              <Route index element={getIndexPage()}/>
                               <Route path="/signin" element={ <SignInRedirect /> } />
                               <Route path="/signin-oidc" element={ <SigninRedirectCallback /> } />
                               <Route path="/silentrenew" element={ <SigninSilent/> } />

@@ -48,6 +48,7 @@ const Header = observer(() => {
 
                               {authStore.userRole === UserRole.Manager &&
                               <>
+                                   <NavLink href='/'>Manage</NavLink>
                                    <NavLink href='/completed/forum'>Forum</NavLink>
                               </>}
 
