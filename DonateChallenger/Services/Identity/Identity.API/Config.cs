@@ -109,24 +109,15 @@ namespace Identity.API
                     AlwaysIncludeUserClaimsInIdToken = true,
                     AlwaysSendClientClaims = true,
 
-                    // ClientUri = globalUrl,
-                    // RedirectUris =
-                    // {
-                    //     globalUrl,
-                    //     $"{globalUrl}/signin-oidc",
-                    //     $"{globalUrl}/silentrenew"
-                    // },
-                    // PostLogoutRedirectUris = { globalUrl },
-                    // AllowedCorsOrigins = { globalUrl },
-                    ClientUri = reactClientUrl,
+                    ClientUri = globalUrl,
                     RedirectUris =
                     {
-                        reactClientUrl,
-                        $"{reactClientUrl}/signin-oidc",
-                        $"{reactClientUrl}/silentrenew"
-                    },
-                    PostLogoutRedirectUris = { reactClientUrl },
-                    AllowedCorsOrigins = { reactClientUrl },
+                         globalUrl,
+                         $"{globalUrl}/signin-oidc",
+                         $"{globalUrl}/silentrenew"
+                     },
+                     PostLogoutRedirectUris = { globalUrl },
+                     AllowedCorsOrigins = { globalUrl },
 
                     ClientSecrets = { new Secret("secret".Sha256()) },
 
