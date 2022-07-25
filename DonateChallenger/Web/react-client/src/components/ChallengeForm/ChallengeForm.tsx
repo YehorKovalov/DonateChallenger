@@ -9,7 +9,11 @@ import { useInjection } from '../../utilities/ioc/ioc.react';
 import iocStores from '../../utilities/ioc/iocStores';
 import './styles.css';
 
-const ChallengeForm = observer(() => {
+interface ChallengeFormProps {
+     formDisabled?: boolean
+}
+
+const ChallengeForm = observer((props: ChallengeFormProps) => {
 
      const streamersStore = useInjection<StreamersStore>(iocStores.streamersStore);
      const authStore = useInjection<AuthStore>(iocStores.authStore);
@@ -25,25 +29,27 @@ const ChallengeForm = observer(() => {
 
      return (
           <Form validated={formIsFocused} onBlur={() => setFormIsFocused(false)} onFocus={() => setFormIsFocused(true)}>
-               <Form.Group>
-                    <Form.Control onChange={e => challengeForAddingStore.title.state = e.target.value}
-                         placeholder="Title..." className="order_challenge__title"
-                         spellCheck={false}
-                         maxLength={ChallengeFormValidation.Title.maxLength}/>
-               </Form.Group>
-               <Form.Group>
-                    <Form.Control onChange={e => challengeForAddingStore.description.state = e.target.value}
-                         placeholder="Description..." as="textarea"
-                         spellCheck={false} required
-                         maxLength={ChallengeFormValidation.Description.maxLength}
-                         minLength={ChallengeFormValidation.Description.minLength}/>
-               </Form.Group>
-               <Form.Group>
-                    <Form.Control type='number' onChange={e => challengeForAddingStore.donatePrice.state = Number.parseFloat(e.target.value)}
-                         placeholder="Donation Price..." className="order_challenge__price"
-                         spellCheck={false} required
-                         min={streamersStore.selectedStreamer.minDonatePrice}/>
-               </Form.Group>
+               <fieldset disabled={props.formDisabled}>
+                    <Form.Group>
+                         <Form.Control onChange={e => challengeForAddingStore.title.state = e.target.value}
+                              placeholder="Title..." className="order_challenge__title"
+                              spellCheck={false}
+                              maxLength={ChallengeFormValidation.Title.maxLength}/>
+                    </Form.Group>
+                    <Form.Group>
+                         <Form.Control onChange={e => challengeForAddingStore.description.state = e.target.value}
+                              placeholder="Description..." as="textarea"
+                              spellCheck={false} required
+                              maxLength={ChallengeFormValidation.Description.maxLength}
+                              minLength={ChallengeFormValidation.Description.minLength}/>
+                    </Form.Group>
+                    <Form.Group>
+                         <Form.Control type='number' onChange={e => challengeForAddingStore.donatePrice.state = Number.parseFloat(e.target.value)}
+                              placeholder="Donation Price..." className="order_challenge__price"
+                              spellCheck={false} required
+                              min={streamersStore.selectedStreamer.minDonatePrice}/>
+                    </Form.Group>
+               </fieldset>
           </Form>
      );
 });
