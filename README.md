@@ -1,3 +1,7 @@
+# Architecture
+
+![Screenshot](https://github.com/YehorKovalov/DonateChallenger/blob/f785bfb4b1e9eac0ddbdcc40eca84df1462f5a58/DonateChallenger/Architecture/architecture.png)
+
 # GETTING STARTED
 
 ### 1)  Make sure you have [installed](https://www.docker.com/get-started/) Docker in your environment.
