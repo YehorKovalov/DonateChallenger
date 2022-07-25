@@ -17,11 +17,14 @@ export default class ChallengeOrderStore {
           makeAutoObservable(this);
      }
 
+     storageIsUpdating = false;
      public makeOrder = async () => {
 
+          this.storageIsUpdating = true;
           const streamer = this.streamersStore.selectedStreamer;
-          const storageUpdatingResult = await this.challengesTempStorageStore.addChallengeToStorage(streamer.streamerId);
-          if (!storageUpdatingResult) {
+          const storageIsUpdated = await this.challengesTempStorageStore.addChallengeToStorage(streamer.streamerId);
+          if (!storageIsUpdated) {
+               this.storageIsUpdating = false;
                return;
           }
 
